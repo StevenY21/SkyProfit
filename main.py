@@ -253,6 +253,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
               bestProfitRec = rec
         globals.finalOutput.description += "\n" + f"`Craft it using {bestProfitRec}`"
       print("reached here not bad")
+      globals.finalOutput.set_footer(text="Data provide by: NotEnoughUpdates")
       await interaction.edit_original_response(embed=globals.finalOutput)
   except:
     await interaction.response.send_message(
