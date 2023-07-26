@@ -280,7 +280,7 @@ async def test(interaction: discord.Interaction):
 @client.event
 async def on_ready():
   await tree.sync()
-  print('IDIOT')
+  print('ITS ALIVE!')
 
 
 keep_alive()
