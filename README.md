@@ -1,8 +1,8 @@
 # SkyProfit
 A Hypixel Skyblock Bot that is all about trying to make money in Skyblock
 [STILL IN DEVELOPMENT]
-Currently has:
-craftprofit [item]: finds regular recipe, raw recipe, and 2 alternative recipes for a specified item. 
+\nCurrently has:
+\ncraftprofit [item]: finds regular recipe, raw recipe, and 2 alternative recipes for a specified item. 
 - provides the material prices for each recipe, and the profit percentage if the user decides to sell the item
 - currently not working with enchant books, potions, pets, and a few random items
 
