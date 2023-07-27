@@ -4,10 +4,8 @@ import io
 import base64
 import globals
 
-skyblockItems = requests.get(
-  "https://api.hypixel.net/resources/skyblock/items").json()
+skyblockItems = globals.SB_ITEMS_DATA
 ah_data = requests.get("https://api.hypixel.net/skyblock/auctions").json()
-print(len(skyblockItems['items']), "items")
 
 # for decoding auction house most recent ending bids
 #def decode_inventory_data(raw_data):
@@ -19,7 +17,9 @@ BASE_ITEMS = [
   "wheat", "cobblestone", "oak log", "birch log", "bone", "spruce log",
   "dark oak log", "jungle log"
 ]
+# for items that have duplicate names
 SPECIAL_ITEMS = {"hay bale": "HAY_BLOCK"}
+
 #decode_inventory_data(
 #"H4sIAAAAAAAAAD2Q3W7TQBCFx0lDExcUwRMMiNvQ1g5J6V0Uwk/VpFwQ4A6N12N7lfVu8K5J80R+jzwYYm0h7lY753xn5oQAIwhkCABBD3oyDcYBDJam1i4Ioe8oH8EZa1H8U/TVbwWDTgkIAVxsdVIx7ShRHPRh9Emm/EFRbr38TwjnqbR7RUcPuTcVD/3vBYxPzbtVlkkhPfiI3+DVqZl/1sJzLFsszAF/1VLs1BGPpq7QGaPgudd0SRYTZcTOvvGs1rjAvTlwldUKvxuTssbFI+OhkKJAQbrTdEYsa+XkXjEqk1uUGgmt1LliOPeaQrqX8OLU3Cx9XGoO+hZPDUXtIf4x94OvhfQ2x2XLxYSx4sxUOaedj06N2m6WD+v1wwYXP1ZDONtQyfDMj+7qNqZdDEIYrx5dRQvnKpnUju2wKzO8224+3q9+emcIT9vGSbuStbN9CPl/W36bAXh0XXvP6+gqeZuxuJpMUyEm0yijCc1oPqEkFhFdxzccx0MYOVmydVTuYTy7vI4voxhnt9MIv6wBevDkPZWUsyfDX/ZF5iEOAgAA"
 #)
@@ -188,7 +188,7 @@ def findCost(item_ID):
 
 # takes in already valid item ids, check ah for lowest bin
 def lowestBin(itemLst):
-  tempLst = [item.lower() for item in itemLst]  # for comparing items
+  
   pg = 0
   lowestBins = {}
   print("auction item list", itemLst)
@@ -201,15 +201,14 @@ def lowestBin(itemLst):
     else:
       print("test", pg)
       for auction in data["auctions"]:
-        if auction["item_name"].lower() in tempLst:
-          print(auction["item_name"], f"on pg {pg}")
-          for i in itemLst:
-            if (i.lower() in auction["item_name"].lower() or i.lower()
-                == auction["item_name"].lower()) and auction["bin"] == True:
-              if lowestBins.get(
-                  i) == None or auction["starting_bid"] < lowestBins[i]:
-                lowestBins[i] = auction["starting_bid"]
-              break
+        for i in itemLst:
+          if (i.lower() in auction["item_name"].lower() or i.lower()
+              == auction["item_name"].lower()) and auction["bin"] == True:
+            print(auction["item_name"], f"on pg {pg}")
+            if lowestBins.get(
+                i) == None or auction["starting_bid"] < lowestBins[i]:
+              lowestBins[i] = auction["starting_bid"]
+            break
       pg += 1
   print("itemLst", itemLst)
   print("lowestBins", lowestBins)

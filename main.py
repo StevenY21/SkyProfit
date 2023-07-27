@@ -1,5 +1,6 @@
 import discord
 from discord import app_commands
+from discord.app_commands import Choice
 import discord.ext
 import functions
 import functools
@@ -7,6 +8,7 @@ import re, json, requests
 import os
 from keep_alive import keep_alive
 import globals
+import time
 
 TOKEN = os.environ['TOKEN']
 intents = discord.Intents.default()
@@ -24,11 +26,23 @@ async def getHelp(interaction: discord.Interaction, name: str):
   await interaction.edit_original_response(embed=globals.finalOutput)
 
 
+"""
+@app_commands.choices(chc=[
+  Choice(name=i["name"], value=i["name"])
+  for i in globals.SB_ITEMS_DATA["items"]
+])
+@tree.command(name="test", description="testin comamnd")
+async def testChoice(interaction: discord.Interaction, chc: str):
+  await interaction.response.send_message(f"You chose {chc}")
+"""
+
+
 @tree.command(
   name="craftprofit",
   description=" Gets many possible recipes for item, provides profit % for each"
 )
 async def getrecipe(interaction: discord.Interaction, name: str):
+  start = time.time()
   try:
     await interaction.response.send_message("Getting Regular Recipe...")
     regRecipe = functions.get_item_recipe(name)
@@ -254,8 +268,12 @@ async def getrecipe(interaction: discord.Interaction, name: str):
         globals.finalOutput.description += "\n" + f"`Craft it using {bestProfitRec}`"
       print("reached here not bad")
       globals.finalOutput.set_footer(text="Data provide by: NotEnoughUpdates")
+      end = time.time()
+      print(end - start)
       await interaction.edit_original_response(embed=globals.finalOutput)
   except:
+    end = time.time()
+    print(end - start)
     await interaction.response.send_message(
       "Error: Check if the item name is spelled correctly, or that it can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable"
     )
