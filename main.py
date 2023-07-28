@@ -87,8 +87,12 @@ async def getrecipe(interaction: discord.Interaction, name: str):
                   prevRecipe[material]) * currRecipe[material]
             else:
               matID = functions.get_item_id(material)
-              material_price[material] = functions.findCost(
-                matID) * currRecipe[material]
+              matCost = functions.findCost(matID)
+              if matCost == -1:
+                material_price[material] = -1
+              else:
+                material_price[material] = functions.findCost(
+                  matID) * currRecipe[material]
           else:
             matID = functions.get_item_id(material)
             material_price[material] = functions.findCost(
@@ -108,6 +112,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
           if curr_recipe[material] > 1:
             globals.finalOutput.description += "s"
           globals.finalOutput.description += ":"
+          #print(mat_prices)
           if mat_prices[material] == -1:
             globals.finalOutput.description += " No one is selling it."
           else:
@@ -137,6 +142,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
         recipeCosts.append(getCosts(regRecipe, rawRecipe))
       else:
         #print("test for 1 alt and one raw")
+        #print(recipeLst[0])
         recipeCosts.append(getCosts(regRecipe, recipeLst[0]))
         prevPrice = recipeCosts[1]
         if len(recipeLst) == 2:
@@ -167,6 +173,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
         if j == costsLen:
           break
         else:
+          print(recipeCosts[j])
           for mat in recipeCosts[j]:
             #print(f"checking {recipeCosts[j]} for auction stuff")
             if recipeCosts[j][mat] == -1 and mat not in ahItems:
@@ -184,10 +191,16 @@ async def getrecipe(interaction: discord.Interaction, name: str):
               print(f"{i} is in current rec {recipeCosts[j]}")
               if count == 0:
                 print(f"landed in regular recipe for {i}")
-                recipeCosts[j][i] = regRecipe[i] * ahItems[i]
+                if ahItems[i] == -1:
+                  recipeCosts[j][i] = -1
+                else:
+                  recipeCosts[j][i] = regRecipe[i] * ahItems[i]
               elif count > 0:
                 print("landed in alt recipes")
-                recipeCosts[j][i] = recipeLst[count - 1][i] * ahItems[i]
+                if ahItems[i] == -1:
+                  recipeCosts[j][i] = -1
+                else:
+                  recipeCosts[j][i] = recipeLst[count - 1][i] * ahItems[i]
               if count == len(recipeCosts) - 1:
                 count = 0
               else:

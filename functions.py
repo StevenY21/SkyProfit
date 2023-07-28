@@ -3,6 +3,7 @@ import nbt
 import io
 import base64
 import globals
+import math
 
 skyblockItems = globals.SB_ITEMS_DATA
 ah_data = requests.get("https://api.hypixel.net/skyblock/auctions").json()
@@ -17,8 +18,10 @@ BASE_ITEMS = [
   "wheat", "cobblestone", "oak log", "birch log", "bone", "spruce log",
   "dark oak log", "jungle log"
 ]
+# items that have recipe that isn't accurate in repo
+SPECIAL_ITEMS1 = {"blaze powder": 0.5}
 # for items that have duplicate names
-SPECIAL_ITEMS = {"hay bale": "HAY_BLOCK"}
+SPECIAL_ITEMS2 = {"hay bale": "HAY_BLOCK"}
 
 #decode_inventory_data(
 #"H4sIAAAAAAAAAD2Q3W7TQBCFx0lDExcUwRMMiNvQ1g5J6V0Uwk/VpFwQ4A6N12N7lfVu8K5J80R+jzwYYm0h7lY753xn5oQAIwhkCABBD3oyDcYBDJam1i4Ioe8oH8EZa1H8U/TVbwWDTgkIAVxsdVIx7ShRHPRh9Emm/EFRbr38TwjnqbR7RUcPuTcVD/3vBYxPzbtVlkkhPfiI3+DVqZl/1sJzLFsszAF/1VLs1BGPpq7QGaPgudd0SRYTZcTOvvGs1rjAvTlwldUKvxuTssbFI+OhkKJAQbrTdEYsa+XkXjEqk1uUGgmt1LliOPeaQrqX8OLU3Cx9XGoO+hZPDUXtIf4x94OvhfQ2x2XLxYSx4sxUOaedj06N2m6WD+v1wwYXP1ZDONtQyfDMj+7qNqZdDEIYrx5dRQvnKpnUju2wKzO8224+3q9+emcIT9vGSbuStbN9CPl/W36bAXh0XXvP6+gqeZuxuJpMUyEm0yijCc1oPqEkFhFdxzccx0MYOVmydVTuYTy7vI4voxhnt9MIv6wBevDkPZWUsyfDX/ZF5iEOAgAA"
@@ -39,8 +42,8 @@ def get_item(itemName):
 # gets an item's item_id
 def get_item_id(itemName):
   try:
-    if itemName.lower() in SPECIAL_ITEMS:
-      return SPECIAL_ITEMS[itemName.lower()]
+    if itemName.lower() in SPECIAL_ITEMS2:
+      return SPECIAL_ITEMS2[itemName.lower()]
     skyblockItems
     items = skyblockItems["items"]
 
@@ -99,7 +102,7 @@ def get_item_recipe(itemName):
         item = recipeData[section].split(':')
         itemID = item[0]
         fixedID = ""
-        itemName = ""
+        itemName2 = ""
         if "-" in itemID:
           for chr in itemID:
             if chr == '-':
@@ -107,14 +110,21 @@ def get_item_recipe(itemName):
             else:
               fixedID += chr
 
-          itemName = get_item_name(fixedID)
+          itemName2 = get_item_name(fixedID)
         else:
-          itemName = get_item_name(item[0])
-        if properRecipe.get(itemName) != None:
-          properRecipe[itemName] += int(item[1])
+          itemName2 = get_item_name(item[0])
+        if properRecipe.get(itemName2) != None:
+          properRecipe[itemName2] += int(item[1])
         else:
-          properRecipe[itemName] = int(item[1])
-    return properRecipe
+          properRecipe[itemName2] = int(item[1])
+    try:
+      factor = SPECIAL_ITEMS1[itemName.lower()]
+      for item in properRecipe:
+        properRecipe[item] = properRecipe[item] * factor
+      return properRecipe
+    except:
+
+      return properRecipe
   # note that this sometimes doesn't work, and just returns None in the try part, look into it later but for now its working fine
   except:
     return -1
@@ -137,7 +147,7 @@ def get_raw_recipe(recipe):
           rawRecipe[material] = tempRec[material]
           numDone += 1
           break
-
+      #print(f"getting recipe for {material}")
       temp = get_item_recipe(material)
       #print(material, temp, f"raw rec for {material}")
       #print(temp)
@@ -150,9 +160,9 @@ def get_raw_recipe(recipe):
         for mat in temp:
           #print(mat, f"in {temp}")
           if rawRecipe.get(mat) == None:
-            rawRecipe[mat] = tempRec[material] * temp[mat]
+            rawRecipe[mat] = int(math.ceil(tempRec[material] * temp[mat]))
           else:
-            rawRecipe[mat] += tempRec[material] * temp[mat]
+            rawRecipe[mat] += int(math.ceil(tempRec[material] * temp[mat]))
     if numDone == recSize:
       break
     else:
@@ -188,7 +198,7 @@ def findCost(item_ID):
 
 # takes in already valid item ids, check ah for lowest bin
 def lowestBin(itemLst):
-  
+
   pg = 0
   lowestBins = {}
   print("auction item list", itemLst)
