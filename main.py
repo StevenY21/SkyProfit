@@ -156,7 +156,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
           recipeCosts.append(getCosts(recipeLst[-2], rawRecipe))
       await interaction.edit_original_response(
         content=
-        "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Raw Recipe Prices..."
+        "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipe Prices... \nNote that if any items are from the auction house, it will take a little longer :slight_smile:"
       )
 
       ahItems = []
