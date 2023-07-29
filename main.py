@@ -26,15 +26,18 @@ async def getHelp(interaction: discord.Interaction, name: str):
   await interaction.edit_original_response(embed=globals.finalOutput)
 
 
-"""
-@app_commands.choices(chc=[
-  Choice(name=i["name"], value=i["name"])
-  for i in globals.SB_ITEMS_DATA["items"]
-])
 @tree.command(name="test", description="testin comamnd")
 async def testChoice(interaction: discord.Interaction, chc: str):
   await interaction.response.send_message(f"You chose {chc}")
-"""
+
+
+@testChoice.autocomplete("chc")
+async def testChoice_autocomp(interaction: discord.Interaction, current: str):
+  data = []
+  for itemChoice in globals.ALL_SB_ITEMS:
+    if current.lower() in itemChoice.lower():
+      data.append(app_commands.Choice(name=itemChoice, value=itemChoice))
+    return data[:5]
 
 
 @tree.command(
@@ -214,7 +217,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
 
       await interaction.edit_original_response(
         content=
-        "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipes' Prices... \nGetting Readable Results. Note that prices for bazaar items are based on buy order prices, and prices for auction house items are based off of lowest BINs."
+        "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipes' Prices... \nGetting Readable Results. Note that prices for bazaar items are based off lowest buy order prices, and prices for auction house items are based off of lowest BINs."
       )
       globals.finalOutput.title = f"{name}'s recipes:"
       # find total cost for each recipe
