@@ -34,7 +34,7 @@ async def testChoice(interaction: discord.Interaction, chc: str):
 @testChoice.autocomplete("chc")
 async def testChoice_autocomp(interaction: discord.Interaction, current: str):
   data = []
-  for itemChoice in globals.ALL_SB_ITEMS:
+  for itemChoice in globals.SB_MINIONS_LIST:
     if current.lower() in itemChoice.lower():
       data.append(app_commands.Choice(name=itemChoice, value=itemChoice))
   return data[:5]
