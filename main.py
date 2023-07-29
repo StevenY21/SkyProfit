@@ -37,7 +37,7 @@ async def testChoice_autocomp(interaction: discord.Interaction, current: str):
   for itemChoice in globals.ALL_SB_ITEMS:
     if current.lower() in itemChoice.lower():
       data.append(app_commands.Choice(name=itemChoice, value=itemChoice))
-    return data[:5]
+  return data[:5]
 
 
 @tree.command(
