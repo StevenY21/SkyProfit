@@ -4,9 +4,10 @@ import io
 import base64
 import globals
 import math
+import aiohttp
+import asyncio
 
 skyblockItems = globals.SB_ITEMS_DATA
-ah_data = requests.get("https://api.hypixel.net/skyblock/auctions").json()
 
 # for decoding auction house most recent ending bids
 #def decode_inventory_data(raw_data):
@@ -16,7 +17,7 @@ ah_data = requests.get("https://api.hypixel.net/skyblock/auctions").json()
 BASE_ITEMS = [
   "lapis lazuli", "coal", "diamond", "redstone", "gold ingot", "iron ingot",
   "wheat", "cobblestone", "oak log", "birch log", "bone", "spruce log",
-  "dark oak log", "jungle log"
+  "dark oak log", "jungle log", "emerald"
 ]
 # items that have recipe that isn't accurate in repo
 SPECIAL_ITEMS1 = {"blaze powder": 0.5}
@@ -166,7 +167,7 @@ def get_raw_recipe(recipe):
     if numDone == recSize:
       break
     else:
-      #print(f"raw recipe so far {rawRecipe}")
+      print(f"raw recipe so far {rawRecipe}")
       recipelst.append(rawRecipe)
       tempRec = rawRecipe
       recSize = len(rawRecipe)

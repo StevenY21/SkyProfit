@@ -9,6 +9,8 @@ import os
 from keep_alive import keep_alive
 import globals
 import time
+import aiohttp
+import asyncio
 
 TOKEN = os.environ['TOKEN']
 intents = discord.Intents.default()
@@ -16,7 +18,7 @@ client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
 
-# inv bot: https://discord.com/api/oauth2/authorize?client_id=1117918806224932915&permissions=515396454465&scope=bot
+# inv bot: https://discord.com/api/oauth2/authorize?client_id=1117918806224932915&permissions=448824396865&scope=bot
 @tree.command(name="help", description="Help for SkyProfit commands")
 async def getHelp(interaction: discord.Interaction, name: str):
   await interaction.response.send_message("Need help for commands? :thinking:")
@@ -60,7 +62,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
         content="Error: Does not have valid recipe or any recipe at all")
     else:
       await interaction.edit_original_response(
-        content="Getting Regular Recipe... \nGetting Raw Recipe...")
+        content="Getting Regular Recipe... \nGetting Alt Recipes...")
       recipeLst = functions.get_raw_recipe(regRecipe)
       print(f"recipeLst {recipeLst}")
       rawRecipe = {}
@@ -137,31 +139,42 @@ async def getrecipe(interaction: discord.Interaction, name: str):
       )
       # getting the prices for the amts of materials
       recipeCosts = []
+      #recipeCosts.append(await asyncio.to_thread(getCosts, None, regRecipe))
       recipeCosts.append(getCosts(None, regRecipe))
+      print(f"rec costs so far{recipeCosts}")
       prevPrice = recipeCosts[0]
       print(f"rec list {recipeLst}")
       if len(recipeLst) == 1:
         #print("test for only raw rec")
-        recipeCosts.append(getCosts(regRecipe, rawRecipe))
+        recipeCosts.append(await asyncio.to_thread(getCosts, regRecipe,
+                                                   rawRecipe))
+        #recipeCosts.append(getCosts(regRecipe, rawRecipe))
       else:
         #print("test for 1 alt and one raw")
         #print(recipeLst[0])
-        recipeCosts.append(getCosts(regRecipe, recipeLst[0]))
+        recipeCosts.append(await asyncio.to_thread(getCosts, regRecipe,
+                                                   recipeLst[0]))
+        #recipeCosts.append(getCosts(regRecipe, recipeLst[0]))
         prevPrice = recipeCosts[1]
         if len(recipeLst) == 2:
           #print("test for 1 alt and 1 raw for raw part")
+          #recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[0], rawRecipe))
           recipeCosts.append(getCosts(recipeLst[0], rawRecipe))
         if len(recipeLst) == 3:
           #print("test for 2 alts and one raw")
           #print(recipeLst[0], recipeLst[-2])
-          recipeCosts.append(getCosts(recipeLst[0], recipeLst[-2]))
+          recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[0],
+                                                     recipeLst[-2]))
+          #recipeCosts.append(getCosts(recipeLst[0], recipeLst[-2]))
           prevPrice = recipeCosts[2]
-          recipeCosts.append(getCosts(recipeLst[-2], rawRecipe))
+          recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[-2],
+                                                     rawRecipe))
+          #recipeCosts.append(getCosts(recipeLst[-2], rawRecipe))
       await interaction.edit_original_response(
         content=
         "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipe Prices... \nNote that if any items are from the auction house, it will take a little longer :slight_smile:"
       )
-
+      print(f"rec costs: {recipeCosts}")
       ahItems = []
       # for efficiency, all items in both raw and regular recipe will be processed together
       mainItemPrice = round(functions.findCost(functions.get_item_id(name)))
@@ -283,9 +296,11 @@ async def getrecipe(interaction: discord.Interaction, name: str):
               bestProfitRec = rec
         globals.finalOutput.description += "\n" + f"`Craft it using {bestProfitRec}`"
       print("reached here not bad")
-      globals.finalOutput.set_footer(text="Data provide by: NotEnoughUpdates")
       end = time.time()
       print(end - start)
+      globals.finalOutput.set_footer(
+        text="Recipe Data By: NotEnoughUpdates" +
+        f"\nProcess Time: {round((end-start), 2)} seconds")
       await interaction.edit_original_response(embed=globals.finalOutput)
   except:
     end = time.time()
