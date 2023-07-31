@@ -58,21 +58,22 @@ for item in SB_ITEMS_DATA["items"]:
   itemName = item["name"]
   #print(i, itemName)
   itemID = item["id"]
-  try: 
+  try:
+    test = item["soulbound"]
+    SB_SOULBOUND_LIST += [itemName]
+  except:
+    test = 0
+  try:
     test = item["category"]
     if test not in SB_CATEGORY_LIST:
       SB_CATEGORY_LIST += [test]
     if test == "MEMENTO" or test == "COSMETIC" or test == "NONE":
       SB_NON_CRAFTABLES += [itemName]
     try:
-      test = item["soulbound"]
-      SB_SOULBOUND_LIST += [itemName]
+      test = item["generator"]
+      SB_MINIONS_LIST += [itemName]
     except:
-      try:
-        test = item["generator"]
-        SB_MINIONS_LIST += [itemName]
-      except:
-        test = 0
+      test = 0
   except:
     test = 0
   if "Enrichment" in itemName:

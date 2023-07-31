@@ -82,6 +82,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
       def getCosts(prevRecipe, currRecipe):
         material_price = {}
         for material in currRecipe:
+          print(f"curr processed: {material}")
           if prevRecipe != None:
             if prevRecipe.get(material) != None:
               if prevRecipe[material] == currRecipe[material]:
@@ -100,8 +101,12 @@ async def getrecipe(interaction: discord.Interaction, name: str):
                   matID) * currRecipe[material]
           else:
             matID = functions.get_item_id(material)
-            material_price[material] = functions.findCost(
-              matID) * currRecipe[material]
+            matCost = functions.findCost(matID)
+            if matCost == -1:
+              material_price[material] = -1
+            else:
+              material_price[material] = functions.findCost(
+                matID) * currRecipe[material]
         return material_price
 
       # process the cost of the materials into proper sentences
@@ -193,7 +198,10 @@ async def getrecipe(interaction: discord.Interaction, name: str):
           for mat in recipeCosts[j]:
             #print(f"checking {recipeCosts[j]} for auction stuff")
             if recipeCosts[j][mat] == -1 and mat not in ahItems:
-              ahItems.append(mat)
+              if mat in globals.SB_SOULBOUND_LIST:
+                recipeCosts[j][mat] = 0
+              else:
+                ahItems.append(mat)
           j += 1
       # places the auction house item costs into the recip cost dict
       if len(ahItems) > 0:
