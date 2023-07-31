@@ -115,7 +115,6 @@ async def getrecipe(interaction: discord.Interaction, name: str):
         totalCost = 0
         for material in mat_prices:
           #print(f"current {material} in loop")
-          mat_prices[material] = round(mat_prices[material])
           #print(f"curr recipe: {curr_recipe}")
           globals.finalOutput.description += "\n" + f"> {curr_recipe[material]} {material}"
           print(curr_recipe, "current recipe being processed")
@@ -125,11 +124,15 @@ async def getrecipe(interaction: discord.Interaction, name: str):
           #print(mat_prices)
           if mat_prices[material] == -1:
             globals.finalOutput.description += " No one is selling it."
+          elif mat_prices[material] == "Soulbound":
+            globals.finalOutput.description += " Soulbound"
           else:
+            mat_prices[material] = round(mat_prices[material])
             globals.finalOutput.description += f" {mat_prices[material]} coins."
           #print(curr_recipe[material], material, mat_prices[material])
           if totalCost != -1 and mat_prices[material] != -1:
-            totalCost += mat_prices[material]
+            if mat_prices[material] != "Soulbound":
+              totalCost += mat_prices[material]
           else:
             totalCost = -1
         if totalCost != -1:
@@ -199,7 +202,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
             #print(f"checking {recipeCosts[j]} for auction stuff")
             if recipeCosts[j][mat] == -1 and mat not in ahItems:
               if mat in globals.SB_SOULBOUND_LIST:
-                recipeCosts[j][mat] = 0
+                recipeCosts[j][mat] = "Soulbound"
               else:
                 ahItems.append(mat)
           j += 1

@@ -17,7 +17,7 @@ skyblockItems = globals.SB_ITEMS_DATA
 BASE_ITEMS = [
   "lapis lazuli", "coal", "diamond", "redstone", "gold ingot", "iron ingot",
   "wheat", "cobblestone", "oak log", "birch log", "bone", "spruce log",
-  "dark oak log", "jungle log", "emerald"
+  "dark oak log", "jungle log", "emerald", "slimeball"
 ]
 # items that have recipe that isn't accurate in repo
 SPECIAL_ITEMS1 = {"blaze powder": 0.5}
