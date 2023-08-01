@@ -208,7 +208,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
           j += 1
       # places the auction house item costs into the recip cost dict
       if len(ahItems) > 0:
-        ahItems = functions.lowestBin(ahItems)
+        ahItems = await asyncio.to_thread(functions.lowestBin, ahItems)
         #print(ahItems)
         count = 0
         #print(f"rec list {recipeLst}")
@@ -251,18 +251,29 @@ async def getrecipe(interaction: discord.Interaction, name: str):
       while True:
         if i == 0:
           globals.finalOutput.description = "__**Regular Recipe:**__"
-          recipeTotals += [processCosts(recipeCosts[0], regRecipe)]
+          recipeTotals += [
+            await asyncio.to_thread(processCosts, recipeCosts[0], regRecipe)
+          ]
         else:
           if len(recipeCosts) == 1 or i == len(recipeCosts) - 1:
             globals.finalOutput.description += "\n" + "\n" + "__**Raw Recipe:**__"
-            recipeTotals += [processCosts(recipeCosts[-1], recipeLst[-1])]
+            recipeTotals += [
+              await asyncio.to_thread(processCosts, recipeCosts[-1],
+                                      recipeLst[-1])
+            ]
             break
           else:
             globals.finalOutput.description += "\n" + "\n" + f"__**Alt Recipe {i}:**__"
             if i == 1:
-              recipeTotals += [processCosts(recipeCosts[1], recipeLst[(0)])]
+              recipeTotals += [
+                await asyncio.to_thread(processCosts, recipeCosts[1],
+                                        recipeLst[(0)])
+              ]
             elif i == 2:
-              recipeTotals += [processCosts(recipeCosts[2], recipeLst[(1)])]
+              recipeTotals += [
+                await asyncio.to_thread(processCosts, recipeCosts[2],
+                                        recipeLst[(1)])
+              ]
         i += 1
       # processes the profit percentages
       globals.finalOutput.description += "\n" + "\n" + "__**Profit Margin**__"
@@ -317,7 +328,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
     end = time.time()
     print(end - start)
     await interaction.response.send_message(
-      "Error: Check if the item name is spelled correctly, or that it can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable"
+      "Error: Check if the item name is spelled correctly, or that it is craftable and can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable."
     )
 
 
