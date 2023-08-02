@@ -8,7 +8,11 @@ import aiohttp
 import asyncio
 
 skyblockItems = globals.SB_ITEMS_DATA
-
+sbItemDict = globals.SB_ITEMS_DICT
+sbIDDict = globals.SB_ID_DICT
+sbAHDict = globals.SB_AH_DICT
+sbBzDict = globals.SB_BZ_DICT
+# fixing sb items dict due to conflicting item names
 # for decoding auction house most recent ending bids
 #def decode_inventory_data(raw_data):
 #data = nbt.nbt.NBTFile(fileobj=io.BytesIO(base64.b64decode(raw_data)))
@@ -20,13 +24,13 @@ BASE_ITEMS = [
   "dark oak log", "jungle log", "emerald", "slimeball"
 ]
 # items that have recipe that isn't accurate in repo
-SPECIAL_ITEMS1 = {"blaze powder": 0.5}
-# for items that have duplicate names
-SPECIAL_ITEMS2 = {"hay bale": "HAY_BLOCK"}
+SPECIAL_ITEMS1 = {"blaze powder": 0.5, "sulphuric coal": 0.25}
 
 #decode_inventory_data(
 #"H4sIAAAAAAAAAD2Q3W7TQBCFx0lDExcUwRMMiNvQ1g5J6V0Uwk/VpFwQ4A6N12N7lfVu8K5J80R+jzwYYm0h7lY753xn5oQAIwhkCABBD3oyDcYBDJam1i4Ioe8oH8EZa1H8U/TVbwWDTgkIAVxsdVIx7ShRHPRh9Emm/EFRbr38TwjnqbR7RUcPuTcVD/3vBYxPzbtVlkkhPfiI3+DVqZl/1sJzLFsszAF/1VLs1BGPpq7QGaPgudd0SRYTZcTOvvGs1rjAvTlwldUKvxuTssbFI+OhkKJAQbrTdEYsa+XkXjEqk1uUGgmt1LliOPeaQrqX8OLU3Cx9XGoO+hZPDUXtIf4x94OvhfQ2x2XLxYSx4sxUOaedj06N2m6WD+v1wwYXP1ZDONtQyfDMj+7qNqZdDEIYrx5dRQvnKpnUju2wKzO8224+3q9+emcIT9vGSbuStbN9CPl/W36bAXh0XXvP6+gqeZuxuJpMUyEm0yijCc1oPqEkFhFdxzccx0MYOVmydVTuYTy7vI4voxhnt9MIv6wBevDkPZWUsyfDX/ZF5iEOAgAA"
 #)
+# old functions that are pointless
+# kept just in case
 """
 #test function
 def get_item(itemName):
@@ -38,8 +42,7 @@ def get_item(itemName):
     return "invalid item, please make try again"
   return item_data
 """
-
-
+"""
 # gets an item's item_id
 def get_item_id(itemName):
   try:
@@ -69,16 +72,18 @@ def get_item_name(itemId):
         return itemName
   except:
     return "invalid item ID, please try again"
+"""
 
 
 #get item name to item recipe
 def get_item_recipe(itemName):
+  print(f"item being checked {itemName}")
   try:
     if itemName.lower() in BASE_ITEMS:
       return -2
     #get the id from the name
 
-    itemId = get_item_id(itemName)
+    itemId = sbItemDict[itemName]
     if itemId == -1:
       return -1
     newItemId = ''
@@ -111,15 +116,16 @@ def get_item_recipe(itemName):
             else:
               fixedID += chr
 
-          itemName2 = get_item_name(fixedID)
+          itemName2 = sbIDDict[fixedID]
         else:
-          itemName2 = get_item_name(item[0])
+          itemName2 = sbIDDict[item[0]]
         if properRecipe.get(itemName2) != None:
           properRecipe[itemName2] += int(item[1])
         else:
           properRecipe[itemName2] = int(item[1])
     try:
       factor = SPECIAL_ITEMS1[itemName.lower()]
+      print(f"special item hit {itemName}")
       for item in properRecipe:
         properRecipe[item] = properRecipe[item] * factor
       return properRecipe
@@ -167,7 +173,7 @@ def get_raw_recipe(recipe):
     if numDone == recSize:
       break
     else:
-      print(f"raw recipe so far {rawRecipe}")
+      #print(f"raw recipe so far {rawRecipe}")
       recipelst.append(rawRecipe)
       tempRec = rawRecipe
       recSize = len(rawRecipe)
@@ -186,6 +192,9 @@ def get_raw_recipe(recipe):
 # can assume id is valid
 # returns -1 if its an auction house item
 def findCost(item_ID):
+  #print(f"item id being checked: {item_ID}")
+  bz_data = asyncio.run(
+  globals.req_data("https://api.hypixel.net/skyblock/bazaar"))["products"]
   bz_data = requests.get("https://api.hypixel.net/skyblock/bazaar").json()
   if bz_data["products"].get(item_ID) != None:
     item_data = bz_data["products"][item_ID]

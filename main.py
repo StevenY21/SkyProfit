@@ -36,7 +36,7 @@ async def testChoice(interaction: discord.Interaction, chc: str):
 @testChoice.autocomplete("chc")
 async def testChoice_autocomp(interaction: discord.Interaction, current: str):
   data = []
-  for itemChoice in globals.SB_MINIONS_LIST:
+  for itemChoice in globals.SB_BITS_DICT:
     if current.lower() in itemChoice.lower():
       data.append(app_commands.Choice(name=itemChoice, value=itemChoice))
   return data[:5]
@@ -82,7 +82,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
       def getCosts(prevRecipe, currRecipe):
         material_price = {}
         for material in currRecipe:
-          print(f"curr processed: {material}")
+          #print(f"curr processed: {material}")
           if prevRecipe != None:
             if prevRecipe.get(material) != None:
               if prevRecipe[material] == currRecipe[material]:
@@ -92,7 +92,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
                   prevPrice[material] /
                   prevRecipe[material]) * currRecipe[material]
             else:
-              matID = functions.get_item_id(material)
+              matID = globals.SB_ITEMS_DICT[material]
               matCost = functions.findCost(matID)
               if matCost == -1:
                 material_price[material] = -1
@@ -100,7 +100,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
                 material_price[material] = functions.findCost(
                   matID) * currRecipe[material]
           else:
-            matID = functions.get_item_id(material)
+            matID = globals.SB_ITEMS_DICT[material]
             matCost = functions.findCost(matID)
             if matCost == -1:
               material_price[material] = -1
@@ -117,7 +117,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
           #print(f"current {material} in loop")
           #print(f"curr recipe: {curr_recipe}")
           globals.finalOutput.description += "\n" + f"> {curr_recipe[material]} {material}"
-          print(curr_recipe, "current recipe being processed")
+          #print(curr_recipe, "current recipe being processed")
           if curr_recipe[material] > 1:
             globals.finalOutput.description += "s"
           globals.finalOutput.description += ":"
@@ -149,9 +149,9 @@ async def getrecipe(interaction: discord.Interaction, name: str):
       recipeCosts = []
       #recipeCosts.append(await asyncio.to_thread(getCosts, None, regRecipe))
       recipeCosts.append(getCosts(None, regRecipe))
-      print(f"rec costs so far{recipeCosts}")
+      #print(f"rec costs so far{recipeCosts}")
       prevPrice = recipeCosts[0]
-      print(f"rec list {recipeLst}")
+      #print(f"rec list {recipeLst}")
       if len(recipeLst) == 1:
         #print("test for only raw rec")
         recipeCosts.append(await asyncio.to_thread(getCosts, regRecipe,
@@ -182,11 +182,11 @@ async def getrecipe(interaction: discord.Interaction, name: str):
         content=
         "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipe Prices... \nNote that if any items are from the auction house, it will take a little longer :slight_smile:"
       )
-      print(f"rec costs: {recipeCosts}")
+      #print(f"rec costs: {recipeCosts}")
       ahItems = []
       # for efficiency, all items in both raw and regular recipe will be processed together
-      mainItemPrice = round(functions.findCost(functions.get_item_id(name)))
-      print(f"mainItem Price of {name} in bz: {mainItemPrice}")
+      mainItemPrice = round(functions.findCost(globals.SB_ITEMS_DICT[name]))
+      #print(f"mainItem Price of {name} in bz: {mainItemPrice}")
       if mainItemPrice == -1:  # if in auction house
         ahItems.append(name)
       j = 0
@@ -197,7 +197,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
         if j == costsLen:
           break
         else:
-          print(recipeCosts[j])
+          #print(recipeCosts[j])
           for mat in recipeCosts[j]:
             #print(f"checking {recipeCosts[j]} for auction stuff")
             if recipeCosts[j][mat] == -1 and mat not in ahItems:
@@ -215,15 +215,15 @@ async def getrecipe(interaction: discord.Interaction, name: str):
         for i in (ahItems):
           for j in range(len(recipeCosts)):
             if i in recipeCosts[j]:
-              print(f"{i} is in current rec {recipeCosts[j]}")
+              #print(f"{i} is in current rec {recipeCosts[j]}")
               if count == 0:
-                print(f"landed in regular recipe for {i}")
+                #print(f"landed in regular recipe for {i}")
                 if ahItems[i] == -1:
                   recipeCosts[j][i] = -1
                 else:
                   recipeCosts[j][i] = regRecipe[i] * ahItems[i]
               elif count > 0:
-                print("landed in alt recipes")
+                #print("landed in alt recipes")
                 if ahItems[i] == -1:
                   recipeCosts[j][i] = -1
                 else:
@@ -247,7 +247,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
       # find total cost for each recipe
       recipeTotals = []
       i = 0
-      print(f"rec costs {recipeCosts}")
+      #print(f"rec costs {recipeCosts}")
       while True:
         if i == 0:
           globals.finalOutput.description = "__**Regular Recipe:**__"
@@ -319,14 +319,12 @@ async def getrecipe(interaction: discord.Interaction, name: str):
         globals.finalOutput.description += "\n" + f"`Craft it using {bestProfitRec}`"
       print("reached here not bad")
       end = time.time()
-      print(end - start)
       globals.finalOutput.set_footer(
         text="Recipe Data By: NotEnoughUpdates" +
         f"\nProcess Time: {round((end-start), 2)} seconds")
       await interaction.edit_original_response(embed=globals.finalOutput)
   except:
     end = time.time()
-    print(end - start)
     await interaction.response.send_message(
       "Error: Check if the item name is spelled correctly, or that it is craftable and can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable."
     )
