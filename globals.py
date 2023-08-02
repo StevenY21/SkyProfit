@@ -14,9 +14,6 @@ async def req_data(link):
       res = await response.json(content_type=None)
       return res
 
-
-testRec = asyncio.run(req_data( 'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/SIL_EX.json'))
-print(testRec)
 # sb item data for command choices
 SB_ITEMS_DATA = asyncio.run(
   req_data("https://api.hypixel.net/resources/skyblock/items"))
@@ -139,6 +136,13 @@ print("soulbound items",len(SB_SOULBOUND_LIST))
 print("unique minions", len(SB_MINIONS_LIST))
 print("bits shop items", len(SB_BITS_DICT))
 print("uncraftable items", len(SB_NONCRAFTABLES_LIST))
+print(SB_ITEMS_DICT["Griffin Feather"])
+# manually fix some of them due to strange items in hypixel items
+SB_ITEMS_DICT["Griffin Feather"] = 'GRIFFIN_FEATHER'
+end = time.time()
+print(f"{(end - start)} seconds")
+print("Globals Done")
+"""
 for itemName in SB_ITEMS_DICT:
   if SB_NONCRAFTABLES_DICT[itemName] == False and "glass" not in itemName and "leaves" not in itemName and "dye" not in itemName and itemName not in SB_MINIONS_LIST and SB_SOULBOUND_DICT[itemName] == False:
     itemID = SB_ITEMS_DICT[itemName]
@@ -157,24 +161,4 @@ for itemName in SB_ITEMS_DICT:
         SB_NONCRAFTABLES_DICT[itemName] = True
   i += 1
 print(f"{i} end")
-end = time.time()
-print(f"{(end - start)} seconds")
-print("Globals Done")
-"""
-for itemName in SB_ITEMS_DICT:
-  if SB_NONCRAFTABLES_DICT[itemName] == False and "glass" not in itemName and "leaves" not in itemName and "dye" not in itemName:
-    itemID = SB_ITEMS_DICT[item]
-    itemMat = SB_MAT_DICT[itemID]
-    if itemID != itemMat
-      try:
-        test = asyncio.run(req_data( f'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/{itemID}.json'))["recipe"]
-        print(f"checking if item {i}, {itemName} has rec")
-        try:
-          test2 = test[0]["type"]
-          if test2 == "forge":
-            SB_FORGE_ITEMS_DATA[itemID] = test[0]
-        except:
-          SB_CRAFTPROFIT_DATA[itemID] = test
-      except:
-        SB_NONCRAFTABLES_DICT[itemName] = True
 """

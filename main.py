@@ -55,7 +55,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
     if regRecipe == None or regRecipe == -1:
       await interaction.edit_original_response(
         content=
-        "Error: Check if the item name is spelled correctly, or that it can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable"
+        f"Error: {name} not found. Check if the item name is spelled correctly, or that it can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable"
       )
     elif regRecipe == -2:
       await interaction.edit_original_response(
@@ -80,6 +80,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
 
       # gets the cost of each amt of materials in the current recipe
       def getCosts(prevRecipe, currRecipe):
+        print(f"checking {currRecipe} with {prevRecipe}")
         material_price = {}
         for material in currRecipe:
           #print(f"curr processed: {material}")
@@ -147,8 +148,8 @@ async def getrecipe(interaction: discord.Interaction, name: str):
       )
       # getting the prices for the amts of materials
       recipeCosts = []
-      #recipeCosts.append(await asyncio.to_thread(getCosts, None, regRecipe))
-      recipeCosts.append(getCosts(None, regRecipe))
+      recipeCosts.append(await asyncio.to_thread(getCosts, None, regRecipe))
+      #recipeCosts.append(getCosts(None, regRecipe))
       #print(f"rec costs so far{recipeCosts}")
       prevPrice = recipeCosts[0]
       #print(f"rec list {recipeLst}")
@@ -166,8 +167,8 @@ async def getrecipe(interaction: discord.Interaction, name: str):
         prevPrice = recipeCosts[1]
         if len(recipeLst) == 2:
           #print("test for 1 alt and 1 raw for raw part")
-          #recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[0], rawRecipe))
-          recipeCosts.append(getCosts(recipeLst[0], rawRecipe))
+          recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[0], rawRecipe))
+          #recipeCosts.append(getCosts(recipeLst[0], rawRecipe))
         if len(recipeLst) == 3:
           #print("test for 2 alts and one raw")
           #print(recipeLst[0], recipeLst[-2])
@@ -185,7 +186,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
       #print(f"rec costs: {recipeCosts}")
       ahItems = []
       # for efficiency, all items in both raw and regular recipe will be processed together
-      mainItemPrice = round(functions.findCost(globals.SB_ITEMS_DICT[name]))
+      mainItemPrice = round(await asyncio.to_thread(functions.findCost, globals.SB_ITEMS_DICT[name]))
       #print(f"mainItem Price of {name} in bz: {mainItemPrice}")
       if mainItemPrice == -1:  # if in auction house
         ahItems.append(name)
@@ -201,7 +202,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
           for mat in recipeCosts[j]:
             #print(f"checking {recipeCosts[j]} for auction stuff")
             if recipeCosts[j][mat] == -1 and mat not in ahItems:
-              if mat in globals.SB_SOULBOUND_LIST:
+              if globals.SB_SOULBOUND_DICT[mat] == True:
                 recipeCosts[j][mat] = "Soulbound"
               else:
                 ahItems.append(mat)
@@ -326,7 +327,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
   except:
     end = time.time()
     await interaction.response.send_message(
-      "Error: Check if the item name is spelled correctly, or that it is craftable and can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable."
+      f"Error: {name} not found. Check if the item name is spelled correctly, or that it is craftable and can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable."
     )
 
 
