@@ -17,6 +17,8 @@ intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
+sbProperNames = globals.SB_NAME_FIX
+
 
 # inv bot: https://discord.com/api/oauth2/authorize?client_id=1117918806224932915&permissions=448824396865&scope=bot
 @tree.command(name="help", description="Help for SkyProfit commands")
@@ -46,11 +48,12 @@ async def testChoice_autocomp(interaction: discord.Interaction, current: str):
   name="craftprofit",
   description=" Gets many possible recipes for item, provides profit % for each"
 )
-async def getrecipe(interaction: discord.Interaction, name: str):
+async def craftprofit(interaction: discord.Interaction, name: str):
   start = time.time()
   try:
+    name = sbProperNames[name.lower()]
     await interaction.response.send_message("Getting Regular Recipe...")
-    regRecipe = functions.get_item_recipe(name)
+    regRecipe = await asyncio.to_thread(functions.get_item_recipe, name)
     print(regRecipe, "is reg recipe")
     if regRecipe == None or regRecipe == -1:
       await interaction.edit_original_response(
@@ -63,7 +66,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
     else:
       await interaction.edit_original_response(
         content="Getting Regular Recipe... \nGetting Alt Recipes...")
-      recipeLst = functions.get_raw_recipe(regRecipe)
+      recipeLst = await asyncio.to_thread(functions.get_raw_recipe, regRecipe)
       print(f"recipeLst {recipeLst}")
       rawRecipe = {}
       if len(recipeLst) == 0:  # when regular and raw recipe the same
@@ -160,18 +163,17 @@ async def getrecipe(interaction: discord.Interaction, name: str):
         #recipeCosts.append(getCosts(regRecipe, rawRecipe))
       else:
         #print("test for 1 alt and one raw")
-        #print(recipeLst[0])
         recipeCosts.append(await asyncio.to_thread(getCosts, regRecipe,
                                                    recipeLst[0]))
         #recipeCosts.append(getCosts(regRecipe, recipeLst[0]))
         prevPrice = recipeCosts[1]
         if len(recipeLst) == 2:
           #print("test for 1 alt and 1 raw for raw part")
-          recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[0], rawRecipe))
+          recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[0],
+                                                     rawRecipe))
           #recipeCosts.append(getCosts(recipeLst[0], rawRecipe))
         if len(recipeLst) == 3:
           #print("test for 2 alts and one raw")
-          #print(recipeLst[0], recipeLst[-2])
           recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[0],
                                                      recipeLst[-2]))
           #recipeCosts.append(getCosts(recipeLst[0], recipeLst[-2]))
@@ -186,7 +188,9 @@ async def getrecipe(interaction: discord.Interaction, name: str):
       #print(f"rec costs: {recipeCosts}")
       ahItems = []
       # for efficiency, all items in both raw and regular recipe will be processed together
-      mainItemPrice = round(await asyncio.to_thread(functions.findCost, globals.SB_ITEMS_DICT[name]))
+      mainItemPrice = round(await
+                            asyncio.to_thread(functions.findCost,
+                                              globals.SB_ITEMS_DICT[name]))
       #print(f"mainItem Price of {name} in bz: {mainItemPrice}")
       if mainItemPrice == -1:  # if in auction house
         ahItems.append(name)
@@ -327,7 +331,7 @@ async def getrecipe(interaction: discord.Interaction, name: str):
   except:
     end = time.time()
     await interaction.response.send_message(
-      f"Error: {name} not found. Check if the item name is spelled correctly, or that it is craftable and can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable."
+      f"Error: {name} not found. Check if the item name is spelled correctly. Note that the input is not case-sensitive."
     )
 
 

@@ -12,6 +12,7 @@ sbItemDict = globals.SB_ITEMS_DICT
 sbIDDict = globals.SB_ID_DICT
 sbAHDict = globals.SB_AH_DICT
 sbBzDict = globals.SB_BZ_DICT
+sbSBDict = globals.SB_SOULBOUND_DICT
 # fixing sb items dict due to conflicting item names
 # for decoding auction house most recent ending bids
 #def decode_inventory_data(raw_data):
@@ -19,12 +20,11 @@ sbBzDict = globals.SB_BZ_DICT
 #print(data)
 
 BASE_ITEMS = [
-  "lapis lazuli", "coal", "diamond", "redstone", "gold ingot", "iron ingot",
-  "wheat", "cobblestone", "oak log", "birch log", "bone", "spruce log",
-  "dark oak log", "jungle log", "emerald", "slimeball"
+  "Lapis Lazuli", "Coal", "Diamond", "Redstone", "Gold Ingot", "Iron Ingot",
+  "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball"
 ]
 # items that have recipe that isn't accurate in repo
-SPECIAL_ITEMS1 = {"blaze powder": 0.5, "sulphuric coal": 0.25}
+SPECIAL_ITEMS1 = {"Blaze Powder": 0.5, "Sulphuric Coal": 0.25}
 
 #decode_inventory_data(
 #"H4sIAAAAAAAAAD2Q3W7TQBCFx0lDExcUwRMMiNvQ1g5J6V0Uwk/VpFwQ4A6N12N7lfVu8K5J80R+jzwYYm0h7lY753xn5oQAIwhkCABBD3oyDcYBDJam1i4Ioe8oH8EZa1H8U/TVbwWDTgkIAVxsdVIx7ShRHPRh9Emm/EFRbr38TwjnqbR7RUcPuTcVD/3vBYxPzbtVlkkhPfiI3+DVqZl/1sJzLFsszAF/1VLs1BGPpq7QGaPgudd0SRYTZcTOvvGs1rjAvTlwldUKvxuTssbFI+OhkKJAQbrTdEYsa+XkXjEqk1uUGgmt1LliOPeaQrqX8OLU3Cx9XGoO+hZPDUXtIf4x94OvhfQ2x2XLxYSx4sxUOaedj06N2m6WD+v1wwYXP1ZDONtQyfDMj+7qNqZdDEIYrx5dRQvnKpnUju2wKzO8224+3q9+emcIT9vGSbuStbN9CPl/W36bAXh0XXvP6+gqeZuxuJpMUyEm0yijCc1oPqEkFhFdxzccx0MYOVmydVTuYTy7vI4voxhnt9MIv6wBevDkPZWUsyfDX/ZF5iEOAgAA"
@@ -76,13 +76,14 @@ def get_item_name(itemId):
 
 
 #get item name to item recipe
+# assume item name is fixed to proper form
 def get_item_recipe(itemName):
   print(f"item being checked {itemName}")
   try:
-    if itemName.lower() in BASE_ITEMS:
+    if itemName in BASE_ITEMS:
       return -2
     #get the id from the name
-
+    
     itemId = sbItemDict[itemName]
     if itemId == -1:
       return -1
@@ -95,9 +96,10 @@ def get_item_recipe(itemName):
           newItemId += j
     else:
       newItemId = itemId
-    itemData2 = requests.get(
-      f'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/{newItemId}.json'
-    ).json()
+    itemData2 = asyncio.run(
+      globals.req_data(
+        f'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/{newItemId}.json'
+      ))
     recipeData = itemData2['recipe']
     #make english readable
     properRecipe = {}
@@ -124,13 +126,12 @@ def get_item_recipe(itemName):
         else:
           properRecipe[itemName2] = int(item[1])
     try:
-      factor = SPECIAL_ITEMS1[itemName.lower()]
+      factor = SPECIAL_ITEMS1[itemName]
       print(f"special item hit {itemName}")
       for item in properRecipe:
         properRecipe[item] = properRecipe[item] * factor
       return properRecipe
     except:
-
       return properRecipe
   # note that this sometimes doesn't work, and just returns None in the try part, look into it later but for now its working fine
   except:
@@ -191,30 +192,30 @@ def get_raw_recipe(recipe):
 # gets items bazaar cost
 # can assume id is valid
 # returns -1 if its an auction house item
-def findCost(item_ID):
+def findCost(itemID):
   #print(f"item id being checked: {item_ID}")
-  bz_data = asyncio.run(
-  globals.req_data("https://api.hypixel.net/skyblock/bazaar"))["products"]
-  bz_data = requests.get("https://api.hypixel.net/skyblock/bazaar").json()
-  if bz_data["products"].get(item_ID) != None:
-    item_data = bz_data["products"][item_ID]
-    #item_buyPrice = item_data["quick_status"]["buyPrice"]
-    item_sellPrice = item_data["quick_status"]["sellPrice"]
-    #print(item_sellPrice)
-    return item_sellPrice
-  else:
+  itemName = sbIDDict[itemID]
+  if sbSBDict[itemName] == True:
     return -1
+  else:
+    try:
+      itemSellPrice = asyncio.run(
+      globals.req_data("https://api.hypixel.net/skyblock/bazaar")
+    )["products"][itemID]['quick_status']['sellPrice']
+      return itemSellPrice
+    except:
+      return -1
 
 
 # takes in already valid item ids, check ah for lowest bin
+# assume all items in itemLst properly capitalized
 def lowestBin(itemLst):
-
   pg = 0
   lowestBins = {}
   print("auction item list", itemLst)
   while True:
-    data = requests.get(
-      f"https://api.hypixel.net/skyblock/auctions?page={pg}").json()
+    data = asyncio.run(
+      globals.req_data(f"https://api.hypixel.net/skyblock/auctions?page={pg}"))
     if data["success"] == False:
       print("test", pg, "last pg reached")
       break
@@ -222,8 +223,8 @@ def lowestBin(itemLst):
       print("test", pg)
       for auction in data["auctions"]:
         for i in itemLst:
-          if (i.lower() in auction["item_name"].lower() or i.lower()
-              == auction["item_name"].lower()) and auction["bin"] == True:
+          if (i in auction["item_name"] or i
+              == auction["item_name"]) and auction["bin"] == True:
             print(auction["item_name"], f"on pg {pg}")
             if lowestBins.get(
                 i) == None or auction["starting_bid"] < lowestBins[i]:

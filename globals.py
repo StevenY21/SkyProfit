@@ -28,6 +28,7 @@ BASE_ITEMS = [
 # a list for use commands, a dict for data
 filter_list = [""]
 SB_ITEMS_DICT = {}  # key: item name, value: item id
+SB_NAME_FIX = {} # key: item name in lower case, value: item name's proper uppercase form
 SB_ID_DICT = {}  # key: item id, value: item name
 SB_MAT_DICT = {} # key: item id, value: item material
 SB_AH_DICT = {}  # key: item name, value: true or false
@@ -121,14 +122,15 @@ for item in SB_ITEMS_DATA["items"]:
     except:
       try:
         test = SB_BZ_DATA[itemID]
-        SB_BZ_DICT[itemName] = True
+        SB_BZ_DICT[itemID] = True
         SB_AH_DICT[itemName] = False
       except:
-        SB_BZ_DICT[itemName] = False
+        SB_BZ_DICT[itemID] = False
         SB_AH_DICT[itemName] = True
   SB_ITEMS_DICT[itemName] = itemID
   SB_ID_DICT[itemID] = itemName 
   SB_MAT_DICT[itemID] = itemMat
+  SB_NAME_FIX[itemName.lower()] = itemName
 i = 0
 print(len(SB_ITEMS_DATA['items']), "items")
 print("items in sb items dict:", len(SB_ITEMS_DICT))
@@ -137,6 +139,7 @@ print("unique minions", len(SB_MINIONS_LIST))
 print("bits shop items", len(SB_BITS_DICT))
 print("uncraftable items", len(SB_NONCRAFTABLES_LIST))
 print(SB_ITEMS_DICT["Griffin Feather"])
+print(SB_SOULBOUND_DICT['Nether Star'])
 # manually fix some of them due to strange items in hypixel items
 SB_ITEMS_DICT["Griffin Feather"] = 'GRIFFIN_FEATHER'
 end = time.time()
