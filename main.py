@@ -334,22 +334,25 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       f"Error: {name} not found. Check if the item name is spelled correctly. Note that the input is not case-sensitive."
     )
 
-
-#jamin testing embeds
-@tree.command(name="testing_embed")
-async def test(interaction: discord.Interaction):
-  grid = ""
-  count = 0
-  for row in range(3):
-    for col in range(3):
-      count += 1
-      grid += str(
-        'https://wiki.hypixel.net/images/4/4d/SkyBlock_items_mine_talisman.png'
-      )
-    grid += "\n"
-  globals.finalOutput.description = grid
-  await interaction.response.send_message(embed=globals.finalOutput)
-
+@tree.command(name = "cookieprofit", description = "provides a sorted list showing bit shop item profits")
+async def cookieprofit(interaction: discord.Interaction, fameRank: str, filter: str):
+  bPC = 4800 * globals.SB_BITS_FACTOR[fameRank]
+  
+  return True
+@cookieprofit.autocomplete("fameRank")
+async def cookieprofit_fameRank(interaction: discord.interaction, current: str):
+  data = []
+  for itemChoice in globals.SB_BITS_FACTOR:
+    if current.lower() in itemChoice.lower():
+      data.append(app_commands.Choice(name=itemChoice, value=itemChoice))
+  return data[:5]
+@cookieprofit.autocomplete("filter")
+async def cookieprofit_filter(interaction: discord.interaction, current: str):
+  data = []
+  for itemChoice in globals.SB_BITS_FACTOR:
+    if current.lower() in itemChoice.lower():
+      data.append(app_commands.Choice(name=itemChoice, value=itemChoice))
+  return data[:5]
 
 @client.event
 async def on_ready():
