@@ -18,6 +18,9 @@ client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
 sbProperNames = globals.SB_NAME_FIX
+sbItemNames = globals.SB_ITEMS_DICT
+sbItemIDs = globals.SB_ID_DICT
+sbItemMat = globals.SB_MAT_DICT
 
 
 # inv bot: https://discord.com/api/oauth2/authorize?client_id=1117918806224932915&permissions=448824396865&scope=bot
@@ -121,9 +124,6 @@ async def craftprofit(interaction: discord.Interaction, name: str):
           #print(f"current {material} in loop")
           #print(f"curr recipe: {curr_recipe}")
           globals.finalOutput.description += "\n" + f"> {curr_recipe[material]} {material}"
-          #print(curr_recipe, "current recipe being processed")
-          if curr_recipe[material] > 1:
-            globals.finalOutput.description += "s"
           globals.finalOutput.description += ":"
           #print(mat_prices)
           if mat_prices[material] == -1:
@@ -334,25 +334,73 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       f"Error: {name} not found. Check if the item name is spelled correctly. Note that the input is not case-sensitive."
     )
 
-@tree.command(name = "cookieprofit", description = "provides a sorted list showing bit shop item profits")
-async def cookieprofit(interaction: discord.Interaction, fameRank: str, filter: str):
-  bPC = 4800 * globals.SB_BITS_FACTOR[fameRank]
-  
-  return True
-@cookieprofit.autocomplete("fameRank")
-async def cookieprofit_fameRank(interaction: discord.interaction, current: str):
+
+@tree.command(
+  name="cookieprofit",
+  description="provides a sorted list showing bit shop item profits")
+@app_commands.choices(
+  filter=[Choice(name=i, value=i) for i in globals.SB_BITS_FILTER])
+async def cookieprofit(interaction: discord.Interaction, famerank: str,
+                       filter: str):
+  start = time.time()
+  cookieBits = 4800 * globals.SB_BITS_FACTOR[famerank]
+  shopLst = globals.SB_BITS_FILTER[filter]
+  await interaction.response.send_message(
+    "Processing filtered Bits Shop items...")
+  costDict = {}
+  ahLst = []
+  cost = 0
+  temp = ""
+  for item in shopLst:
+    if "Abicase" not in item:
+      temp = item
+      if item == "1 Inferno Fuel Block" or item == "64 Inferno Fuel Blocks":
+        item = "Inferno Fuel Block"
+      itemID = ""
+      if item == "Compact" or item == "Expertise" or item == "Cultivating" or item == "Hecatomb" or item == "Champion":
+        itemID = f"ENCHANTMENT_{item.upper()}_1"
+      else:
+        itemID = sbItemNames[item]
+      cost = await asyncio.to_thread(functions.findCost, itemID)
+    print(f"{itemID}: {cost}")
+    if cost == -1:
+      ahLst += [item]
+      costDict[item] = -1
+    else:
+      costDict[temp] = cost
+  await interaction.edit_original_response(
+    content=
+    "Processing filtered Bits Shop items... \nChecking auction house for items..."
+  )
+  ahDict = await asyncio.to_thread(functions.lowestBin, ahLst)
+  for item in ahDict:
+    costDict[item] = ahDict[item]
+  await interaction.edit_original_response(
+    content=
+    "Processing filtered Bits Shop items... \nChecking auction house for items... \nFinalizing Results"
+  )
+  if filter == "None":
+    globals.finalOutput.title = "Bits Shop Item Profit List."
+  else:
+    globals.finalOutput.title = f"Bits Shop Item Profit List with {filter}."
+  globals.finalOutput.description = ""
+  for item in costDict:
+    globals.finalOutput.description += f"\n{item}: {costDict[item]}"
+  end = time.time()
+  globals.finalOutput.set_footer(
+    text=f"Process Time: {round((end-start),2)} seconds")
+  await interaction.edit_original_response(embed=globals.finalOutput)
+
+
+@cookieprofit.autocomplete("famerank")
+async def cookieprofit_fameRank(interaction: discord.Interaction,
+                                current: str):
   data = []
   for itemChoice in globals.SB_BITS_FACTOR:
     if current.lower() in itemChoice.lower():
       data.append(app_commands.Choice(name=itemChoice, value=itemChoice))
   return data[:5]
-@cookieprofit.autocomplete("filter")
-async def cookieprofit_filter(interaction: discord.interaction, current: str):
-  data = []
-  for itemChoice in globals.SB_BITS_FACTOR:
-    if current.lower() in itemChoice.lower():
-      data.append(app_commands.Choice(name=itemChoice, value=itemChoice))
-  return data[:5]
+
 
 @client.event
 async def on_ready():

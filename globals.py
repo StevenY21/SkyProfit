@@ -21,13 +21,19 @@ SB_ITEMS_DATA = asyncio.run(
 
 SB_BZ_DATA = asyncio.run(
   req_data("https://api.hypixel.net/skyblock/bazaar"))["products"]
-BASE_ITEMS = [
-  "lapis lazuli", "coal", "diamond", "redstone", "gold ingot", "iron ingot",
-  "wheat", "cobblestone", "oak log", "birch log", "bone", "spruce log",
-  "dark oak log", "jungle log"
+# Vanilla items that have uses in skyblock
+USEFUL_VANILLA_ITEMS = [
+  "Lapis Lazuli", "Coal", "Diamond", "Redstone", "Gold Ingot", "Iron Ingot",
+  "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block", "Ice",
+  "Packed Ice", "Oak Log", "Birch Log", "Spruce Log", " Dark Oak Log",
+  "Acacia Log", "Jungle Log", "Endstone", "Bone", "Rotten Flesh", "Blaze Rod",
+  "Spider Eye", "Nether Wart", "Pumpkin", "Melon", "Ink Sac", "Raw Fish",
+  "Salmon", "Pufferfish", "Ender Pearl", "Prismarine Shard",
+  "Prismarine Crystals", "Flint", "Obsidian", "Raw Porkchop", "Raw Chicken",
+  "Cobblestone", "Raw Beef", "Raw Mutton", "Raw Cod", "Raw Salmon", "Potato",
+  "Carrot", "Red Mushroom", "Brown Mushroom"
 ]
-# a list for use commands, a dict for data
-filter_list = [""]
+USELESS_VANILLA_ITEMS = []
 SB_ITEMS_DICT = {}  # key: item name, value: item id
 SB_NAME_FIX = {
 }  # key: item name in lower case, value: item name's proper uppercase form
@@ -209,15 +215,15 @@ SB_BITS_FACTOR = {
   'Supreme': 2.26
 }
 # all enchants
-SB_ENCHANTS_LIST = {"Expertise: ENCHANTMENT_EXPERTISE_1"}
+SB_ENCHANTS_LIST = [
+  "Expertise", "Cultivating", "Compact", "Champion", "Hecatomb"
+]
 # Sorting out all the items
 for item in SB_ITEMS_DATA["items"]:
   itemName = item["name"]
   itemID = item["id"]
   itemMat = item["material"]
   if item.get("furniture") != None:
-    test = item["furniture"]
-    itemName += "*"
     SB_NONCRAFTABLES_DICT[itemName] = True
     SB_NONCRAFTABLES_LIST += [itemName]
   if item.get("soulbound") != None:
@@ -250,13 +256,22 @@ for item in SB_ITEMS_DATA["items"]:
         SB_BZ_DICT[itemID] = True
         SB_AH_DICT[itemName] = False
       except:
-        SB_BZ_DICT[itemID] = False
-        SB_AH_DICT[itemName] = True
+        if itemID == itemMat and itemName not in USEFUL_VANILLA_ITEMS:
+          SB_BZ_DICT[itemID] = False
+          SB_AH_DICT[itemName] = False
+        else:
+          SB_BZ_DICT[itemID] = False
+          SB_AH_DICT[itemName] = True
   SB_ITEMS_DICT[itemName] = itemID
   SB_ID_DICT[itemID] = itemName
   SB_MAT_DICT[itemID] = itemMat
   SB_NAME_FIX[itemName.lower()] = itemName
 i = 0
+#Processing Enchants Here:
+for enchant in SB_ENCHANTS_LIST:
+  SB_ITEMS_DICT[enchant] = f"ENCHANTMENT_{enchant.upper()}_1"
+  SB_ID_DICT[f"ENCHANTMENT_{enchant.upper()}_1"] = enchant
+  SB_SOULBOUND_DICT[enchant] = False
 #create the filters for cookieprofit
 SB_BITS_FILTER = {
   "None": SB_BITS_SHOP_1,
@@ -265,7 +280,11 @@ SB_BITS_FILTER = {
   "No Abicase and Enrichment": SB_BITS_SHOP_4
 }
 # manually fix some of them due to strange items in hypixel items
+# currently going to manually fix the enchantments
 SB_ITEMS_DICT["Griffin Feather"] = 'GRIFFIN_FEATHER'
+SB_ITEMS_DICT["Hay Bale"] = "HAY_BLOCK"
+SB_ID_DICT["HAY_BLOCK"] = "Hay Bale"
+
 # for personal debugging
 print(len(SB_ITEMS_DATA['items']), "items")
 print("items in sb items dict:", len(SB_ITEMS_DICT))

@@ -6,6 +6,7 @@ import globals
 import math
 import aiohttp
 import asyncio
+import testing
 
 skyblockItems = globals.SB_ITEMS_DATA
 sbItemDict = globals.SB_ITEMS_DICT
@@ -18,7 +19,7 @@ sbSBDict = globals.SB_SOULBOUND_DICT
 
 BASE_ITEMS = [
   "Lapis Lazuli", "Coal", "Diamond", "Redstone", "Gold Ingot", "Iron Ingot",
-  "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball"
+  "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block"
 ]
 # items that have recipe that isn't accurate in repo
 SPECIAL_ITEMS1 = {"Blaze Powder": 0.5, "Sulphuric Coal": 0.25}
@@ -132,13 +133,6 @@ def get_raw_recipe(recipe):
       numDone = 0
   return recipelst
 
-
-#test_item = "Enchanted Block of Coal"
-#test_recipe = get_item_recipe(test_item)
-#print(test_item, "recipe:", test_recipe)
-#print("raw recipe:", get_raw_recipe(test_recipe))
-
-
 # gets items bazaar cost
 # can assume id is valid
 # returns -1 if its an auction house item
@@ -156,8 +150,7 @@ def findCost(itemID):
     except:
       return -1
 
-
-# takes in already valid item ids, check ah for lowest bin
+# takes in already valid item names, check ah for lowest bin
 # assume all items in itemLst properly capitalized
 def lowestBin(itemLst):
   pg = 0
