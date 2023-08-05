@@ -7,6 +7,7 @@ import math
 import aiohttp
 import asyncio
 import testing
+import msgspec
 
 skyblockItems = globals.SB_ITEMS_DATA
 sbItemDict = globals.SB_ITEMS_DICT
