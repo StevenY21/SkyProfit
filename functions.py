@@ -16,15 +16,12 @@ sbAHDict = globals.SB_AH_DICT
 sbBzDict = globals.SB_BZ_DICT
 sbSBDict = globals.SB_SOULBOUND_DICT
 
-
-
 BASE_ITEMS = [
   "Lapis Lazuli", "Coal", "Diamond", "Redstone", "Gold Ingot", "Iron Ingot",
   "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block"
 ]
 # items that have recipe that isn't accurate in repo
 SPECIAL_ITEMS1 = {"Blaze Powder": 0.5, "Sulphuric Coal": 0.25}
-
 
 
 #get item name to item recipe
@@ -35,7 +32,7 @@ def get_item_recipe(itemName):
     if itemName in BASE_ITEMS:
       return -2
     #get the id from the name
-    
+
     itemId = sbItemDict[itemName]
     if itemId == -1:
       return -1
@@ -73,7 +70,7 @@ def get_item_recipe(itemName):
           itemName2 = sbIDDict[fixedID]
         else:
           itemName2 = sbIDDict[item[0]]
-        if properRecipe.get(itemName2) != None:
+        if itemName2 in properRecipe:
           properRecipe[itemName2] += int(item[1])
         else:
           properRecipe[itemName2] = int(item[1])
@@ -103,7 +100,7 @@ def get_raw_recipe(recipe):
     for material in tempRec:
       #print(material, "curr material to process in get_raw_recipe")
       if len(tempRec) == 1:
-        if material in BASE_ITEMS and rawRecipe.get(material) == None:
+        if material in BASE_ITEMS and material not in rawRecipe:
           rawRecipe[material] = tempRec[material]
           numDone += 1
           break
@@ -112,14 +109,14 @@ def get_raw_recipe(recipe):
       #print(material, temp, f"raw rec for {material}")
       #print(temp)
       if temp == -1 or temp == -2:
-        if rawRecipe.get(material) == None:
+        if material not in rawRecipe:
           rawRecipe[material] = tempRec[material]
         numDone += 1
       else:
         #print(temp)
         for mat in temp:
           #print(mat, f"in {temp}")
-          if rawRecipe.get(mat) == None:
+          if mat not in rawRecipe:
             rawRecipe[mat] = int(math.ceil(tempRec[material] * temp[mat]))
           else:
             rawRecipe[mat] += int(math.ceil(tempRec[material] * temp[mat]))
@@ -134,6 +131,7 @@ def get_raw_recipe(recipe):
       numDone = 0
   return recipelst
 
+
 # gets items bazaar cost
 # can assume id is valid
 # returns -1 if its an auction house item
@@ -145,17 +143,17 @@ def findCost(itemID):
   else:
     try:
       itemSellPrice = asyncio.run(
-      globals.req_data("https://api.hypixel.net/skyblock/bazaar")
-    )["products"][itemID]['quick_status']['sellPrice']
+        globals.req_data("https://api.hypixel.net/skyblock/bazaar")
+      )["products"][itemID]['quick_status']['sellPrice']
       return itemSellPrice
     except:
       return -1
+
 
 # takes in already valid item names, check ah for lowest bin
 # assume all items in itemLst properly capitalized
 def lowestBin(itemLst):
   pg = 0
-  lowestBins = {}
   print("auction item list", itemLst)
   while True:
     data = asyncio.run(
@@ -166,20 +164,43 @@ def lowestBin(itemLst):
     else:
       print("test", pg)
       for auction in data["auctions"]:
-        for i in itemLst:
-          if (i in auction["item_name"] or i
-              == auction["item_name"]) and auction["bin"] == True:
-            print(auction["item_name"], f"on pg {pg}")
-            if lowestBins.get(
-                i) == None or auction["starting_bid"] < lowestBins[i]:
-              lowestBins[i] = auction["starting_bid"]
-            break
+        aucName = auction["item_name"]
+        if auction["bin"] == True and aucName[-1] != "✪" and aucName[-2] != "✪":
+          for i in itemLst:
+            if (i in aucName or i == aucName):
+              print(aucName, f"on pg {pg}")
+              if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
+                itemLst[i] = auction["starting_bid"]
+              break
       pg += 1
   print("itemLst", itemLst)
-  print("lowestBins", lowestBins)
-  for i in itemLst:
-    if i not in lowestBins:
-      lowestBins[i] = -1
-  print(lowestBins)
+  return itemLst
 
-  return lowestBins
+
+# trying out a lowest bin for bits
+# assume all items in dict are valid and properly spelled
+def bitsLowestBin(itmDict):
+  pg = 0
+  print("auction item list", itmDict)
+  while True:
+    data = asyncio.run(
+      globals.req_data(f"https://api.hypixel.net/skyblock/auctions?page={pg}"))
+    if data["success"] == False:
+      print("test", pg, "last pg reached")
+      break
+    else:
+      print("test", pg)
+      for auction in data["auctions"]:
+        if auction["bin"] == True:
+          try:
+            test = itmDict[auction["item_name"]]
+            print(auction["item_name"], f"on pg {pg}")
+            aucItm = auction["item_name"]
+            aucPrice = auction["starting_bid"]
+            if itmDict[aucItm] == -1 or aucPrice < itmDict[aucItm]:
+              itmDict[aucItm] = aucPrice
+          except:
+            pass
+    pg += 1
+  print("itemLst", itmDict)
+  return itmDict

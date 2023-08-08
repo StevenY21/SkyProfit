@@ -91,7 +91,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         for material in currRecipe:
           #print(f"curr processed: {material}")
           if prevRecipe != None:
-            if prevRecipe.get(material) != None:
+            if material in prevRecipe:
               if prevRecipe[material] == currRecipe[material]:
                 material_price[material] = prevPrice[material]
               else:
@@ -186,14 +186,14 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipe Prices... \nNote that if any items are from the auction house, it will take a little longer :slight_smile:"
       )
       #print(f"rec costs: {recipeCosts}")
-      ahItems = []
+      ahItems = {}
       # for efficiency, all items in both raw and regular recipe will be processed together
       mainItemPrice = round(await
                             asyncio.to_thread(functions.findCost,
                                               globals.SB_ITEMS_DICT[name]))
       #print(f"mainItem Price of {name} in bz: {mainItemPrice}")
       if mainItemPrice == -1:  # if in auction house
-        ahItems.append(name)
+        ahItems[name] = -1
       j = 0
       costsLen = len(recipeCosts)
       prevPrice = recipeCosts[0]
@@ -205,11 +205,11 @@ async def craftprofit(interaction: discord.Interaction, name: str):
           #print(recipeCosts[j])
           for mat in recipeCosts[j]:
             #print(f"checking {recipeCosts[j]} for auction stuff")
-            if recipeCosts[j][mat] == -1 and mat not in ahItems:
+            if recipeCosts[j][mat] == -1:
               if globals.SB_SOULBOUND_DICT[mat] == True:
                 recipeCosts[j][mat] = "Soulbound"
               else:
-                ahItems.append(mat)
+                ahItems[mat] = -1
           j += 1
       # places the auction house item costs into the recip cost dict
       if len(ahItems) > 0:
@@ -348,7 +348,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   await interaction.response.send_message(
     "Processing filtered Bits Shop items...")
   costDict = {}
-  ahLst = []
+  ahLst = {}
   cost = 0
   temp = ""
   for item in shopLst:
@@ -364,15 +364,21 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
       cost = await asyncio.to_thread(functions.findCost, itemID)
     print(f"{itemID}: {cost}")
     if cost == -1:
-      ahLst += [item]
+      ahLst[item] = -1
       costDict[item] = -1
     else:
-      costDict[temp] = cost
+      if item == "64 Inferno Fuel Blocks":
+        costDict[temp] = cost * 64
+      else:
+        costDict[temp] = cost
   await interaction.edit_original_response(
     content=
     "Processing filtered Bits Shop items... \nChecking auction house for items..."
   )
-  ahDict = await asyncio.to_thread(functions.lowestBin, ahLst)
+  testStart = time.time()
+  ahDict = await asyncio.to_thread(functions.bitsLowestBin, ahLst)
+  testEnd = time.time()
+  print(f"lowest bin process time {testEnd - testStart} seconds")
   for item in ahDict:
     costDict[item] = ahDict[item]
   await interaction.edit_original_response(
@@ -384,8 +390,16 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   else:
     globals.finalOutput.title = f"Bits Shop Item Profit List with {filter}."
   globals.finalOutput.description = ""
+  profitDict = {}
   for item in costDict:
-    globals.finalOutput.description += f"\n{item}: {costDict[item]}"
+    if costDict[item] == -1:
+      profitDict[item] = 0
+    else:
+      profitDict[item] = costDict[item] / cookieBits
+  print(profitDict)
+  sortedItms = dict(sorted(profitDict.items(), key=lambda x:x[1], reverse=True))
+  for item in sortedItms:
+    globals.finalOutput.description += f"\n{item}: {round(profitDict[item], 2)} coins per bit"
   end = time.time()
   globals.finalOutput.set_footer(
     text=f"Process Time: {round((end-start),2)} seconds")

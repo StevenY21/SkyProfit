@@ -3,6 +3,8 @@ import re, json, requests
 import time
 import aiohttp
 import asyncio
+import msgspec
+import pandas as pd
 # for final output of commands
 start = time.time()
 finalOutput = discord.Embed(title="  ", colour=0x1978E3)
@@ -218,6 +220,8 @@ SB_BITS_FACTOR = {
 SB_ENCHANTS_LIST = [
   "Expertise", "Cultivating", "Compact", "Champion", "Hecatomb"
 ]
+# Stars
+SB_STARS = ["✪✪✪✪✪", "➊", "➋", "➌", "➍", "➎"]
 # Sorting out all the items
 for item in SB_ITEMS_DATA["items"]:
   itemName = item["name"]
@@ -295,7 +299,6 @@ print("uncraftable items", len(SB_NONCRAFTABLES_LIST))
 end = time.time()
 print(f"{(end - start)} seconds")
 print("Globals Done")
-
 # find a way to get all craftable items that can be sold on ah and bz
 """
 for itemName in SB_ITEMS_DICT:
