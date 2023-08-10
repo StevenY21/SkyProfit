@@ -18,10 +18,17 @@ sbSBDict = globals.SB_SOULBOUND_DICT
 
 BASE_ITEMS = [
   "Lapis Lazuli", "Coal", "Diamond", "Redstone", "Gold Ingot", "Iron Ingot",
-  "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block"
+  "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block",
+  "Glass Bottle"
 ]
 # items that have recipe that isn't accurate in repo
-SPECIAL_ITEMS1 = {"Blaze Powder": 0.5, "Sulphuric Coal": 0.25}
+ITEM_FACTOR = {"Blaze Powder": 0.5, "Sulphuric Coal": 0.25}
+NPC_ITEMS = {"Glass Bottle": 6, "Stick": 0}
+# these items can't be bought on bazaar, but are made of items from bz
+EXCLUDED_ITEMS = {
+  "Block of Coal", "Block of Iron", "Block of Gold", "Block of Diamond",
+  "Block of Emerald", "Lapis Lazuli Block", "Blaze Powder"
+}
 
 
 #get item name to item recipe
@@ -75,7 +82,7 @@ def get_item_recipe(itemName):
         else:
           properRecipe[itemName2] = int(item[1])
     try:
-      factor = SPECIAL_ITEMS1[itemName]
+      factor = ITEM_FACTOR[itemName]
       print(f"special item hit {itemName}")
       for item in properRecipe:
         properRecipe[item] = properRecipe[item] * factor
@@ -134,19 +141,25 @@ def get_raw_recipe(recipe):
 
 # gets items bazaar cost
 # can assume id is valid
-# returns -1 if its an auction house item
 def findCost(itemID):
   #print(f"item id being checked: {item_ID}")
   itemName = sbIDDict[itemID]
-  if sbSBDict[itemName] == True:
-    return -1
+  if sbSBDict[itemName] == True:  # if it is soulboumd
+    return -3
+  elif itemName in NPC_ITEMS:  # if it is sold by npc
+    return NPC_ITEMS[itemName]
+  elif itemName in EXCLUDED_ITEMS:  # for items that have to be crafted anyways
+    return -4
   else:
     try:
       itemSellPrice = asyncio.run(
         globals.req_data("https://api.hypixel.net/skyblock/bazaar")
-      )["products"][itemID]['quick_status']['sellPrice']
-      return itemSellPrice
-    except:
+      )["products"][itemID]['sell_summary']
+      if itemSellPrice == []:  # if no one is selling it bazaar
+        return -2
+      else:
+        return itemSellPrice[0]["pricePerUnit"]
+    except:  # if it does not exist on bazaar
       return -1
 
 
@@ -165,7 +178,7 @@ def lowestBin(itemLst):
       print("test", pg)
       for auction in data["auctions"]:
         aucName = auction["item_name"]
-        if auction["bin"] == True and aucName[-1] != "✪" and aucName[-2] != "✪":
+        if auction["bin"] == True:
           for i in itemLst:
             if (i in aucName or i == aucName):
               print(aucName, f"on pg {pg}")

@@ -99,18 +99,18 @@ async def craftprofit(interaction: discord.Interaction, name: str):
                   prevPrice[material] /
                   prevRecipe[material]) * currRecipe[material]
             else:
-              matID = globals.SB_ITEMS_DICT[material]
+              matID = sbItemNames[material]
               matCost = functions.findCost(matID)
-              if matCost == -1:
-                material_price[material] = -1
+              if matCost < 0:
+                material_price[material] = matCost
               else:
                 material_price[material] = functions.findCost(
                   matID) * currRecipe[material]
           else:
-            matID = globals.SB_ITEMS_DICT[material]
+            matID = sbItemNames[material]
             matCost = functions.findCost(matID)
-            if matCost == -1:
-              material_price[material] = -1
+            if matCost < 0:
+              material_price[material] = matCost
             else:
               material_price[material] = functions.findCost(
                 matID) * currRecipe[material]
@@ -126,19 +126,21 @@ async def craftprofit(interaction: discord.Interaction, name: str):
           globals.finalOutput.description += "\n" + f"> {curr_recipe[material]} {material}"
           globals.finalOutput.description += ":"
           #print(mat_prices)
-          if mat_prices[material] == -1:
-            globals.finalOutput.description += " No one is selling it."
-          elif mat_prices[material] == "Soulbound":
-            globals.finalOutput.description += " Soulbound"
+          if mat_prices[material] < 0:
+            if mat_prices[material] == -1 or mat_prices[material] == -2:
+              globals.finalOutput.description += " No one is selling it."
+            elif mat_prices[material] == -3:
+              globals.finalOutput.description += " Soulbound"
+            elif mat_prices[material] == -4:
+              globals.finalOutput.description += " See Next Recipe"
+            totalCost = -1
           else:
             mat_prices[material] = round(mat_prices[material])
             globals.finalOutput.description += f" {mat_prices[material]} coins."
           #print(curr_recipe[material], material, mat_prices[material])
-          if totalCost != -1 and mat_prices[material] != -1:
+          if totalCost != -1:
             if mat_prices[material] != "Soulbound":
               totalCost += mat_prices[material]
-          else:
-            totalCost = -1
         if totalCost != -1:
           globals.finalOutput.description += "\n" + f"`Total Cost: {totalCost} coins.`"
         else:
@@ -188,9 +190,8 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       #print(f"rec costs: {recipeCosts}")
       ahItems = {}
       # for efficiency, all items in both raw and regular recipe will be processed together
-      mainItemPrice = round(await
-                            asyncio.to_thread(functions.findCost,
-                                              globals.SB_ITEMS_DICT[name]))
+      mainItemPrice = round(await asyncio.to_thread(functions.findCost,
+                                                    sbItemNames[name]))
       #print(f"mainItem Price of {name} in bz: {mainItemPrice}")
       if mainItemPrice == -1:  # if in auction house
         ahItems[name] = -1
@@ -206,10 +207,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
           for mat in recipeCosts[j]:
             #print(f"checking {recipeCosts[j]} for auction stuff")
             if recipeCosts[j][mat] == -1:
-              if globals.SB_SOULBOUND_DICT[mat] == True:
-                recipeCosts[j][mat] = "Soulbound"
-              else:
-                ahItems[mat] = -1
+              ahItems[mat] = -1
           j += 1
       # places the auction house item costs into the recip cost dict
       if len(ahItems) > 0:
@@ -246,7 +244,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
 
       await interaction.edit_original_response(
         content=
-        "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipes' Prices... \nGetting Readable Results. Note that prices for bazaar items are based off lowest buy order prices, and prices for auction house items are based off of lowest BINs."
+        "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipes' Prices... \nGetting Readable Results. Note that the price for bazaar items are based off the highest buy order price, and the price for auction house items are based off of the lowest BIN."
       )
       globals.finalOutput.title = f"{name}'s recipes:"
       # find total cost for each recipe
@@ -395,9 +393,10 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
     if costDict[item] == -1:
       profitDict[item] = 0
     else:
-      profitDict[item] = costDict[item] / cookieBits
+      profitDict[item] = costDict[item] / shopLst[item]
   print(profitDict)
-  sortedItms = dict(sorted(profitDict.items(), key=lambda x:x[1], reverse=True))
+  sortedItms = dict(
+    sorted(profitDict.items(), key=lambda x: x[1], reverse=True))
   for item in sortedItms:
     globals.finalOutput.description += f"\n{item}: {round(profitDict[item], 2)} coins per bit"
   end = time.time()
