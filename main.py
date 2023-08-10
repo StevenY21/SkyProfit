@@ -95,9 +95,12 @@ async def craftprofit(interaction: discord.Interaction, name: str):
               if prevRecipe[material] == currRecipe[material]:
                 material_price[material] = prevPrice[material]
               else:
-                material_price[material] = (
-                  prevPrice[material] /
-                  prevRecipe[material]) * currRecipe[material]
+                if prevPrice[material] < 0:
+                  material_price[material] = prevPrice[material]
+                else:
+                  material_price[material] = (
+                    prevPrice[material] /
+                    prevRecipe[material]) * currRecipe[material]
             else:
               matID = sbItemNames[material]
               matCost = functions.findCost(matID)
@@ -114,6 +117,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
             else:
               material_price[material] = functions.findCost(
                 matID) * currRecipe[material]
+        print(f"mat price for curr recipe: {material_price}")
         return material_price
 
       # process the cost of the materials into proper sentences

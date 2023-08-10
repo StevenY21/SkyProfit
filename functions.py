@@ -19,7 +19,7 @@ sbSBDict = globals.SB_SOULBOUND_DICT
 BASE_ITEMS = [
   "Lapis Lazuli", "Coal", "Diamond", "Redstone", "Gold Ingot", "Iron Ingot",
   "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block",
-  "Glass Bottle"
+  "Glass Bottle", "Stick"
 ]
 # items that have recipe that isn't accurate in repo
 ITEM_FACTOR = {"Blaze Powder": 0.5, "Sulphuric Coal": 0.25}
