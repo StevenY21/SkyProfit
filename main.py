@@ -340,7 +340,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   for item in shopLst:
     if "Abicase" not in item:
       temp = item
-      if item == "1 Inferno Fuel Block" or item == "64 Inferno Fuel Blocks":
+      if temp == "1 Inferno Fuel Block" or item == "64 Inferno Fuel Blocks":
         item = "Inferno Fuel Block"
       itemID = ""
       if item == "Compact" or item == "Expertise" or item == "Cultivating" or item == "Hecatomb" or item == "Champion":
@@ -353,7 +353,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
       ahLst[item] = -1
       costDict[item] = -1
     else:
-      if item == "64 Inferno Fuel Blocks":
+      if temp == "64 Inferno Fuel Blocks":
         costDict[temp] = cost * 64
       else:
         costDict[temp] = cost
@@ -401,20 +401,27 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
     else:
       if costDict[item] == -1:
         sellPrice = "No one is selling"
-        embed.add_field(name=f"{j+1}. {item}", value=f"\nBit Cost: {itmBits} bits\nSell Price: {sellPrice} coins\nEstimated Value = {round(shopLst[item] * cookieCPB)}", inline=True)
+        embed.add_field(
+          name=f"{j+1}. {item}",
+          value=
+          f"\nBit Cost: {itmBits} bits\nSell Price: {sellPrice} coins\nEstimated Value = {round(shopLst[item] * cookieCPB)}",
+          inline=True)
       else:
         itmBits = shopLst[item]
-        cPB = round(profitDict[item], 2) # coins Per Bit
+        cPB = round(profitDict[item], 2)  # coins Per Bit
         profit = round((cPB - cookieCPB) * itmBits)
         cost = cookieCPB * itmBits
-        profitPercent = round(((profit / cost) * 100),2)
-        embed.add_field(name=f"{j+1}. {item}", value= f"\nBit Cost: {itmBits} bits\nSell Price: {costDict[item]} coins\nCoins Per Bit: {cPB}\nProfit (%): {profit} coins ({profitPercent}%)", inline=True)
+        profitPercent = round(((profit / cost) * 100), 2)
+        embed.add_field(
+          name=f"{j+1}. {item}",
+          value=
+          f"\nBit Cost: {itmBits} bits\nSell Price: {costDict[item]} coins\nCoins Per Bit: {cPB}\nProfit (%): {profit} coins ({profitPercent}%)",
+          inline=True)
 
       i += 1
       j += 1
   if i > 0:
     embList.append(embed)
-  end = time.time()
   numEmbeds = len(embList)
   #print(numEmbeds)
   pg = 0
@@ -433,9 +440,17 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
       pg += 1
       await interaction.response.edit_message(embed=embList[pg % numEmbeds])
 
+  end = time.time()
   #res.set_footer(text=f"Process Time: {round((end-start),2)} seconds")
+  procTime = round((end - start), 2)
+  await interaction.edit_original_response(
+    content=
+    "Processing filtered Bits Shop items... \nChecking auction house for items... \nFinalizing Results \nNote that the table will timeout 60 seconds after last interaction"
+  )
+  for i in embList:
+    i.set_footer(text=f"Process Time: {procTime} seconds")
   await interaction.edit_original_response(embed=embList[0],
-                                           view=MyView(timeout=30))
+                                           view=MyView(timeout=60))
 
 
 @cookieprofit.autocomplete("famerank")
