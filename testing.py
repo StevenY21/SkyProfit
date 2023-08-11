@@ -79,3 +79,42 @@ async def test(interaction: discord.Interaction):
   globals.finalOutput.description = grid
   await interaction.response.send_message(embed=globals.finalOutput)
 """
+
+# gets the cost of each amt of materials in the current recipe
+# originally used in my craftprofit, but found to be kinda pointless after finding better way to process material costs
+"""
+      def getCosts(prevRecipe, currRecipe):
+        print(f"checking {currRecipe} with {prevRecipe}")
+        material_price = {}
+        for material in currRecipe:
+          #print(f"curr processed: {material}")
+          if prevRecipe != None:
+            if material in prevRecipe:
+              if prevRecipe[material] == currRecipe[material]:
+                material_price[material] = prevPrice[material]
+              else:
+                if prevPrice[material] < 0:
+                  material_price[material] = prevPrice[material]
+                else:
+                  material_price[material] = (
+                    prevPrice[material] /
+                    prevRecipe[material]) * currRecipe[material]
+            else:
+              matID = sbItemNames[material]
+              matCost = functions.findCost(matID)
+              if matCost < 0:
+                material_price[material] = matCost
+              else:
+                material_price[material] = functions.findCost(
+                  matID) * currRecipe[material]
+          else:
+            matID = sbItemNames[material]
+            matCost = functions.findCost(matID)
+            if matCost < 0:
+              material_price[material] = matCost
+            else:
+              material_price[material] = functions.findCost(
+                matID) * currRecipe[material]
+        print(f"mat price for curr recipe: {material_price}")
+        return material_price
+"""

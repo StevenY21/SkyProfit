@@ -156,12 +156,57 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices..."
       )
       # getting the prices for the amts of materials
+      #fullLst = [regRecipe] + recipeLst
       recipeCosts = []
       recipeCosts.append(await asyncio.to_thread(getCosts, None, regRecipe))
       #recipeCosts.append(getCosts(None, regRecipe))
-      #print(f"rec costs so far{recipeCosts}")
       prevPrice = recipeCosts[0]
+      """
+      prevRecipe = None
+      prevPrice = None
+      currRecipe = fullLst[0]
+      numRecs = len(fullLst)
+      i = 0
+      while True:
+        material_price = {}
+        for material in currRecipe:
+        #print(f"curr processed: {material}")
+          if prevRecipe != None:
+            if material in prevRecipe:
+              if prevRecipe[material] == currRecipe[material]:
+                material_price[material] = prevPrice[material]
+              else:
+                if prevPrice[material] < 0:
+                  material_price[material] = prevPrice[material]
+                else:
+                  material_price[material] = (
+                    prevPrice[material] /
+                    prevRecipe[material]) * currRecipe[material]
+            else:
+              matID = sbItemNames[material]
+              matCost = await asyncio.to_thread(functions.findCost, matID)
+              if matCost < 0:
+                material_price[material] = matCost
+              else:
+                material_price[material] = matCost * currRecipe[material]
+          else:
+            matID = sbItemNames[material]
+            matCost = await asyncio.to_thread(functions.findCost, matID)
+            if matCost < 0:
+              material_price[material] = matCost
+            else:
+              material_price[material] = matCost * currRecipe[material]
+        recipeCosts.append(material_price)
+        print(f"mat price for curr recipe: {material_price}")
+        i += 1
+        if i == numRecs:
+          break
+        else:
+          prevRecipe = currRecipe
+          currRecipe = fullLst[i]
+          prevPrice = recipeCosts[-1]
       #print(f"rec list {recipeLst}")
+      """
       if len(recipeLst) == 1:
         #print("test for only raw rec")
         recipeCosts.append(await asyncio.to_thread(getCosts, regRecipe,
