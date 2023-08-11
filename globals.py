@@ -62,7 +62,7 @@ BASE_ITEMS = [
 ]
 EXCLUDED_ITEMS = [
   "Block of Coal", "Block of Iron", "Block of Gold", "Block of Diamond",
-  "Block of Emerald", "Lapis Lazuli Block", "Blaze Powder"
+  "Block of Emerald", "Lapis Lazuli Block", "Blaze Powder", "Block of Quartz"
 ]
 BASE_ITEMS_DICT = {} # key: item name, value: true or false
 EXCLUDED_ITEMS_DICT = {} # key: item name, value: true or false
@@ -278,7 +278,11 @@ for item in SB_ITEMS_DATA["items"]:
   SB_ID_DICT[itemID] = itemName
   SB_MAT_DICT[itemID] = itemMat
   SB_NAME_FIX[itemName.lower()] = itemName
-  EXCLUDED_ITEMS_DICT[itemName] = False
+  if "Stairs" in itemName or "Fence" in itemName or "Chiseled" in itemName or "Granite" in itemName or "Diorite" in itemName or "Andesite" in itemName or "Slab" in itemName or "Planks" in itemName:
+    
+    EXCLUDED_ITEMS_DICT[itemName] = True
+  else:
+    EXCLUDED_ITEMS_DICT[itemName] = False
   BASE_ITEMS_DICT[itemName] = False
 #i = 0
 # Processing excluded items and base items:

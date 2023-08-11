@@ -32,7 +32,6 @@ def get_item_recipe(itemName):
     if BASE_ITEMS[itemName] == True:
       return -2
     #get the id from the name
-
     itemId = sbItemDict[itemName]
     if itemId == -1:
       return -1

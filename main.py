@@ -20,6 +20,8 @@ sbProperNames = globals.SB_NAME_FIX
 sbItemNames = globals.SB_ITEMS_DICT
 sbItemIDs = globals.SB_ID_DICT
 sbItemMat = globals.SB_MAT_DICT
+BASE_ITEMS = globals.BASE_ITEMS_DICT
+EXCLUDED_ITEMS = globals.EXCLUDED_ITEMS_DICT
 
 
 # inv bot: https://discord.com/api/oauth2/authorize?client_id=1117918806224932915&permissions=448824396865&scope=bot
@@ -57,7 +59,10 @@ async def craftprofit(interaction: discord.Interaction, name: str):
     await interaction.response.send_message("Getting Regular Recipe...")
     regRecipe = await asyncio.to_thread(functions.get_item_recipe, name)
     print(regRecipe, "is reg recipe")
-    if regRecipe == None or regRecipe == -1:
+    if EXCLUDED_ITEMS[name] == True:
+      await interaction.edit_original_response(
+        content="Do not try to flip vanilla blocks (well most of them)")
+    elif regRecipe == None or regRecipe == -1:
       await interaction.edit_original_response(
         content=
         f"Error: {name} not found. Check if the item name is spelled correctly, or that it can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable"
@@ -279,11 +284,14 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         print("check point creating profit % ")
         while True:
           #print(i)
+          profit = 0
+          profitPercent = 0
           if i == len(recipeCosts):
             break
           else:
             if recipeTotals[i] == -1:
               profit = 'N/A'
+              profitPercent = 'N/A'
             else:
               profit = (mainItemPrice - recipeTotals[i])
               profitPercent = (round(((profit / recipeTotals[i]) * 100), 2))
