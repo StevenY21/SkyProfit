@@ -3,7 +3,6 @@ from discord import app_commands
 from discord.app_commands import Choice
 import discord.ext
 import functions
-import functools
 import re, json, requests
 import os
 from keep_alive import keep_alive
@@ -84,42 +83,6 @@ async def craftprofit(interaction: discord.Interaction, name: str):
 
       print(rawRecipe, "is raw recipe")
 
-      # gets the cost of each amt of materials in the current recipe
-      def getCosts(prevRecipe, currRecipe):
-        print(f"checking {currRecipe} with {prevRecipe}")
-        material_price = {}
-        for material in currRecipe:
-          #print(f"curr processed: {material}")
-          if prevRecipe != None:
-            if material in prevRecipe:
-              if prevRecipe[material] == currRecipe[material]:
-                material_price[material] = prevPrice[material]
-              else:
-                if prevPrice[material] < 0:
-                  material_price[material] = prevPrice[material]
-                else:
-                  material_price[material] = (
-                    prevPrice[material] /
-                    prevRecipe[material]) * currRecipe[material]
-            else:
-              matID = sbItemNames[material]
-              matCost = functions.findCost(matID)
-              if matCost < 0:
-                material_price[material] = matCost
-              else:
-                material_price[material] = functions.findCost(
-                  matID) * currRecipe[material]
-          else:
-            matID = sbItemNames[material]
-            matCost = functions.findCost(matID)
-            if matCost < 0:
-              material_price[material] = matCost
-            else:
-              material_price[material] = functions.findCost(
-                matID) * currRecipe[material]
-        print(f"mat price for curr recipe: {material_price}")
-        return material_price
-
       # process the cost of the materials into proper sentences
       def processCosts(mat_prices, curr_recipe):
         #print(mat_prices, "process_cost debug mat prices")
@@ -133,18 +96,19 @@ async def craftprofit(interaction: discord.Interaction, name: str):
           if mat_prices[material] < 0:
             if mat_prices[material] == -1 or mat_prices[material] == -2:
               globals.finalOutput.description += " No one is selling it."
+              totalCost = -1
             elif mat_prices[material] == -3:
               globals.finalOutput.description += " Soulbound"
+              mat_prices[material] = 0
             elif mat_prices[material] == -4:
               globals.finalOutput.description += " See Next Recipe"
-            totalCost = -1
+              totalCost = -1
           else:
             mat_prices[material] = round(mat_prices[material])
             globals.finalOutput.description += f" {mat_prices[material]} coins."
           #print(curr_recipe[material], material, mat_prices[material])
           if totalCost != -1:
-            if mat_prices[material] != "Soulbound":
-              totalCost += mat_prices[material]
+            totalCost += mat_prices[material]
         if totalCost != -1:
           globals.finalOutput.description += "\n" + f"`Total Cost: {totalCost} coins.`"
         else:
@@ -156,12 +120,11 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices..."
       )
       # getting the prices for the amts of materials
-      #fullLst = [regRecipe] + recipeLst
-      recipeCosts = []
-      recipeCosts.append(await asyncio.to_thread(getCosts, None, regRecipe))
+      #recipeCosts.append(await asyncio.to_thread(getCosts, None, regRecipe))
       #recipeCosts.append(getCosts(None, regRecipe))
-      prevPrice = recipeCosts[0]
-      """
+      #prevPrice = recipeCosts[0]
+      fullLst = [regRecipe] + recipeLst
+      recipeCosts = []
       prevRecipe = None
       prevPrice = None
       currRecipe = fullLst[0]
@@ -170,7 +133,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       while True:
         material_price = {}
         for material in currRecipe:
-        #print(f"curr processed: {material}")
+          #print(f"curr processed: {material}")
           if prevRecipe != None:
             if material in prevRecipe:
               if prevRecipe[material] == currRecipe[material]:
@@ -206,32 +169,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
           currRecipe = fullLst[i]
           prevPrice = recipeCosts[-1]
       #print(f"rec list {recipeLst}")
-      """
-      if len(recipeLst) == 1:
-        #print("test for only raw rec")
-        recipeCosts.append(await asyncio.to_thread(getCosts, regRecipe,
-                                                   rawRecipe))
-        #recipeCosts.append(getCosts(regRecipe, rawRecipe))
-      else:
-        #print("test for 1 alt and one raw")
-        recipeCosts.append(await asyncio.to_thread(getCosts, regRecipe,
-                                                   recipeLst[0]))
-        #recipeCosts.append(getCosts(regRecipe, recipeLst[0]))
-        prevPrice = recipeCosts[1]
-        if len(recipeLst) == 2:
-          #print("test for 1 alt and 1 raw for raw part")
-          recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[0],
-                                                     rawRecipe))
-          #recipeCosts.append(getCosts(recipeLst[0], rawRecipe))
-        if len(recipeLst) == 3:
-          #print("test for 2 alts and one raw")
-          recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[0],
-                                                     recipeLst[-2]))
-          #recipeCosts.append(getCosts(recipeLst[0], recipeLst[-2]))
-          prevPrice = recipeCosts[2]
-          recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[-2],
-                                                     rawRecipe))
-          #recipeCosts.append(getCosts(recipeLst[-2], rawRecipe))
+      #recipeCosts.append(getCosts(recipeLst[-2], rawRecipe))
       await interaction.edit_original_response(
         content=
         "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipe Prices... \nNote that if any items are from the auction house, it will take a little longer :slight_smile:"
@@ -347,18 +285,17 @@ async def craftprofit(interaction: discord.Interaction, name: str):
             if recipeTotals[i] == -1:
               profit = 'N/A'
             else:
-              profit = (round(
-                (((mainItemPrice - recipeTotals[i]) / recipeTotals[i]) * 100),
-                2))
+              profit = (mainItemPrice - recipeTotals[i])
+              profitPercent = (round(((profit / recipeTotals[i]) * 100), 2))
             if i == 0:
-              globals.finalOutput.description += "\n" + f"> Regular Recipe Proft %: {profit}%."
-              recProfits["Regular Recipe"] = profit
+              globals.finalOutput.description += "\n" + f"> Regular Recipe Proft (%): {profit} ({profitPercent}%)."
+              recProfits["Regular Recipe"] = profitPercent
             elif i == len(recipeCosts) - 1:
-              globals.finalOutput.description += "\n" + f"> Raw Recipe Proft %: {profit}%."
-              recProfits["Raw Recipe"] = profit
+              globals.finalOutput.description += "\n" + f"> Raw Recipe Proft (%): {profit} ({profitPercent}%)."
+              recProfits["Raw Recipe"] = profitPercent
             else:
-              globals.finalOutput.description += "\n" + f"> Alt Recipe {i} Proft %: {profit}%."
-              recProfits[f"Alt Recipe {i}"] = profit
+              globals.finalOutput.description += "\n" + f"> Alt Recipe {i} Proft (%): {profit} ({profitPercent}%)."
+              recProfits[f"Alt Recipe {i}"] = profitPercent
           i += 1
         bestProfitRec = ""
         bestProfit = 'N/A'
@@ -391,6 +328,8 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
                        filter: str):
   start = time.time()
   cookieBits = 4800 * globals.SB_BITS_FACTOR[famerank]
+  cookieCost = await asyncio.to_thread(functions.findCost, "BOOSTER_COOKIE")
+  cookieCPB = round(cookieCost / cookieBits, 2)
   shopLst = globals.SB_BITS_FILTER[filter]
   await interaction.response.send_message(
     "Processing filtered Bits Shop items...")
@@ -432,26 +371,71 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
     content=
     "Processing filtered Bits Shop items... \nChecking auction house for items... \nFinalizing Results"
   )
+  embTitle = ""
   if filter == "None":
-    globals.finalOutput.title = "Bits Shop Item Profit List."
+    embTitle = "Bits Shop Item Profits:"
   else:
-    globals.finalOutput.title = f"Bits Shop Item Profit List with {filter}."
-  globals.finalOutput.description = ""
+    embTitle = f"Bits Shop Item Profits with {filter}:"
   profitDict = {}
   for item in costDict:
     if costDict[item] == -1:
       profitDict[item] = 0
     else:
       profitDict[item] = costDict[item] / shopLst[item]
-  print(profitDict)
+  #print(profitDict)
   sortedItms = dict(
     sorted(profitDict.items(), key=lambda x: x[1], reverse=True))
+  i = 0
+  j = 0
+  embList = []
+  embed = discord.Embed(title=embTitle, colour=0x1978E3)
   for item in sortedItms:
-    globals.finalOutput.description += f"\n{item}: {round(profitDict[item], 2)} coins per bit"
+    #res.description += f"\n{item}: {shopLst[item]} bits, {costDict[item]} coins, {round(profitDict[item], 2)} coins per bit"
+    #print(f"curr item: {item}")
+    itmBits = shopLst[item]
+    if i == 12:
+      embList.append(embed)
+      #print(embList)
+      embed = discord.Embed(title=embTitle, colour=0x1978E3)
+      i = 0
+    else:
+      if costDict[item] == -1:
+        sellPrice = "No one is selling"
+        embed.add_field(name=f"{j+1}. {item}", value=f"\nBit Cost: {itmBits} bits\nSell Price: {sellPrice} coins\nEstimated Value = {round(shopLst[item] * cookieCPB)}", inline=True)
+      else:
+        itmBits = shopLst[item]
+        cPB = round(profitDict[item], 2) # coins Per Bit
+        profit = round((cPB - cookieCPB) * itmBits)
+        cost = cookieCPB * itmBits
+        profitPercent = round(((profit / cost) * 100),2)
+        embed.add_field(name=f"{j+1}. {item}", value= f"\nBit Cost: {itmBits} bits\nSell Price: {costDict[item]} coins\nCoins Per Bit: {cPB}\nProfit (%): {profit} coins ({profitPercent}%)", inline=True)
+
+      i += 1
+      j += 1
+  if i > 0:
+    embList.append(embed)
   end = time.time()
-  globals.finalOutput.set_footer(
-    text=f"Process Time: {round((end-start),2)} seconds")
-  await interaction.edit_original_response(embed=globals.finalOutput)
+  numEmbeds = len(embList)
+  #print(numEmbeds)
+  pg = 0
+
+  class MyView(discord.ui.View):
+
+    @discord.ui.button(label='<', style=discord.ButtonStyle.blurple)
+    async def prev_callback(self, interaction: discord.Interaction, button):
+      nonlocal pg
+      pg -= 1
+      await interaction.response.edit_message(embed=embList[pg % numEmbeds])
+
+    @discord.ui.button(label='>', style=discord.ButtonStyle.blurple)
+    async def next_callback(self, interaction: discord.Interaction, button):
+      nonlocal pg
+      pg += 1
+      await interaction.response.edit_message(embed=embList[pg % numEmbeds])
+
+  #res.set_footer(text=f"Process Time: {round((end-start),2)} seconds")
+  await interaction.edit_original_response(embed=embList[0],
+                                           view=MyView(timeout=30))
 
 
 @cookieprofit.autocomplete("famerank")

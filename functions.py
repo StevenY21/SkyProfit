@@ -16,19 +16,12 @@ sbAHDict = globals.SB_AH_DICT
 sbBzDict = globals.SB_BZ_DICT
 sbSBDict = globals.SB_SOULBOUND_DICT
 
-BASE_ITEMS = [
-  "Lapis Lazuli", "Coal", "Diamond", "Redstone", "Gold Ingot", "Iron Ingot",
-  "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block",
-  "Glass Bottle", "Stick"
-]
+BASE_ITEMS = globals.BASE_ITEMS_DICT
 # items that have recipe that isn't accurate in repo
 ITEM_FACTOR = {"Blaze Powder": 0.5, "Sulphuric Coal": 0.25}
 NPC_ITEMS = {"Glass Bottle": 6, "Stick": 0}
 # these items can't be bought on bazaar, but are made of items from bz
-EXCLUDED_ITEMS = {
-  "Block of Coal", "Block of Iron", "Block of Gold", "Block of Diamond",
-  "Block of Emerald", "Lapis Lazuli Block", "Blaze Powder"
-}
+EXCLUDED_ITEMS = globals.EXCLUDED_ITEMS_DICT
 
 
 #get item name to item recipe
@@ -36,7 +29,7 @@ EXCLUDED_ITEMS = {
 def get_item_recipe(itemName):
   print(f"item being checked {itemName}")
   try:
-    if itemName in BASE_ITEMS:
+    if BASE_ITEMS[itemName] == True:
       return -2
     #get the id from the name
 
@@ -148,7 +141,8 @@ def findCost(itemID):
     return -3
   elif itemName in NPC_ITEMS:  # if it is sold by npc
     return NPC_ITEMS[itemName]
-  elif itemName in EXCLUDED_ITEMS:  # for items that have to be crafted anyways
+  elif EXCLUDED_ITEMS[
+      itemName] == True:  # for items that have to be crafted anyways
     return -4
   else:
     try:

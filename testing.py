@@ -118,3 +118,52 @@ async def test(interaction: discord.Interaction):
         print(f"mat price for curr recipe: {material_price}")
         return material_price
 """
+# additional code for usin get getCosts that isnt useful anymore
+"""
+      if len(recipeLst) == 1:
+        #print("test for only raw rec")
+        recipeCosts.append(await asyncio.to_thread(getCosts, regRecipe,
+                                                   rawRecipe))
+        #recipeCosts.append(getCosts(regRecipe, rawRecipe))
+      else:
+        #print("test for 1 alt and one raw")
+        recipeCosts.append(await asyncio.to_thread(getCosts, regRecipe,
+                                                   recipeLst[0]))
+        #recipeCosts.append(getCosts(regRecipe, recipeLst[0]))
+        prevPrice = recipeCosts[1]
+        if len(recipeLst) == 2:
+          #print("test for 1 alt and 1 raw for raw part")
+          recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[0],
+                                                     rawRecipe))
+          #recipeCosts.append(getCosts(recipeLst[0], rawRecipe))
+        if len(recipeLst) == 3:
+          #print("test for 2 alts and one raw")
+          recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[0],
+                                                     recipeLst[-2]))
+          #recipeCosts.append(getCosts(recipeLst[0], recipeLst[-2]))
+          prevPrice = recipeCosts[2]
+          recipeCosts.append(await asyncio.to_thread(getCosts, recipeLst[-2],
+                                                     rawRecipe))
+      """
+
+# find a way to get all craftable items that can be sold on ah and bz
+"""
+for itemName in SB_ITEMS_DICT:
+  if SB_NONCRAFTABLES_DICT[itemName] == False and "glass" not in itemName and "leaves" not in itemName and "dye" not in itemName and itemName not in SB_MINIONS_LIST and SB_SOULBOUND_DICT[itemName] == False:
+    itemID = SB_ITEMS_DICT[itemName]
+    itemMat = SB_MAT_DICT[itemID]
+    if itemID != itemMat:
+      try:
+        test = asyncio.run(req_data( f'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/{itemID}.json'))["recipe"]
+        print(f"checking if item {i}, {itemName} has rec")
+        try:
+          test2 = test[0]["type"]
+          if test2 == "forge":
+            SB_FORGE_ITEMS_DATA[itemID] = test[0]
+        except:
+          SB_CRAFTPROFIT_DATA[itemID] = test
+      except:
+        SB_NONCRAFTABLES_DICT[itemName] = True
+  i += 1
+print(f"{i} end")
+"""

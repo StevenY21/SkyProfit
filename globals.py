@@ -55,13 +55,24 @@ SB_MINIONS_LIST = []  # all minions with all tiers
 SB_SOULBOUND_LIST = []  # all soulbound items
 SB_SOULBOUND_DICT = {}  #key: item name, value: true or false
 SB_CATEGORY_LIST = []  # all categories in hypixel sb items data
+BASE_ITEMS = [
+  "Lapis Lazuli", "Coal", "Diamond", "Redstone", "Gold Ingot", "Iron Ingot",
+  "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block",
+  "Glass Bottle", "Stick"
+]
+EXCLUDED_ITEMS = [
+  "Block of Coal", "Block of Iron", "Block of Gold", "Block of Diamond",
+  "Block of Emerald", "Lapis Lazuli Block", "Blaze Powder"
+]
+BASE_ITEMS_DICT = {} # key: item name, value: true or false
+EXCLUDED_ITEMS_DICT = {} # key: item name, value: true or false
+
 SB_BITS_SHOP_1 = {
   "God Potion": 1500,
   "Kismet Feather": 1350,
   "Kat Flower": 500,
   "Matriarch's Perfume": 1200,
   "Hologram": 2000,
-  "Ditto Blob": 600,
   "Builder's Wand": 12000,
   "Block Zapper": 5000,
   "Bits Talisman": 15000,
@@ -101,7 +112,6 @@ SB_BITS_SHOP_2 = {
   "Kat Flower": 500,
   "Matriarch's Perfume": 1200,
   "Hologram": 2000,
-  "Ditto Blob": 600,
   "Builder's Wand": 12000,
   "Block Zapper": 5000,
   "Bits Talisman": 15000,
@@ -133,7 +143,6 @@ SB_BITS_SHOP_3 = {
   "Kat Flower": 500,
   "Matriarch's Perfume": 1200,
   "Hologram": 2000,
-  "Ditto Blob": 600,
   "Builder's Wand": 12000,
   "Block Zapper": 5000,
   "Bits Talisman": 15000,
@@ -172,7 +181,6 @@ SB_BITS_SHOP_4 = {
   "Kat Flower": 500,
   "Matriarch's Perfume": 1200,
   "Hologram": 2000,
-  "Ditto Blob": 600,
   "Builder's Wand": 12000,
   "Block Zapper": 5000,
   "Bits Talisman": 15000,
@@ -217,7 +225,7 @@ SB_BITS_FACTOR = {
   'Supreme': 2.26
 }
 # all enchants
-SB_ENCHANTS_LIST = [
+BITS_ENCHANTS_LIST = [
   "Expertise", "Cultivating", "Compact", "Champion", "Hecatomb"
 ]
 # Stars
@@ -270,12 +278,21 @@ for item in SB_ITEMS_DATA["items"]:
   SB_ID_DICT[itemID] = itemName
   SB_MAT_DICT[itemID] = itemMat
   SB_NAME_FIX[itemName.lower()] = itemName
-i = 0
+  EXCLUDED_ITEMS_DICT[itemName] = False
+  BASE_ITEMS_DICT[itemName] = False
+#i = 0
+# Processing excluded items and base items:
+for i in BASE_ITEMS:
+  BASE_ITEMS_DICT[i] = True
+for i in EXCLUDED_ITEMS:
+  EXCLUDED_ITEMS_DICT[i] = True
 #Processing Enchants Here:
-for enchant in SB_ENCHANTS_LIST:
+for enchant in BITS_ENCHANTS_LIST:
   SB_ITEMS_DICT[enchant] = f"ENCHANTMENT_{enchant.upper()}_1"
   SB_ID_DICT[f"ENCHANTMENT_{enchant.upper()}_1"] = enchant
   SB_SOULBOUND_DICT[enchant] = False
+  EXCLUDED_ITEMS_DICT[enchant] = False
+  BASE_ITEMS_DICT[enchant] = False
 #create the filters for cookieprofit
 SB_BITS_FILTER = {
   "None": SB_BITS_SHOP_1,
@@ -308,24 +325,4 @@ print("uncraftable items", len(SB_NONCRAFTABLES_LIST))
 end = time.time()
 print(f"{(end - start)} seconds")
 print("Globals Done")
-# find a way to get all craftable items that can be sold on ah and bz
-"""
-for itemName in SB_ITEMS_DICT:
-  if SB_NONCRAFTABLES_DICT[itemName] == False and "glass" not in itemName and "leaves" not in itemName and "dye" not in itemName and itemName not in SB_MINIONS_LIST and SB_SOULBOUND_DICT[itemName] == False:
-    itemID = SB_ITEMS_DICT[itemName]
-    itemMat = SB_MAT_DICT[itemID]
-    if itemID != itemMat:
-      try:
-        test = asyncio.run(req_data( f'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/{itemID}.json'))["recipe"]
-        print(f"checking if item {i}, {itemName} has rec")
-        try:
-          test2 = test[0]["type"]
-          if test2 == "forge":
-            SB_FORGE_ITEMS_DATA[itemID] = test[0]
-        except:
-          SB_CRAFTPROFIT_DATA[itemID] = test
-      except:
-        SB_NONCRAFTABLES_DICT[itemName] = True
-  i += 1
-print(f"{i} end")
-"""
+
