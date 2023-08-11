@@ -283,12 +283,21 @@ SB_BITS_FILTER = {
   "No Enrichment": SB_BITS_SHOP_3,
   "No Abicase and Enrichment": SB_BITS_SHOP_4
 }
-# manually fix some of them due to strange items in hypixel items
+# manually fix some of them due to strange items in hypixel items data
 # currently going to manually fix the enchantments
 SB_ITEMS_DICT["Griffin Feather"] = 'GRIFFIN_FEATHER'
 SB_ITEMS_DICT["Hay Bale"] = "HAY_BLOCK"
 SB_ID_DICT["HAY_BLOCK"] = "Hay Bale"
-
+SB_ITEMS_DICT["Jumbo Backpack"] = "JUMBO_BACKPACK"
+SB_ITEMS_DICT["JUMBO_BACKPACK"] = "Jumbo Backpack"
+SB_ITEMS_DICT["Greater Backpack"] = "GREATER_BACKPACK"
+SB_ITEMS_DICT["GREATER_BACKPACK"] = "Greater Backpack"
+SB_ITEMS_DICT["Large Backpack"] = "LARGE_BACKPACK"
+SB_ITEMS_DICT["LARGE_BACKPACK"] = "Large Backpack"
+SB_ITEMS_DICT["Medium Backpack"] = "MEDIUM_BACKPACK"
+SB_ITEMS_DICT["MEDIUM_BACKPACK"] = "Medium Backpack"
+SB_ITEMS_DICT["Small Backpack"] = "SMALL_BACKPACK"
+SB_ITEMS_DICT["SMALL_BACKPACK"] = "Small Backpack"
 # for personal debugging
 print(len(SB_ITEMS_DATA['items']), "items")
 print("items in sb items dict:", len(SB_ITEMS_DICT))
