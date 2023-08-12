@@ -20,6 +20,8 @@ sbProperNames = globals.SB_NAME_FIX
 sbItemNames = globals.SB_ITEMS_DICT
 sbItemIDs = globals.SB_ID_DICT
 sbItemMat = globals.SB_MAT_DICT
+sbBzItms = globals.SB_BZ_DICT
+sbAHItms = globals.SB_AH_DICT
 BASE_ITEMS = globals.BASE_ITEMS_DICT
 EXCLUDED_ITEMS = globals.EXCLUDED_ITEMS_DICT
 
@@ -61,7 +63,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
     print(regRecipe, "is reg recipe")
     if EXCLUDED_ITEMS[name] == True:
       await interaction.edit_original_response(
-        content="Do not try to flip vanilla blocks (well most of them)")
+        content="Do not flip vanilla items (well most of them)")
     elif regRecipe == None or regRecipe == -1:
       await interaction.edit_original_response(
         content=
@@ -296,13 +298,13 @@ async def craftprofit(interaction: discord.Interaction, name: str):
               profit = (mainItemPrice - recipeTotals[i])
               profitPercent = (round(((profit / recipeTotals[i]) * 100), 2))
             if i == 0:
-              globals.finalOutput.description += "\n" + f"> Regular Recipe Proft (%): {profit} ({profitPercent}%)."
+              globals.finalOutput.description += "\n" + f"> Regular Recipe Proft (%): {profit} coins ({profitPercent}%)."
               recProfits["Regular Recipe"] = profitPercent
             elif i == len(recipeCosts) - 1:
-              globals.finalOutput.description += "\n" + f"> Raw Recipe Proft (%): {profit} ({profitPercent}%)."
+              globals.finalOutput.description += "\n" + f"> Raw Recipe Proft (%): {profit} coins ({profitPercent}%)."
               recProfits["Raw Recipe"] = profitPercent
             else:
-              globals.finalOutput.description += "\n" + f"> Alt Recipe {i} Proft (%): {profit} ({profitPercent}%)."
+              globals.finalOutput.description += "\n" + f"> Alt Recipe {i} Proft (%): {profit} coins ({profitPercent}%)."
               recProfits[f"Alt Recipe {i}"] = profitPercent
           i += 1
         bestProfitRec = ""
@@ -355,7 +357,10 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
         itemID = f"ENCHANTMENT_{item.upper()}_1"
       else:
         itemID = sbItemNames[item]
-      cost = await asyncio.to_thread(functions.findCost, itemID)
+      if sbBzItms[itemID] == True:
+        cost = await asyncio.to_thread(functions.findCost, itemID)
+      else:
+        cost = -1
     print(f"{itemID}: {cost}")
     if cost == -1:
       ahLst[item] = -1
@@ -398,12 +403,9 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   embList = []
   embed = discord.Embed(title=embTitle, colour=0x1978E3)
   for item in sortedItms:
-    #res.description += f"\n{item}: {shopLst[item]} bits, {costDict[item]} coins, {round(profitDict[item], 2)} coins per bit"
-    #print(f"curr item: {item}")
     itmBits = shopLst[item]
     if i == 12:
       embList.append(embed)
-      #print(embList)
       embed = discord.Embed(title=embTitle, colour=0x1978E3)
       i = 0
     else:
@@ -412,7 +414,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
         embed.add_field(
           name=f"{j+1}. {item}",
           value=
-          f"\nBit Cost: {itmBits} bits\nSell Price: {sellPrice} coins\nEstimated Value = {round(shopLst[item] * cookieCPB)}",
+          f"\nBit Cost: {itmBits} bits\nSell Price: {sellPrice} coins\nEstimated Value: {round(shopLst[item] * cookieCPB)}",
           inline=True)
       else:
         itmBits = shopLst[item]
@@ -425,7 +427,6 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
           value=
           f"\nBit Cost: {itmBits} bits\nSell Price: {costDict[item]} coins\nCoins Per Bit: {cPB}\nProfit (%): {profit} coins ({profitPercent}%)",
           inline=True)
-
       i += 1
       j += 1
   if i > 0:
@@ -447,7 +448,8 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
       nonlocal pg
       pg += 1
       await interaction.response.edit_message(embed=embList[pg % numEmbeds])
-
+    async def on_timeout(self):
+      await self.clear_items()
   end = time.time()
   #res.set_footer(text=f"Process Time: {round((end-start),2)} seconds")
   procTime = round((end - start), 2)

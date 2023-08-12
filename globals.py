@@ -29,11 +29,11 @@ USEFUL_VANILLA_ITEMS = [
   "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block", "Ice",
   "Packed Ice", "Oak Log", "Birch Log", "Spruce Log", " Dark Oak Log",
   "Acacia Log", "Jungle Log", "Endstone", "Bone", "Rotten Flesh", "Blaze Rod",
-  "Spider Eye", "Nether Wart", "Pumpkin", "Melon", "Ink Sac", "Raw Fish",
-  "Salmon", "Pufferfish", "Ender Pearl", "Prismarine Shard",
+  "Spider Eye", "Nether Wart", "Pumpkin", "Melon", "Melon Block", "Ink Sac",
+  "Raw Fish", "Salmon", "Pufferfish", "Ender Pearl", "Prismarine Shard",
   "Prismarine Crystals", "Flint", "Obsidian", "Raw Porkchop", "Raw Chicken",
   "Cobblestone", "Raw Beef", "Raw Mutton", "Raw Cod", "Raw Salmon", "Potato",
-  "Carrot", "Red Mushroom", "Brown Mushroom"
+  "Carrot", "Red Mushroom", "Brown Mushroom", "Hay Bale"
 ]
 USELESS_VANILLA_ITEMS = []
 SB_ITEMS_DICT = {}  # key: item name, value: item id
@@ -62,10 +62,11 @@ BASE_ITEMS = [
 ]
 EXCLUDED_ITEMS = [
   "Block of Coal", "Block of Iron", "Block of Gold", "Block of Diamond",
-  "Block of Emerald", "Lapis Lazuli Block", "Blaze Powder", "Block of Quartz"
+  "Block of Emerald", "Lapis Lazuli Block", "Blaze Powder", "Block of Quartz",
+  "Golden Carrot", "Glistering Melon"
 ]
-BASE_ITEMS_DICT = {} # key: item name, value: true or false
-EXCLUDED_ITEMS_DICT = {} # key: item name, value: true or false
+BASE_ITEMS_DICT = {}  # key: item name, value: true or false
+EXCLUDED_ITEMS_DICT = {}  # key: item name, value: true or false
 
 SB_BITS_SHOP_1 = {
   "God Potion": 1500,
@@ -278,8 +279,8 @@ for item in SB_ITEMS_DATA["items"]:
   SB_ID_DICT[itemID] = itemName
   SB_MAT_DICT[itemID] = itemMat
   SB_NAME_FIX[itemName.lower()] = itemName
-  if "Stairs" in itemName or "Fence" in itemName or "Chiseled" in itemName or "Granite" in itemName or "Diorite" in itemName or "Andesite" in itemName or "Slab" in itemName or "Planks" in itemName:
-    
+  if "Stairs" in itemName or "Fence" in itemName or "Chiseled" in itemName or "Granite" in itemName or "Diorite" in itemName or "Andesite" in itemName or "Slab" in itemName or "Planks" in itemName or "Rail" in itemName:
+
     EXCLUDED_ITEMS_DICT[itemName] = True
   else:
     EXCLUDED_ITEMS_DICT[itemName] = False
@@ -297,6 +298,8 @@ for enchant in BITS_ENCHANTS_LIST:
   SB_SOULBOUND_DICT[enchant] = False
   EXCLUDED_ITEMS_DICT[enchant] = False
   BASE_ITEMS_DICT[enchant] = False
+  SB_BZ_DICT[f"ENCHANTMENT_{enchant.upper()}_1"] = True
+  SB_AH_DICT[enchant] = False
 #create the filters for cookieprofit
 SB_BITS_FILTER = {
   "None": SB_BITS_SHOP_1,
@@ -307,18 +310,34 @@ SB_BITS_FILTER = {
 # manually fix some of them due to strange items in hypixel items data
 # currently going to manually fix the enchantments
 SB_ITEMS_DICT["Griffin Feather"] = 'GRIFFIN_FEATHER'
+SB_BZ_DICT['GRIFFIN_FEATHER'] = True
+SB_AH_DICT["Griffin Feather"] = False
 SB_ITEMS_DICT["Hay Bale"] = "HAY_BLOCK"
 SB_ID_DICT["HAY_BLOCK"] = "Hay Bale"
+SB_BZ_DICT["HAY_BLOCK"] = True
 SB_ITEMS_DICT["Jumbo Backpack"] = "JUMBO_BACKPACK"
 SB_ITEMS_DICT["JUMBO_BACKPACK"] = "Jumbo Backpack"
+SB_BZ_DICT["JUMBO_BACKPACK"] = False
+SB_AH_DICT["Jumbo Backpack"] = True
 SB_ITEMS_DICT["Greater Backpack"] = "GREATER_BACKPACK"
 SB_ITEMS_DICT["GREATER_BACKPACK"] = "Greater Backpack"
+SB_BZ_DICT["GREATER_BACKPACK"] = False
+SB_AH_DICT["Greater Backpack"] = True
 SB_ITEMS_DICT["Large Backpack"] = "LARGE_BACKPACK"
 SB_ITEMS_DICT["LARGE_BACKPACK"] = "Large Backpack"
+SB_BZ_DICT["LARGE_BACKPACK"] = False
+SB_AH_DICT["Large Backpack"] = True
 SB_ITEMS_DICT["Medium Backpack"] = "MEDIUM_BACKPACK"
 SB_ITEMS_DICT["MEDIUM_BACKPACK"] = "Medium Backpack"
+SB_BZ_DICT["MEDIUM_BACKPACK"] = False
+SB_AH_DICT["Medium Backpack"] = True
 SB_ITEMS_DICT["Small Backpack"] = "SMALL_BACKPACK"
 SB_ITEMS_DICT["SMALL_BACKPACK"] = "Small Backpack"
+SB_BZ_DICT["SMALL_BACKPACK"] = False
+SB_AH_DICT["Small Backpack"] = True
+SB_BZ_DICT["POCKET_SACK_IN_A_SACK"] = False
+SB_AH_DICT["Pocket Sack-in-a-Sack"] = True
+
 # for personal debugging
 print(len(SB_ITEMS_DATA['items']), "items")
 print("items in sb items dict:", len(SB_ITEMS_DICT))
@@ -329,4 +348,3 @@ print("uncraftable items", len(SB_NONCRAFTABLES_LIST))
 end = time.time()
 print(f"{(end - start)} seconds")
 print("Globals Done")
-

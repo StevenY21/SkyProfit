@@ -99,7 +99,7 @@ def get_raw_recipe(recipe):
     for material in tempRec:
       #print(material, "curr material to process in get_raw_recipe")
       if len(tempRec) == 1:
-        if material in BASE_ITEMS and material not in rawRecipe:
+        if BASE_ITEMS[material] == True and material not in rawRecipe:
           rawRecipe[material] = tempRec[material]
           numDone += 1
           break
@@ -199,11 +199,12 @@ def bitsLowestBin(itmDict):
       for auction in data["auctions"]:
         if auction["bin"] == True:
           try:
-            test = itmDict[auction["item_name"]]
-            print(auction["item_name"], f"on pg {pg}")
             aucItm = auction["item_name"]
+            itmVal = itmDict[aucItm]
+            aucItm
+            print(auction["item_name"], f"on pg {pg}")
             aucPrice = auction["starting_bid"]
-            if itmDict[aucItm] == -1 or aucPrice < itmDict[aucItm]:
+            if itmVal == -1 or aucPrice < itmVal:
               itmDict[aucItm] = aucPrice
           except:
             pass
