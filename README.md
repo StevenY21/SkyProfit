@@ -7,7 +7,8 @@ Currently has:
   - currently not working with enchant books, potions, pets, and a few random items
 - cookieprofit [famerank] [filter]: finds profitability of items in bits shop
   - provides the bit cost, the lowest sell price in auction house or bazaar, the coins to bits ratio, and the profit in coins and %.
-  - profit calculated based on the cost of bits, which depends on your fame rank and booster cookie price \
+  - profit calculated based on the cost of bits, which depends on your fame rank and booster cookie price
+  
 In the works (higher up = higher priority):
 - enchantsProfit: provides a list of enchants, from best to worst profit, and checks the profit you can make by buying the lower level versions of it and combining into the max level version
 - candyProfit: provides a list, from best to worst value, of all items that can be bought with candy during the Spooky Festival
