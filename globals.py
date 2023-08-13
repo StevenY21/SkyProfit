@@ -275,6 +275,9 @@ for item in SB_ITEMS_DATA["items"]:
         else:
           SB_BZ_DICT[itemID] = False
           SB_AH_DICT[itemName] = True
+  else:
+    SB_BZ_DICT[itemID] = False
+    SB_AH_DICT[itemName] = False
   SB_ITEMS_DICT[itemName] = itemID
   SB_ID_DICT[itemID] = itemName
   SB_MAT_DICT[itemID] = itemMat

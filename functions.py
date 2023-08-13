@@ -136,24 +136,24 @@ def get_raw_recipe(recipe):
 def findCost(itemID):
   #print(f"item id being checked: {item_ID}")
   itemName = sbIDDict[itemID]
-  if sbSBDict[itemName] == True:  # if it is soulboumd
-    return -3
-  elif itemName in NPC_ITEMS:  # if it is sold by npc
-    return NPC_ITEMS[itemName]
-  elif EXCLUDED_ITEMS[
-      itemName] == True:  # for items that have to be crafted anyways
-    return -4
-  else:
-    try:
-      itemSellPrice = asyncio.run(
-        globals.req_data("https://api.hypixel.net/skyblock/bazaar")
-      )["products"][itemID]['sell_summary']
-      if itemSellPrice == []:  # if no one is selling it bazaar
-        return -2
-      else:
-        return itemSellPrice[0]["pricePerUnit"]
-    except:  # if it does not exist on bazaar
+  if sbBzDict[itemID] == False:
+    if sbSBDict[itemName] == True:  # if it is soulboumd
+      return -3
+    elif itemName in NPC_ITEMS:  # if it is sold by npc
+      return NPC_ITEMS[itemName]
+    elif EXCLUDED_ITEMS[
+        itemName] == True:  # for items that have to be crafted anyways
+      return -4
+    else:
       return -1
+  else:
+    itemSellPrice = asyncio.run(
+      globals.req_data("https://api.hypixel.net/skyblock/bazaar")
+    )["products"][itemID]['sell_summary']
+    if itemSellPrice == []:  # if no one is selling it bazaar
+      return -2
+    else:
+      return itemSellPrice[0]["pricePerUnit"]
 
 
 # takes in already valid item names, check ah for lowest bin

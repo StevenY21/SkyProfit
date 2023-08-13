@@ -449,7 +449,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
       pg += 1
       await interaction.response.edit_message(embed=embList[pg % numEmbeds])
     async def on_timeout(self):
-      await self.clear_items()
+      self.clear_items()
   end = time.time()
   #res.set_footer(text=f"Process Time: {round((end-start),2)} seconds")
   procTime = round((end - start), 2)
