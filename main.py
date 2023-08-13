@@ -55,7 +55,7 @@ async def testChoice_autocomp(interaction: discord.Interaction, current: str):
   description=" Gets many possible recipes for item, provides profit % for each"
 )
 async def craftprofit(interaction: discord.Interaction, name: str):
-  start = time.time()
+  testStart = time.time()
   try:
     name = sbProperNames[name.lower()]
     await interaction.response.send_message("Getting Regular Recipe...")
@@ -320,13 +320,12 @@ async def craftprofit(interaction: discord.Interaction, name: str):
               bestProfitRec = rec
         res.description += f"\n`Craft it using {bestProfitRec}`"
       print("reached here not bad")
-      end = time.time()
+      testEnd = time.time()
       res.set_footer(
         text="Recipe Data By: NotEnoughUpdates" +
-        f"\nProcess Time: {round((end-start), 2)} seconds")
+        f"\nProcess Time: {round((testEnd-testStart), 2)} seconds")
       await interaction.edit_original_response(embed=res)
   except:
-    end = time.time()
     await interaction.response.send_message(
       f"Error: {name} not found. Check if the item name is spelled correctly. Note that the input is not case-sensitive."
     )

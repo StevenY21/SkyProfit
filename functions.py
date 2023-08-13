@@ -10,15 +10,26 @@ sbIDDict = globals.SB_ID_DICT
 sbAHDict = globals.SB_AH_DICT
 sbBzDict = globals.SB_BZ_DICT
 sbSBDict = globals.SB_SOULBOUND_DICT
-
+sbCatDict = globals.SB_CAT_DICT
+sbTierDict = globals.SB_TIER_DICT
 BASE_ITEMS = globals.BASE_ITEMS_DICT
+sbTiers = globals.SB_UNIQUE_TIER 
+sbCats = globals.SB_UNIQUE_CAT 
 # items that have recipe that isn't accurate in repo
 ITEM_FACTOR = {"Blaze Powder": 0.5, "Sulphuric Coal": 0.25}
 NPC_ITEMS = {"Glass Bottle": 6, "Stick": 0}
 # these items can't be bought on bazaar, but are made of items from bz
 EXCLUDED_ITEMS = globals.EXCLUDED_ITEMS_DICT
-
-
+# check what item tiers and what item categories exist in list of items
+def checkTiersCats(itemLst):
+  tierLst = sbTiers
+  catsLst = sbCats
+  for item in itemLst:
+    itmTier = sbTierDict[item]
+    tierLst[itmTier] = True
+    itmCat = sbCatDict[item]
+    catsLst[itmCat]
+  return [tierLst, catsLst]
 #get item name to item recipe
 # assume item name is fixed to proper form
 def get_item_recipe(itemName):
@@ -155,6 +166,10 @@ def lowestBin(itemLst):
   start = time.time()
   pg = 0
   print("auction item list", itemLst)
+  tiersCats = checkTiersCats(itemLst)
+  tierDict = tiersCats[0]
+  print("valid tiers",tierDict)
+  catDict = tiersCats[1]
   while True:
     data = asyncio.run(
       globals.req_data(f"https://api.hypixel.net/skyblock/auctions?page={pg}"))
@@ -166,12 +181,14 @@ def lowestBin(itemLst):
       for auction in data["auctions"]:
         aucName = auction["item_name"]
         if auction["bin"] == True:
-          for i in itemLst:
-            if (i in aucName or i == aucName):
-              print(aucName, f"on pg {pg}")
-              if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
-                itemLst[i] = auction["starting_bid"]
-              break
+          aucTier = auction["tier"]
+          if tierDict[aucTier] == True:
+            for i in itemLst:
+              if (i in aucName or i == aucName):
+                print(aucName, f"on pg {pg}")
+                if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
+                  itemLst[i] = auction["starting_bid"]
+                break
       pg += 1
   print("itemLst", itemLst)
   end = time.time()
@@ -183,6 +200,10 @@ def lowestBin(itemLst):
 # assume all items in dict are valid and properly spelled
 def bitsLowestBin(itmDict):
   start = time.time()
+  tiersCats = checkTiersCats(itmDict)
+  tierDict = tiersCats[0]
+  print("valid tiers",tierDict)
+  catDict = tiersCats[1]
   pg = 0
   print("auction item list", itmDict)
   while True:
@@ -195,16 +216,20 @@ def bitsLowestBin(itmDict):
       print("test", pg)
       for auction in data["auctions"]:
         if auction["bin"] == True:
-          try:
-            aucItm = auction["item_name"]
-            itmVal = itmDict[aucItm]
-            aucItm
-            print(auction["item_name"], f"on pg {pg}")
-            aucPrice = auction["starting_bid"]
-            if itmVal == -1 or aucPrice < itmVal:
-              itmDict[aucItm] = aucPrice
-          except:
-            pass
+          aucItm = auction["item_name"]
+          itmCat = auction["category"]
+          itmTier = auction["tier"]
+          if tierDict[itmTier] == True:
+            try:
+              aucItm = auction["item_name"]
+              itmVal = itmDict[aucItm]
+              aucItm
+              print(auction["item_name"], f"on pg {pg}")
+              aucPrice = auction["starting_bid"]
+              if itmVal == -1 or aucPrice < itmVal:
+                itmDict[aucItm] = aucPrice
+            except:
+              pass
     pg += 1
   print("itemLst", itmDict)
   end = time.time()
