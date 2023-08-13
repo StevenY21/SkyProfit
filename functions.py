@@ -13,23 +13,23 @@ sbSBDict = globals.SB_SOULBOUND_DICT
 sbCatDict = globals.SB_CAT_DICT
 sbTierDict = globals.SB_TIER_DICT
 BASE_ITEMS = globals.BASE_ITEMS_DICT
-sbTiers = globals.SB_UNIQUE_TIER 
-sbCats = globals.SB_UNIQUE_CAT 
+sbTiers = globals.SB_UNIQUE_TIER
 # items that have recipe that isn't accurate in repo
 ITEM_FACTOR = {"Blaze Powder": 0.5, "Sulphuric Coal": 0.25}
 NPC_ITEMS = {"Glass Bottle": 6, "Stick": 0}
 # these items can't be bought on bazaar, but are made of items from bz
 EXCLUDED_ITEMS = globals.EXCLUDED_ITEMS_DICT
+
+
 # check what item tiers and what item categories exist in list of items
-def checkTiersCats(itemLst):
+def checkTiers(itemLst):
   tierLst = sbTiers
-  catsLst = sbCats
   for item in itemLst:
     itmTier = sbTierDict[item]
     tierLst[itmTier] = True
-    itmCat = sbCatDict[item]
-    catsLst[itmCat]
-  return [tierLst, catsLst]
+  return tierLst
+
+
 #get item name to item recipe
 # assume item name is fixed to proper form
 def get_item_recipe(itemName):
@@ -139,6 +139,7 @@ def get_raw_recipe(recipe):
 # can assume id is valid
 def findCost(itemID):
   #print(f"item id being checked: {item_ID}")
+  start = time.time()
   itemName = sbIDDict[itemID]
   if sbBzDict[itemID] == False:
     if sbSBDict[itemName] == True:  # if it is soulboumd
@@ -154,6 +155,8 @@ def findCost(itemID):
     itemSellPrice = asyncio.run(
       globals.req_data("https://api.hypixel.net/skyblock/bazaar")
     )["products"][itemID]['sell_summary']
+    end = time.time()
+    print(f"findCost time for {itemName} is {end - start}")
     if itemSellPrice == []:  # if no one is selling it bazaar
       return -2
     else:
@@ -166,10 +169,8 @@ def lowestBin(itemLst):
   start = time.time()
   pg = 0
   print("auction item list", itemLst)
-  tiersCats = checkTiersCats(itemLst)
-  tierDict = tiersCats[0]
-  print("valid tiers",tierDict)
-  catDict = tiersCats[1]
+  tierDict = checkTiers(itemLst)
+  print("valid tiers", tierDict)
   while True:
     data = asyncio.run(
       globals.req_data(f"https://api.hypixel.net/skyblock/auctions?page={pg}"))
@@ -177,7 +178,7 @@ def lowestBin(itemLst):
       print("test", pg, "last pg reached")
       break
     else:
-      print("test", pg)
+      #print("test", pg)
       for auction in data["auctions"]:
         aucName = auction["item_name"]
         if auction["bin"] == True:
@@ -185,7 +186,7 @@ def lowestBin(itemLst):
           if tierDict[aucTier] == True:
             for i in itemLst:
               if (i in aucName or i == aucName):
-                print(aucName, f"on pg {pg}")
+                #print(aucName, f"on pg {pg}")
                 if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
                   itemLst[i] = auction["starting_bid"]
                 break
@@ -200,10 +201,8 @@ def lowestBin(itemLst):
 # assume all items in dict are valid and properly spelled
 def bitsLowestBin(itmDict):
   start = time.time()
-  tiersCats = checkTiersCats(itmDict)
-  tierDict = tiersCats[0]
-  print("valid tiers",tierDict)
-  catDict = tiersCats[1]
+  tierDict = checkTiers(itmDict)
+  catDict = {"weapon": False, "armor": False, "accessories": True, "consumables": True, "blocks": True, "tools": True, "misc": True}
   pg = 0
   print("auction item list", itmDict)
   while True:
@@ -213,18 +212,18 @@ def bitsLowestBin(itmDict):
       print("test", pg, "last pg reached")
       break
     else:
-      print("test", pg)
+      #print("test", pg)
       for auction in data["auctions"]:
         if auction["bin"] == True:
           aucItm = auction["item_name"]
           itmCat = auction["category"]
           itmTier = auction["tier"]
-          if tierDict[itmTier] == True:
+          if tierDict[itmTier] == True and catDict[itmCat] == True:
             try:
               aucItm = auction["item_name"]
               itmVal = itmDict[aucItm]
               aucItm
-              print(auction["item_name"], f"on pg {pg}")
+              #print(auction["item_name"], f"on pg {pg}")
               aucPrice = auction["starting_bid"]
               if itmVal == -1 or aucPrice < itmVal:
                 itmDict[aucItm] = aucPrice

@@ -133,6 +133,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       #recipeCosts.append(await asyncio.to_thread(getCosts, None, regRecipe))
       #recipeCosts.append(getCosts(None, regRecipe))
       #prevPrice = recipeCosts[0]
+      costStrt = time.time()
       fullLst = [regRecipe] + recipeLst
       recipeCosts = []
       prevRecipe = None
@@ -180,6 +181,8 @@ async def craftprofit(interaction: discord.Interaction, name: str):
           prevPrice = recipeCosts[-1]
       #print(f"rec list {recipeLst}")
       #recipeCosts.append(getCosts(recipeLst[-2], rawRecipe))
+      costEnd = time.time()
+      print(f"getCosts time {costEnd - costStrt} seconds")
       await interaction.edit_original_response(
         content=
         "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipe Prices... \nNote that if any items are from the auction house, it will take a little longer :slight_smile:"
