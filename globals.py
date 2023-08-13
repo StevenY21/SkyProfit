@@ -263,6 +263,8 @@ for item in SB_ITEMS_DATA["items"]:
     try:
       test = item["generator"]
       SB_MINIONS_LIST += [itemName]
+      SB_BZ_DICT[itemID] = False
+      SB_AH_DICT[itemName] = False
     except:
       try:
         test = SB_BZ_DATA[itemID]

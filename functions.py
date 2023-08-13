@@ -1,13 +1,8 @@
 import re, json, requests
-import nbt
-import io
-import base64
 import globals
 import math
-import aiohttp
 import asyncio
-import testing
-import msgspec
+import time
 
 skyblockItems = globals.SB_ITEMS_DATA
 sbItemDict = globals.SB_ITEMS_DICT
@@ -33,8 +28,6 @@ def get_item_recipe(itemName):
       return -2
     #get the id from the name
     itemId = sbItemDict[itemName]
-    if itemId == -1:
-      return -1
     newItemId = ''
     if ':' in itemId:
       for j in itemId:
@@ -88,6 +81,7 @@ def get_item_recipe(itemName):
 
 # assume recipe given has all valid items
 def get_raw_recipe(recipe):
+  start = time.time()
   tempRec = recipe
   recipelst = []
   rawRecipe = {}
@@ -99,19 +93,10 @@ def get_raw_recipe(recipe):
   while True:
     for material in tempRec:
       #print(material, "curr material to process in get_raw_recipe")
-      if len(tempRec) == 1:
-        if BASE_ITEMS[material] == True and material not in rawRecipe:
-          rawRecipe[material] = tempRec[material]
-          numDone += 1
-          break
-      #print(f"getting recipe for {material}")
-
       try:
         temp = procRecs[material]
       except:
         temp = get_item_recipe(material)
-      #print(material, temp, f"raw rec for {material}")
-      #print(temp)
       if temp == -1 or temp == -2:
         if material not in rawRecipe:
           rawRecipe[material] = tempRec[material]
@@ -134,6 +119,8 @@ def get_raw_recipe(recipe):
       recSize = len(rawRecipe)
       rawRecipe = {}
       numDone = 0
+  end = time.time()
+  print(f"get_raw_recipe time {end - start} seconds")
   return recipelst
 
 
@@ -165,6 +152,7 @@ def findCost(itemID):
 # takes in already valid item names, check ah for lowest bin
 # assume all items in itemLst properly capitalized
 def lowestBin(itemLst):
+  start = time.time()
   pg = 0
   print("auction item list", itemLst)
   while True:
@@ -186,12 +174,15 @@ def lowestBin(itemLst):
               break
       pg += 1
   print("itemLst", itemLst)
+  end = time.time()
+  print(f"lowestBin process time {end - start} seconds")
   return itemLst
 
 
 # trying out a lowest bin for bits
 # assume all items in dict are valid and properly spelled
 def bitsLowestBin(itmDict):
+  start = time.time()
   pg = 0
   print("auction item list", itmDict)
   while True:
@@ -216,4 +207,6 @@ def bitsLowestBin(itmDict):
             pass
     pg += 1
   print("itemLst", itmDict)
+  end = time.time()
+  print(f"bitsLowestBin process time {end - start} seconds")
   return itmDict
