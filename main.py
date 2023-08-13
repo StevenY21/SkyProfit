@@ -438,7 +438,9 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   pg = 0
 
   class MyView(discord.ui.View):
-
+    def __init__(self, timeout):
+      super().__init__(timeout=timeout)
+      self.response = None 
     @discord.ui.button(label='<', style=discord.ButtonStyle.blurple)
     async def prev_callback(self, interaction: discord.Interaction, button):
       nonlocal pg
@@ -452,6 +454,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
       await interaction.response.edit_message(embed=embList[pg % numEmbeds])
     async def on_timeout(self):
       self.clear_items()
+      await self.response.edit(view=self)
   end = time.time()
   #res.set_footer(text=f"Process Time: {round((end-start),2)} seconds")
   procTime = round((end - start), 2)
@@ -461,9 +464,11 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   )
   for i in embList:
     i.set_footer(text=f"Process Time: {procTime} seconds")
+  my_view = MyView(timeout=60)
   await interaction.edit_original_response(embed=embList[0],
-                                           view=MyView(timeout=60))
-
+                                           view = my_view)
+  out = await interaction.edit_original_response(embed=embList[0], view=my_view)
+  my_view.response = out
 
 @cookieprofit.autocomplete("famerank")
 async def cookieprofit_fameRank(interaction: discord.Interaction,
