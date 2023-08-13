@@ -94,6 +94,7 @@ def get_raw_recipe(recipe):
   temp = None
   recSize = len(recipe)
   numDone = 0  # number of items in recipe that have reached its most basic component
+  procRecs = {} # all the recipes that have already been processed stored here
   #print(recipe, "recipe to be processed into raw form")
   while True:
     for material in tempRec:
@@ -104,7 +105,11 @@ def get_raw_recipe(recipe):
           numDone += 1
           break
       #print(f"getting recipe for {material}")
-      temp = get_item_recipe(material)
+      
+      try:
+        temp = procRecs[material]
+      except:
+        temp = get_item_recipe(material)
       #print(material, temp, f"raw rec for {material}")
       #print(temp)
       if temp == -1 or temp == -2:
@@ -119,6 +124,7 @@ def get_raw_recipe(recipe):
             rawRecipe[mat] = int(math.ceil(tempRec[material] * temp[mat]))
           else:
             rawRecipe[mat] += int(math.ceil(tempRec[material] * temp[mat]))
+      procRecs[material] = temp
     if numDone == recSize:
       break
     else:
