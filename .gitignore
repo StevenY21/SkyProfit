@@ -6,5 +6,3 @@ test.py
 .config
 .git
 venv
-poetry.lock
-pyproject.toml
