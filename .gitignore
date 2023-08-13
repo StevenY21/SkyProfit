@@ -1,0 +1,10 @@
+src/__pycache__
+replit.nix
+.replit
+test.py
+.upm
+.config
+.git
+venv
+poetry.lock
+pyproject.toml
