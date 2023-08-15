@@ -244,10 +244,8 @@ def lowestBin(itemLst):
 # assume all items in dict are valid and properly spelled
 def bitsLowestBin(itmDict):
   start = time.time()
-  tierCats = checkTierCats(itmDict)
-  tierDict = tierCats[0]
-  ahCats = tierCats[1]
-  catDict = {
+  tierDict = {'SUPREME': False, 'RARE': True, 'MYTHIC': False, 'LEGENDARY': True, 'EPIC': True, 'UNCOMMON': False, 'UNTIERED': False, 'COMMON': False, 'VERY_SPECIAL': False, 'SPECIAL': True, 'UNOBTAINABLE': False}
+  ahCats = {
     "weapon": False,
     "armor": False,
     "accessories": True,
