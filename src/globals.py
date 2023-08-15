@@ -384,7 +384,7 @@ for item in SB_ITEMS_DATA["items"]:
   BASE_ITEMS_DICT[itemName] = False
 # manually fix some strange items
 SB_ITEM_DICT["SPECKLED_MELON"]['vanilla'] = True
-SB_ITEM_DICT["SPECKLED_MELON"]['in_ah'] = False
+SB_ITEM_DICT["SPECKLED_MELON"]['in_ah'] = True
 SB_NAME_DICT["Jumbo Backpack"] = "JUMBO_BACKPACK"
 SB_ID_DICT["JUMBO_BACKPACK"] = "Jumbo Backpack"
 SB_ITEM_DICT["JUMBO_BACKPACK"] = {
@@ -474,8 +474,8 @@ for i in BASE_ITEMS:
   itemID = SB_NAME_DICT[i]
   SB_ITEM_DICT[itemID]['base_item'] = True
 # for updating items.json
-#with open("src/data/items.json", "w") as outfile:
-#  json.dump(SB_ITEM_DICT, outfile)
+with open("src/data/items.json", "w") as outfile:
+  json.dump(SB_ITEM_DICT, outfile)
 #Processing Enchants Here:
 for enchant in BITS_ENCHANTS_LIST:
   SB_NAME_DICT[enchant] = f"ENCHANTMENT_{enchant.upper()}_1"
