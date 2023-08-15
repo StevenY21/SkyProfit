@@ -17,7 +17,7 @@ client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
 sbProperNames = globals.SB_NAME_FIX
-sbItemNames = globals.SB_ITEMS_DICT
+sbItemNames = globals.SB_NAME_DICT
 sbItemIDs = globals.SB_ID_DICT
 sbItemMat = globals.SB_MAT_DICT
 sbBzItms = globals.SB_BZ_DICT

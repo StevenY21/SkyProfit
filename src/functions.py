@@ -5,7 +5,7 @@ import asyncio
 import time
 
 skyblockItems = globals.SB_ITEMS_DATA
-sbItemDict = globals.SB_ITEMS_DICT
+sbItemDict = globals.SB_NAME_DICT
 sbIDDict = globals.SB_ID_DICT
 sbAHDict = globals.SB_AH_DICT
 sbBzDict = globals.SB_BZ_DICT
