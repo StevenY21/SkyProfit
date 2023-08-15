@@ -40,14 +40,32 @@ SB_ITEM_DATA = asyncio.run(
 
 
 # check what item tiers and what item categories exist in list of items
-def checkTiers(itemLst):
+def checkTierCats(itemLst):
   tierLst = sbTiers
+  aHCats = {
+    "weapon": False,
+    "armor": False,
+    "accessories": False,
+    "consumables": False,
+    "blocks": False,
+    "tools": False,
+    "misc": False
+  }
   for item in itemLst:
     itemID = sbItemDict[item]
     itmTier = SB_ITEM_DATA[itemID]['tier']
     itmCat = SB_ITEM_DATA[itemID]['ah_category']
+    if itmCat == 'tools and misc':
+      aHCats["tools"] = True
+      aHCats["misc"] = True
+    elif itmCat == 'blocks and tools and misc':
+      aHCats["blocks"] = True
+      aHCats["tools"] = True
+      aHCats["misc"] = True
+    else:
+      aHCats[itmCat] = True
     tierLst[itmTier] = True
-  return tierLst
+  return [tierLst, aHCats]
 
 
 #get item name to item recipe
@@ -191,7 +209,9 @@ def lowestBin(itemLst):
   start = time.time()
   pg = 0
   print("auction item list", itemLst)
-  tierDict = checkTiers(itemLst)
+  tierCats = checkTierCats(itemLst)
+  tierDict = tierCats[0]
+  ahCats = tierCats[1]
   print("valid tiers", tierDict)
   while True:
     data = asyncio.run(
@@ -200,15 +220,16 @@ def lowestBin(itemLst):
       print("test", pg, "last pg reached")
       break
     else:
-      #print("test", pg)
+      print("test", pg)
       for auction in data["auctions"]:
         aucName = auction["item_name"]
         if auction["bin"] == True:
           aucTier = auction["tier"]
-          if tierDict[aucTier] == True:
+          aucCat = auction['category']
+          if tierDict[aucTier] == True and ahCats[aucCat] == True:
             for i in itemLst:
-              if (i in aucName or i == aucName):
-                #print(aucName, f"on pg {pg}")
+              if (i in aucName):
+                print(aucName, f"on pg {pg}")
                 if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
                   itemLst[i] = auction["starting_bid"]
                 break
@@ -223,7 +244,9 @@ def lowestBin(itemLst):
 # assume all items in dict are valid and properly spelled
 def bitsLowestBin(itmDict):
   start = time.time()
-  tierDict = checkTiers(itmDict)
+  tierCats = checkTierCats(itmDict)
+  tierDict = tierCats[0]
+  ahCats = tierCats[1]
   catDict = {
     "weapon": False,
     "armor": False,
@@ -248,7 +271,7 @@ def bitsLowestBin(itmDict):
           aucItm = auction["item_name"]
           itmCat = auction["category"]
           itmTier = auction["tier"]
-          if tierDict[itmTier] == True and catDict[itmCat] == True:
+          if tierDict[itmTier] == True and ahCats[itmCat] == True:
             try:
               aucItm = auction["item_name"]
               itmVal = itmDict[aucItm]

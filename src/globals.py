@@ -23,6 +23,7 @@ SB_BZ_DATA = asyncio.run(
   req_data("https://api.hypixel.net/skyblock/bazaar"))["products"]
 # Vanilla items that have uses in skyblock
 SB_CATEGORIES = {
+  'ENCHANTMENT': 'bz',
   'REFORGE_STONE': 'bz',
   'N/A': 'tools and misc',
   'SWORD': 'weapon',
@@ -473,14 +474,29 @@ SB_NAME_DICT["Hay Bale"] = "HAY_BLOCK"
 for i in BASE_ITEMS:
   itemID = SB_NAME_DICT[i]
   SB_ITEM_DICT[itemID]['base_item'] = True
+for enchant in BITS_ENCHANTS_LIST:
+  itemID = f"ENCHANTMENT_{enchant.upper()}_1"
+  SB_NAME_DICT[enchant] = itemID
+  SB_ID_DICT[itemID] = enchant
+  SB_ITEM_DICT[itemID] = {
+    'name': enchant,
+    'material': "ENCHANTED_BOOK",
+    'tier': "UNTIERED",
+    'category': 'ENCHANTMENT',
+    'soulbound': 'N/A',
+    'furniture': 'N/A',
+    'generator': 'N/A',
+    'in_bz': True,
+    'in_ah': False,
+    'ah_category': 'bz',
+    'base_item': False,
+    'vanilla': False,
+  }
+  BASE_ITEMS_DICT[enchant] = False
 # for updating items.json
 #with open("src/data/items.json", "w") as outfile:
 #  json.dump(SB_ITEM_DICT, outfile)
 #Processing Enchants Here:
-for enchant in BITS_ENCHANTS_LIST:
-  SB_NAME_DICT[enchant] = f"ENCHANTMENT_{enchant.upper()}_1"
-  SB_ID_DICT[f"ENCHANTMENT_{enchant.upper()}_1"] = enchant
-  BASE_ITEMS_DICT[enchant] = False
 #create the filters for cookieprofit
 SB_BITS_FILTER = {
   "None": SB_BITS_SHOP_1,
