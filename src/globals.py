@@ -22,10 +22,55 @@ SB_ITEMS_DATA = asyncio.run(
 SB_BZ_DATA = asyncio.run(
   req_data("https://api.hypixel.net/skyblock/bazaar"))["products"]
 # Vanilla items that have uses in skyblock
-SB_CATEGORIES = {'REFORGE_STONE': 'bz', 'N/A': 'tools and misc', 'SWORD': 'weapon', 'BOOTS': 'armor', 'BELT': 'misc', 'NECKLACE': 'misc', 'GLOVES': 'misc', 'HELMET': 'armor', 'CHESTPLATE': 'armor', 'ACCESSORY': "accessories", 'CLOAK': 'misc', 'LEGGINGS': 'misc', 'AXE': 'misc', 'HOE': 'misc', 'COSMETIC': 'misc', 'MEMENTO': 'misc', 'PET_ITEM': 'blocks and tools and misc', 'BAIT': 'bz', 'FISHING_ROD': 'tool', 'WAND': 'tools' , 'PORTAL': 'misc', 'BOW': "weapon", 'NONE': 'tools and misc', 'DUNGEON_PASS': 'none', 'ARROW': 'none', 'SPADE': 'tools', 'PICKAXE': 'tools', 'DEPLOYABLE': 'tools', 'DRILL': 'tools', 'SHEARS': 'tools and misc', 'BRACELET': 'misc', 'GAUNTLET': 'misc', 'LONGSWORD': 'weapon', 'TRAVEL_SCROLL': 'misc', 'ARROW_POISON': 'bz', 'FISHING_WEAPON': 'tools'}
-with open("src/data/test.json", "w") as outfile:
-    json.dump(SB_CATEGORIES, outfile)
-catDict = {"weapon": False, "armor": False, "accessories": True, "consumables": True, "blocks": True, "tools": True, "misc": True}
+SB_CATEGORIES = {
+  'REFORGE_STONE': 'bz',
+  'N/A': 'tools and misc',
+  'SWORD': 'weapon',
+  'BOOTS': 'armor',
+  'BELT': 'misc',
+  'NECKLACE': 'misc',
+  'GLOVES': 'misc',
+  'HELMET': 'armor',
+  'CHESTPLATE': 'armor',
+  'ACCESSORY': "accessories",
+  'CLOAK': 'misc',
+  'LEGGINGS': 'misc',
+  'AXE': 'misc',
+  'HOE': 'misc',
+  'COSMETIC': 'misc',
+  'MEMENTO': 'misc',
+  'PET_ITEM': 'blocks and tools and misc',
+  'BAIT': 'bz',
+  'FISHING_ROD': 'tool',
+  'WAND': 'tools',
+  'PORTAL': 'misc',
+  'BOW': "weapon",
+  'NONE': 'tools and misc',
+  'DUNGEON_PASS': 'none',
+  'ARROW': 'none',
+  'SPADE': 'tools',
+  'PICKAXE': 'tools',
+  'DEPLOYABLE': 'tools',
+  'DRILL': 'tools',
+  'SHEARS': 'tools and misc',
+  'BRACELET': 'misc',
+  'GAUNTLET': 'misc',
+  'LONGSWORD': 'weapon',
+  'TRAVEL_SCROLL': 'misc',
+  'ARROW_POISON': 'bz',
+  'FISHING_WEAPON': 'tools'
+}
+#with open("src/data/test.json", "w") as outfile:
+#  json.dump(SB_CATEGORIES, outfile)
+catDict = {
+  "weapon": False,
+  "armor": False,
+  "accessories": True,
+  "consumables": True,
+  "blocks": True,
+  "tools": True,
+  "misc": True
+}
 USEFUL_VANILLA_ITEMS = [
   "Lapis Lazuli", "Coal", "Diamond", "Redstone", "Gold Ingot", "Iron Ingot",
   "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block", "Ice",
@@ -39,7 +84,7 @@ USEFUL_VANILLA_ITEMS = [
 ]
 USELESS_VANILLA_ITEMS = []
 SB_UNIQUE_CAT = {}  # all categories in hypixel sb items data
-SB_UNIQUE_TIER = {"SUPREME": False} # all tiers in hypixel sb items data
+SB_UNIQUE_TIER = {"SUPREME": False}  # all tiers in hypixel sb items data
 # key: item id, value: {'item name':, 'item'}
 SB_NAME_DICT = {}  # key: item name, value: item id
 SB_ID_DICT = {}  # key: item id, value: item name
@@ -219,17 +264,19 @@ SB_BITS_FACTOR = {
 BITS_ENCHANTS_LIST = [
   "Expertise", "Cultivating", "Compact", "Champion", "Hecatomb"
 ]
-ABICASE_DICT = {"Sumsung© G3 Abicase": 15000,
+ABICASE_DICT = {
+  "Sumsung© G3 Abicase": 15000,
   "Sumsung© GG Abicase": 25000,
   "Rezar® Abicase": 26000,
   "Blue™ but Red Abicase": 17000,
   "Actually Blue™ Abicase": 17000,
   "Blue™ but Green Abicase": 17000,
   "Blue™ but Yellow Abicase": 17000,
-  "Lighter Blue™ Abicase": 17000,}
+  "Lighter Blue™ Abicase": 17000,
+}
 # Stars
 SB_STARS = ["✪✪✪✪✪", "➊", "➋", "➌", "➍", "➎"]
-SB_ITEM_DICT = {} # my own version of hypixel sb item data set
+SB_ITEM_DICT = {}  # my own version of hypixel sb item data set
 """
 example of an item in SB_ITEM_DICT
 [item ID]: {
@@ -247,11 +294,11 @@ example of an item in SB_ITEM_DICT
   'vanilla': ,
 }
 """
-  
+
 for item in SB_ITEMS_DATA["items"]:
   itemID = item["id"]
   SB_ITEM_DICT[itemID] = {}
-  # name 
+  # name
   itemName = item["name"]
   SB_ITEM_DICT[itemID]['name'] = itemName
   # for special dictionaries
@@ -265,7 +312,7 @@ for item in SB_ITEMS_DATA["items"]:
   # material
   itemMat = item["material"]
   SB_ITEM_DICT[itemID]['material'] = itemMat
-  # tier 
+  # tier
   itemTier = ""
   if item.get('tier') != None:
     itemTier = item["tier"]
@@ -282,6 +329,7 @@ for item in SB_ITEMS_DATA["items"]:
     SB_UNIQUE_CAT["N/A"] = False
     SB_ITEM_DICT[itemID]['category'] = 'N/A'
   itemSB = item.get("soulbound")
+  # soulbound
   if itemSB != None:
     SB_ITEM_DICT[itemID]['soulbound'] = itemSB
   else:
@@ -292,14 +340,15 @@ for item in SB_ITEMS_DATA["items"]:
     SB_ITEM_DICT[itemID]['furniture'] = itemFurn
   else:
     SB_ITEM_DICT[itemID]['furniture'] = 'N/A'
-  # generator  
+  # generator
   itemGen = item.get('generator')
   if itemGen != None:
     SB_ITEM_DICT[itemID]['generator'] = itemGen
   else:
     SB_ITEM_DICT[itemID]['generator'] = 'N/A'
   # in_bz and in_ah
-  if SB_ITEM_DICT[itemID]['soulbound'] == 'N/A' and SB_ITEM_DICT[itemID]['generator'] == 'N/A' and 'sack' not in itemName:
+  if SB_ITEM_DICT[itemID]['soulbound'] == 'N/A' and SB_ITEM_DICT[itemID][
+      'generator'] == 'N/A' and 'sack' not in itemName:
     try:
       test = SB_BZ_DATA[itemID]
       SB_ITEM_DICT[itemID]['in_bz'] = True
@@ -319,7 +368,8 @@ for item in SB_ITEMS_DATA["items"]:
   elif SB_ITEM_DICT[itemID]['in_ah'] == False:
     SB_ITEM_DICT[itemID]['ah_category'] = 'N/A'
   else:
-    SB_ITEM_DICT[itemID]['ah_category'] = SB_CATEGORIES[SB_ITEM_DICT[itemID]['category']]
+    SB_ITEM_DICT[itemID]['ah_category'] = SB_CATEGORIES[SB_ITEM_DICT[itemID]
+                                                        ['category']]
   #base_item gonna be set to false initially
   SB_ITEM_DICT[itemID]['base_item'] = False
   # vanilla
@@ -333,90 +383,88 @@ for item in SB_ITEMS_DATA["items"]:
     SB_ITEM_DICT[itemID]['vanilla'] = False
   BASE_ITEMS_DICT[itemName] = False
 # manually fix some strange items
-SB_ITEM_DICT["SPECKLED_MELON"]['ah_vanilla'] = False
+SB_ITEM_DICT["SPECKLED_MELON"]['vanilla'] = True
 SB_ITEM_DICT["SPECKLED_MELON"]['in_ah'] = False
 SB_NAME_DICT["Jumbo Backpack"] = "JUMBO_BACKPACK"
 SB_ID_DICT["JUMBO_BACKPACK"] = "Jumbo Backpack"
 SB_ITEM_DICT["JUMBO_BACKPACK"] = {
-  'name': "Jumbo Backpack" ,
+  'name': "Jumbo Backpack",
   'material': "SKULL_ITEM",
   'tier': 'LEGENDARY',
   'category': 'N/A',
-  'soulbound': False,
+  'soulbound': 'N/A',
   'furniture': 'N/A',
   'generator': 'N/A',
   'in_bz': False,
   'in_ah': True,
   'ah_category': 'tools and misc',
-  'base_item': False,  
+  'base_item': False,
   'vanilla': False,
 }
 SB_NAME_DICT["Greater Backpack"] = "GREATER_BACKPACK"
 SB_ID_DICT["GREATER_BACKPACK"] = "Greater Backpack"
 SB_ITEM_DICT["GREATER_BACKPACK"] = {
-  'name': "Greater Backpack" ,
+  'name': "Greater Backpack",
   'material': "SKULL_ITEM",
   'tier': "EPIC",
   'category': 'N/A',
-  'soulbound': False,
+  'soulbound': 'N/A',
   'furniture': 'N/A',
   'generator': 'N/A',
   'in_bz': False,
   'in_ah': True,
   'ah_category': 'tools and misc',
-  'base_item': False,  
+  'base_item': False,
   'vanilla': False,
 }
 SB_NAME_DICT["Large Backpack"] = "LARGE_BACKPACK"
 SB_ID_DICT["LARGE_BACKPACK"] = "Large Backpack"
 SB_ITEM_DICT["LARGE_BACKPACK"] = {
-  'name': "Large Backpack" ,
+  'name': "Large Backpack",
   'material': "SKULL_ITEM",
   'tier': "EPIC",
   'category': 'N/A',
-  'soulbound': False,
+  'soulbound': 'N/A',
   'furniture': 'N/A',
   'generator': 'N/A',
   'in_bz': False,
   'in_ah': True,
   'ah_category': 'tools and misc',
-  'base_item': False,  
+  'base_item': False,
   'vanilla': False,
 }
 SB_NAME_DICT["Medium Backpack"] = "MEDIUM_BACKPACK"
 SB_ID_DICT["MEDIUM_BACKPACK"] = "Medium Backpack"
 SB_ITEM_DICT["MEDIUM_BACKPACK"] = {
-  'name': "Medium Backpack" ,
+  'name': "Medium Backpack",
   'material': "SKULL_ITEM",
   'tier': "RARE",
   'category': 'N/A',
-  'soulbound': False,
+  'soulbound': 'N/A',
   'furniture': 'N/A',
   'generator': 'N/A',
   'in_bz': False,
   'in_ah': True,
   'ah_category': 'tools and misc',
-  'base_item': False,  
+  'base_item': False,
   'vanilla': False,
 }
 SB_NAME_DICT["Small Backpack"] = "SMALL_BACKPACK"
 SB_ID_DICT["SMALL_BACKPACK"] = "Small Backpack"
 SB_ITEM_DICT["SMALL_BACKPACK"] = {
-  'name': "Small Backpack" ,
+  'name': "Small Backpack",
   'material': "SKULL_ITEM",
   'tier': "UNCOMMON",
   'category': 'N/A',
-  'soulbound': False,
+  'soulbound': 'N/A',
   'furniture': 'N/A',
   'generator': 'N/A',
   'in_bz': False,
   'in_ah': True,
   'ah_category': 'tools and misc',
-  'base_item': False,  
+  'base_item': False,
   'vanilla': False,
 }
-with open("src/data/items.json", "w") as outfile:
-    json.dump(SB_ITEM_DICT, outfile)
 # item name hay bale has both a furniture and the actual thing, which is dumb
 SB_ITEM_DICT["HAY_BLOCK"]['vanilla'] = True
 SB_NAME_DICT["Hay Bale"] = "HAY_BLOCK"
@@ -425,6 +473,8 @@ SB_NAME_DICT["Hay Bale"] = "HAY_BLOCK"
 for i in BASE_ITEMS:
   itemID = SB_NAME_DICT[i]
   SB_ITEM_DICT[itemID]['base_item'] = True
+#with open("src/data/items.json", "w") as outfile:
+#   json.dump(SB_ITEM_DICT, outfile)
 #Processing Enchants Here:
 for enchant in BITS_ENCHANTS_LIST:
   SB_NAME_DICT[enchant] = f"ENCHANTMENT_{enchant.upper()}_1"
@@ -443,10 +493,10 @@ SB_NAME_FIX = {
 }  # key: item name in lower case, value: item name's proper uppercase form
 SB_ID_DICT = {}  # key: item id, value: item name
 SB_MAT_DICT = {}  # key: item id, value: item material
-SB_CAT_DICT = {} # key: item name, value: item category
+SB_CAT_DICT = {}  # key: item name, value: item category
 SB_UNIQUE_CAT = {}  # all categories in hypixel sb items data
-SB_TIER_DICT = {} # key: item name, value: item tier
-SB_UNIQUE_TIER = {"SUPREME": False} # all tiers in hypixel sb items data
+SB_TIER_DICT = {}  # key: item name, value: item tier
+SB_UNIQUE_TIER = {"SUPREME": False}  # all tiers in hypixel sb items data
 SB_AH_DICT = {}  # key: item name, value: true or false
 SB_BZ_DICT = {}  # key: item name, value: true or false
 SB_CRAFTPROFIT_DATA = {
@@ -466,7 +516,7 @@ for item in SB_ITEMS_DATA["items"]:
   itemID = item["id"]
   itemMat = item["material"]
   itemTier = ""
-  try: 
+  try:
     itemTier = item["tier"]
     SB_TIER_DICT[itemName] = itemTier
   except:
@@ -584,7 +634,7 @@ SB_TIER_DICT["Greater Backpack"] = "EPIC"
 SB_NAME_DICT["Large Backpack"] = "LARGE_BACKPACK"
 SB_NAME_DICT["LARGE_BACKPACK"] = "Large Backpack"
 SB_BZ_DICT["LARGE_BACKPACK"] = False
-SB_AH_DICT["Large Backpack"] = True 
+SB_AH_DICT["Large Backpack"] = True
 SB_CAT_DICT["Large Backpack"] = "N/A"
 SB_TIER_DICT["Large Backpack"] = "EPIC"
 SB_NAME_DICT["Medium Backpack"] = "MEDIUM_BACKPACK"
