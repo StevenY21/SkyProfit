@@ -302,8 +302,6 @@ for item in SB_ITEMS_DATA["items"]:
   itemName = item["name"]
   SB_ITEM_DICT[itemID]['name'] = itemName
   # for special dictionaries
-  SB_NAME_DICT[itemName] = itemID
-  SB_ID_DICT[itemID] = itemName
   SB_NAME_FIX[itemName.lower()] = itemName
   # processing some enrichments that I am too lazy to type out
   if "Enrichment" in itemName and "Accessory" not in itemName:
@@ -340,6 +338,10 @@ for item in SB_ITEMS_DATA["items"]:
     SB_ITEM_DICT[itemID]['furniture'] = itemFurn
   else:
     SB_ITEM_DICT[itemID]['furniture'] = 'N/A'
+    # filtering out some decor blocks that I don't need for my purposes
+    if 'BUILDER_' not in itemID:
+      SB_NAME_DICT[itemName] = itemID
+      SB_ID_DICT[itemID] = itemName
   # generator
   itemGen = item.get('generator')
   if itemGen != None:
@@ -570,8 +572,9 @@ for item in SB_ITEMS_DATA["items"]:
   else:
     SB_BZ_DICT[itemID] = False
     SB_AH_DICT[itemName] = False
-  SB_NAME_DICT[itemName] = itemID
-  SB_ID_DICT[itemID] = itemName
+  if 'BUILDER_' not in itemID:
+    SB_NAME_DICT[itemName] = itemID
+    SB_ID_DICT[itemID] = itemName
   SB_MAT_DICT[itemID] = itemMat
   SB_NAME_FIX[itemName.lower()] = itemName
   if "Stairs" in itemName or "Fence" in itemName or "Chiseled" in itemName or "Stone:" in itemID or "Slab" in itemName or "Planks" in itemName or "Rail" in itemName:
@@ -661,6 +664,7 @@ print("soulbound items", len(SB_SOULBOUND_LIST))
 print("unique minions", len(SB_MINIONS_LIST))
 print("bits shop items", len(SB_BITS_SHOP_1))
 print("uncraftable items", len(SB_NONCRAFTABLES_LIST))
+#print(f"excluded items: {EXCLUDED_ITEMS_DICT} ")
 end = time.time()
 print(f"{(end - start)} seconds")
 print("Globals Done")

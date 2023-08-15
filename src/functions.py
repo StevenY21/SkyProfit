@@ -2,6 +2,7 @@ import re, json, requests
 import globals
 import math
 import asyncio
+import aiohttp
 import time
 
 skyblockItems = globals.SB_ITEMS_DATA
@@ -14,12 +15,18 @@ sbCatDict = globals.SB_CAT_DICT
 sbTierDict = globals.SB_TIER_DICT
 BASE_ITEMS = globals.BASE_ITEMS_DICT
 sbTiers = globals.SB_UNIQUE_TIER
+async def req_data(link):
+  async with aiohttp.ClientSession() as session:
+    async with session.get(link) as response:
+      res = await response.json(content_type=None)
+      return res
+
 # items that have recipe that isn't accurate in repo
 ITEM_FACTOR = {"Blaze Powder": 0.5, "Sulphuric Coal": 0.25}
 NPC_ITEMS = {"Glass Bottle": 6, "Stick": 0}
 # these items can't be bought on bazaar, but are made of items from bz
 EXCLUDED_ITEMS = globals.EXCLUDED_ITEMS_DICT
-
+SB_ITEM_DATA = asyncio.run(req_data('https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/items.json'))
 
 # check what item tiers and what item categories exist in list of items
 def checkTiers(itemLst):
@@ -34,20 +41,21 @@ def checkTiers(itemLst):
 # assume item name is fixed to proper form
 def get_item_recipe(itemName):
   print(f"item being checked {itemName}")
+  
   try:
-    if BASE_ITEMS[itemName] == True:
+    itemID = sbItemDict[itemName]
+    if SB_ITEM_DATA[itemID]['base_item'] == True:
       return -2
     #get the id from the name
-    itemId = sbItemDict[itemName]
-    newItemId = ''
-    if ':' in itemId:
-      for j in itemId:
+    newItemID = ''
+    if ':' in itemID:
+      for j in itemID:
         if j == ':':
-          newItemId += '-'
+          newItemID += '-'
         else:
-          newItemId += j
+          newItemID += j
     else:
-      newItemId = itemId
+      newItemId = itemID
     itemData2 = asyncio.run(
       globals.req_data(
         f'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/{newItemId}.json'
@@ -141,13 +149,13 @@ def findCost(itemID):
   #print(f"item id being checked: {item_ID}")
   start = time.time()
   itemName = sbIDDict[itemID]
-  if sbBzDict[itemID] == False:
-    if sbSBDict[itemName] == True:  # if it is soulboumd
+  SB_ITEM_DATA[itemID]["in_bz"]
+  if SB_ITEM_DATA[itemID]["in_bz"] == False:
+    if SB_ITEM_DATA[itemID]["soulbound"] != 'N/A':  # if it is soulboumd
       return -3
     elif itemName in NPC_ITEMS:  # if it is sold by npc
       return NPC_ITEMS[itemName]
-    elif EXCLUDED_ITEMS[
-        itemName] == True:  # for items that have to be crafted anyways
+    elif SB_ITEM_DATA[itemID]['vanilla'] and SB_ITEM_DATA[itemID]['in_ah']:  # for items that have to be crafted anyways
       return -4
     else:
       return -1
@@ -156,7 +164,7 @@ def findCost(itemID):
       globals.req_data("https://api.hypixel.net/skyblock/bazaar")
     )["products"][itemID]['sell_summary']
     end = time.time()
-    print(f"findCost time for {itemName} is {end - start}")
+    print(f"findCost time for {itemID} is {end - start}")
     if itemSellPrice == []:  # if no one is selling it bazaar
       return -2
     else:

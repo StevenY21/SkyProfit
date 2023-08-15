@@ -24,7 +24,7 @@ sbBzItms = globals.SB_BZ_DICT
 sbAHItms = globals.SB_AH_DICT
 BASE_ITEMS = globals.BASE_ITEMS_DICT
 EXCLUDED_ITEMS = globals.EXCLUDED_ITEMS_DICT
-
+SB_ITEM_DATA = asyncio.run(functions.req_data('https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/items.json'))
 
 # inv bot: https://discord.com/api/oauth2/authorize?client_id=1117918806224932915&permissions=448824396865&scope=bot
 @tree.command(name="help", description="Help for SkyProfit commands")
@@ -144,7 +144,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       while True:
         material_price = {}
         for material in currRecipe:
-          #print(f"curr processed: {material}")
+          print(f"curr processed: {material}")
           if prevRecipe != None:
             if material in prevRecipe:
               if prevRecipe[material] == currRecipe[material]:
