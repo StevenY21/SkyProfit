@@ -474,8 +474,8 @@ for i in BASE_ITEMS:
   itemID = SB_NAME_DICT[i]
   SB_ITEM_DICT[itemID]['base_item'] = True
 # for updating items.json
-with open("src/data/items.json", "w") as outfile:
-  json.dump(SB_ITEM_DICT, outfile)
+#with open("src/data/items.json", "w") as outfile:
+#  json.dump(SB_ITEM_DICT, outfile)
 #Processing Enchants Here:
 for enchant in BITS_ENCHANTS_LIST:
   SB_NAME_DICT[enchant] = f"ENCHANTMENT_{enchant.upper()}_1"

@@ -15,24 +15,37 @@ sbCatDict = globals.SB_CAT_DICT
 sbTierDict = globals.SB_TIER_DICT
 BASE_ITEMS = globals.BASE_ITEMS_DICT
 sbTiers = globals.SB_UNIQUE_TIER
+
+
 async def req_data(link):
   async with aiohttp.ClientSession() as session:
     async with session.get(link) as response:
       res = await response.json(content_type=None)
       return res
 
+
 # items that have recipe that isn't accurate in repo
-ITEM_FACTOR = {"Blaze Powder": 0.5, "Sulphuric Coal": 0.25}
+ITEM_FACTOR = {
+  "Blaze Powder": 0.5,
+  "Sulphuric Coal": 0.25,
+  "Gold Nugget": 0.111
+}
 NPC_ITEMS = {"Glass Bottle": 6, "Stick": 0}
 # these items can't be bought on bazaar, but are made of items from bz
 EXCLUDED_ITEMS = globals.EXCLUDED_ITEMS_DICT
-SB_ITEM_DATA = asyncio.run(req_data('https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/items.json'))
+SB_ITEM_DATA = asyncio.run(
+  req_data(
+    'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/items.json'
+  ))
+
 
 # check what item tiers and what item categories exist in list of items
 def checkTiers(itemLst):
   tierLst = sbTiers
   for item in itemLst:
-    itmTier = sbTierDict[item]
+    itemID = sbItemDict[item]
+    itmTier = SB_ITEM_DATA[itemID]['tier']
+    itmCat = SB_ITEM_DATA[itemID]['ah_category']
     tierLst[itmTier] = True
   return tierLst
 
@@ -41,7 +54,7 @@ def checkTiers(itemLst):
 # assume item name is fixed to proper form
 def get_item_recipe(itemName):
   print(f"item being checked {itemName}")
-  
+
   try:
     itemID = sbItemDict[itemName]
     if SB_ITEM_DATA[itemID]['base_item'] == True:
@@ -155,7 +168,8 @@ def findCost(itemID):
       return -3
     elif itemName in NPC_ITEMS:  # if it is sold by npc
       return NPC_ITEMS[itemName]
-    elif SB_ITEM_DATA[itemID]['vanilla'] and SB_ITEM_DATA[itemID]['in_ah']:  # for items that have to be crafted anyways
+    elif SB_ITEM_DATA[itemID]['vanilla'] and SB_ITEM_DATA[itemID][
+        'in_ah']:  # for items that have to be crafted anyways
       return -4
     else:
       return -1
@@ -210,7 +224,15 @@ def lowestBin(itemLst):
 def bitsLowestBin(itmDict):
   start = time.time()
   tierDict = checkTiers(itmDict)
-  catDict = {"weapon": False, "armor": False, "accessories": True, "consumables": True, "blocks": True, "tools": True, "misc": True}
+  catDict = {
+    "weapon": False,
+    "armor": False,
+    "accessories": True,
+    "consumables": True,
+    "blocks": True,
+    "tools": True,
+    "misc": True
+  }
   pg = 0
   print("auction item list", itmDict)
   while True:
