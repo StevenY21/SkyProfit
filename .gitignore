@@ -8,3 +8,4 @@ test.py
 venv
 testing.py
 .breakpoints
+src/data/test.json
