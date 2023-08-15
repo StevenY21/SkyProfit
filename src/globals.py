@@ -375,9 +375,7 @@ for item in SB_ITEMS_DATA["items"]:
   # vanilla
   if itemID == itemMat or 'INK_SAC:' in itemID or 'LOG' in itemID:
     SB_ITEM_DICT[itemID]['vanilla'] = True
-  else:
-    SB_ITEM_DICT[itemID]['vanilla'] = False
-  if "Stairs" in itemName or "Fence" in itemName or "STONE:" in itemID or "Slab" in itemName or "Planks" in itemName or "Rail" in itemName:
+  elif "Stairs" in itemName or "Fence" in itemName or "STONE:" in itemID or "Slab" in itemName or "Planks" in itemName or "Rail" in itemName:
     SB_ITEM_DICT[itemID]['vanilla'] = True
   else:
     SB_ITEM_DICT[itemID]['vanilla'] = False
@@ -474,7 +472,7 @@ for i in BASE_ITEMS:
   itemID = SB_NAME_DICT[i]
   SB_ITEM_DICT[itemID]['base_item'] = True
 #with open("src/data/items.json", "w") as outfile:
-#   json.dump(SB_ITEM_DICT, outfile)
+#  json.dump(SB_ITEM_DICT, outfile)
 #Processing Enchants Here:
 for enchant in BITS_ENCHANTS_LIST:
   SB_NAME_DICT[enchant] = f"ENCHANTMENT_{enchant.upper()}_1"
