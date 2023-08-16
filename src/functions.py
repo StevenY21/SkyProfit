@@ -191,8 +191,14 @@ def findCost(itemID):
     elif itemName in NPC_ITEMS:  # if it is sold by npc
       return NPC_ITEMS[itemName]
     elif SB_ITEM_DATA[itemID]['vanilla'] and SB_ITEM_DATA[itemID][
-        'in_ah']:  # for items that have to be crafted anyways
-      return -4
+        'in_ah']:  # for vanilla items found in auction
+      # for vanilla items with no recipe
+      # so far only applied to vines
+      if itemName == "Vines":
+        return 0
+      # for vanilla items with recipe
+      else:
+        return -4
     else:
       return -1
   else:
