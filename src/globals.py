@@ -21,7 +21,7 @@ SB_ITEMS_DATA = asyncio.run(
 
 SB_BZ_DATA = asyncio.run(
   req_data("https://api.hypixel.net/skyblock/bazaar"))["products"]
-# Vanilla items that have uses in skyblock
+# key is category name (some of my own creation and some not), value is what they would be in auction category terms
 SB_CATEGORIES = {
   'ENCHANTMENT': 'bz',
   'REFORGE_STONE': 'bz',
@@ -83,12 +83,10 @@ USEFUL_VANILLA_ITEMS = [
   "Cobblestone", "Raw Beef", "Raw Mutton", "Raw Cod", "Raw Salmon", "Potato",
   "Carrot", "Red Mushroom", "Brown Mushroom", "Hay Bale"
 ]
-USELESS_VANILLA_ITEMS = []
 SB_UNIQUE_CAT = {}  # all categories in hypixel sb items data
 SB_UNIQUE_TIER = {"SUPREME": False}  # all tiers in hypixel sb items data
 # key: item id, value: {'item name':, 'item'}
 SB_NAME_DICT = {}  # key: item name, value: item id
-SB_ID_DICT = {}  # key: item id, value: item name
 SB_NAME_FIX = {
 }  # key: item name in lower case, value: item name's proper uppercase form
 BASE_ITEMS = [
@@ -101,8 +99,6 @@ EXCLUDED_ITEMS = [
   "Block of Emerald", "Lapis Lazuli Block", "Blaze Powder", "Block of Quartz",
   "Golden Carrot", "Glistering Melon"
 ]
-BASE_ITEMS_DICT = {}  # key: item name, value: true or false
-EXCLUDED_ITEMS_DICT = {}  # key: item name, value: true or false
 
 SB_BITS_SHOP_1 = {
   "God Potion": 1500,
@@ -261,10 +257,15 @@ SB_BITS_FACTOR = {
   'Chancellor': 2.24,
   'Supreme': 2.26
 }
+#create the filters for cookieprofit
+SB_BITS_FILTER = {
+  "None": SB_BITS_SHOP_1,
+  "No Abicase": SB_BITS_SHOP_2,
+  "No Enrichment": SB_BITS_SHOP_3,
+  "No Abicase and Enrichment": SB_BITS_SHOP_4
+}
 # all enchants
-BITS_ENCHANTS_LIST = [
-  "Expertise", "Cultivating", "Compact", "Champion", "Hecatomb"
-]
+ENCHANTS_LIST = ["Expertise", "Cultivating", "Compact", "Champion", "Hecatomb"]
 ABICASE_DICT = {
   "Sumsung© G3 Abicase": 15000,
   "Sumsung© GG Abicase": 25000,
@@ -339,10 +340,9 @@ for item in SB_ITEMS_DATA["items"]:
     SB_ITEM_DICT[itemID]['furniture'] = itemFurn
   else:
     SB_ITEM_DICT[itemID]['furniture'] = 'N/A'
-    # filtering out some decor blocks that I don't need for my purposes
-    if 'BUILDER_' not in itemID:
-      SB_NAME_DICT[itemName] = itemID
-      SB_ID_DICT[itemID] = itemName
+  # filtering out some decor blocks that I don't need for my purposes
+  if 'BUILDER_' not in itemID:
+    SB_NAME_DICT[itemName] = itemID
   # generator
   itemGen = item.get('generator')
   if itemGen != None:
@@ -382,12 +382,10 @@ for item in SB_ITEMS_DATA["items"]:
     SB_ITEM_DICT[itemID]['vanilla'] = True
   else:
     SB_ITEM_DICT[itemID]['vanilla'] = False
-  BASE_ITEMS_DICT[itemName] = False
 # manually fix some strange items
 SB_ITEM_DICT["SPECKLED_MELON"]['vanilla'] = True
 SB_ITEM_DICT["SPECKLED_MELON"]['in_ah'] = True
 SB_NAME_DICT["Jumbo Backpack"] = "JUMBO_BACKPACK"
-SB_ID_DICT["JUMBO_BACKPACK"] = "Jumbo Backpack"
 SB_ITEM_DICT["JUMBO_BACKPACK"] = {
   'name': "Jumbo Backpack",
   'material': "SKULL_ITEM",
@@ -403,7 +401,6 @@ SB_ITEM_DICT["JUMBO_BACKPACK"] = {
   'vanilla': False,
 }
 SB_NAME_DICT["Greater Backpack"] = "GREATER_BACKPACK"
-SB_ID_DICT["GREATER_BACKPACK"] = "Greater Backpack"
 SB_ITEM_DICT["GREATER_BACKPACK"] = {
   'name': "Greater Backpack",
   'material': "SKULL_ITEM",
@@ -419,7 +416,6 @@ SB_ITEM_DICT["GREATER_BACKPACK"] = {
   'vanilla': False,
 }
 SB_NAME_DICT["Large Backpack"] = "LARGE_BACKPACK"
-SB_ID_DICT["LARGE_BACKPACK"] = "Large Backpack"
 SB_ITEM_DICT["LARGE_BACKPACK"] = {
   'name': "Large Backpack",
   'material': "SKULL_ITEM",
@@ -435,7 +431,6 @@ SB_ITEM_DICT["LARGE_BACKPACK"] = {
   'vanilla': False,
 }
 SB_NAME_DICT["Medium Backpack"] = "MEDIUM_BACKPACK"
-SB_ID_DICT["MEDIUM_BACKPACK"] = "Medium Backpack"
 SB_ITEM_DICT["MEDIUM_BACKPACK"] = {
   'name': "Medium Backpack",
   'material': "SKULL_ITEM",
@@ -451,7 +446,6 @@ SB_ITEM_DICT["MEDIUM_BACKPACK"] = {
   'vanilla': False,
 }
 SB_NAME_DICT["Small Backpack"] = "SMALL_BACKPACK"
-SB_ID_DICT["SMALL_BACKPACK"] = "Small Backpack"
 SB_ITEM_DICT["SMALL_BACKPACK"] = {
   'name': "Small Backpack",
   'material': "SKULL_ITEM",
@@ -470,14 +464,15 @@ SB_ITEM_DICT["SMALL_BACKPACK"] = {
 SB_ITEM_DICT["HAY_BLOCK"]['vanilla'] = True
 SB_NAME_DICT["Hay Bale"] = "HAY_BLOCK"
 
-# Processing excluded items and base items:
+# Manually processing base items:
 for i in BASE_ITEMS:
   itemID = SB_NAME_DICT[i]
   SB_ITEM_DICT[itemID]['base_item'] = True
-for enchant in BITS_ENCHANTS_LIST:
+# for enchants in bits shop
+# probably gonna apply this to all of enchants
+for enchant in ENCHANTS_LIST:
   itemID = f"ENCHANTMENT_{enchant.upper()}_1"
   SB_NAME_DICT[enchant] = itemID
-  SB_ID_DICT[itemID] = enchant
   SB_ITEM_DICT[itemID] = {
     'name': enchant,
     'material': "ENCHANTED_BOOK",
@@ -492,195 +487,10 @@ for enchant in BITS_ENCHANTS_LIST:
     'base_item': False,
     'vanilla': False,
   }
-  BASE_ITEMS_DICT[enchant] = False
 # for updating items.json
 #with open("src/data/items.json", "w") as outfile:
 #  json.dump(SB_ITEM_DICT, outfile)
-#Processing Enchants Here:
-#create the filters for cookieprofit
-SB_BITS_FILTER = {
-  "None": SB_BITS_SHOP_1,
-  "No Abicase": SB_BITS_SHOP_2,
-  "No Enrichment": SB_BITS_SHOP_3,
-  "No Abicase and Enrichment": SB_BITS_SHOP_4
-}
 print(SB_ITEM_DICT["SIL_EX"])
-SB_NAME_DICT = {}  # key: item name, value: item id
-SB_NAME_FIX = {
-}  # key: item name in lower case, value: item name's proper uppercase form
-SB_ID_DICT = {}  # key: item id, value: item name
-SB_MAT_DICT = {}  # key: item id, value: item material
-SB_CAT_DICT = {}  # key: item name, value: item category
-SB_UNIQUE_CAT = {}  # all categories in hypixel sb items data
-SB_TIER_DICT = {}  # key: item name, value: item tier
-SB_UNIQUE_TIER = {"SUPREME": False}  # all tiers in hypixel sb items data
-SB_AH_DICT = {}  # key: item name, value: true or false
-SB_BZ_DICT = {}  # key: item name, value: true or false
-SB_CRAFTPROFIT_DATA = {
-}  # key: valid craftprofit item id, value: item crafting recipe
-SB_FORGE_ITEMS_DATA = {
-}  # key: valid forgeprofit item id, value: item forge recipe
-SB_NONCRAFTABLES_LIST = [
-]  # list of all items that cannot be crafted or forged
-SB_NONCRAFTABLES_DICT = {}  # key: item name, value: true or false
-SB_INVALID_ITEMS = []  # just in case if some wacky items appear
-SB_MINIONS_LIST = []  # all minions with all tiers
-SB_SOULBOUND_LIST = []  # all soulbound items
-SB_SOULBOUND_DICT = {}  #key: item name, value: true or false
-# Sorting out all the items
-for item in SB_ITEMS_DATA["items"]:
-  itemName = item["name"]
-  itemID = item["id"]
-  itemMat = item["material"]
-  itemTier = ""
-  try:
-    itemTier = item["tier"]
-    SB_TIER_DICT[itemName] = itemTier
-  except:
-    itemTier = "UNTIERED"
-  SB_TIER_DICT[itemName] = itemTier
-  SB_UNIQUE_TIER[itemTier] = False
-  if item.get("furniture") != None:
-    SB_NONCRAFTABLES_DICT[itemName] = True
-    SB_NONCRAFTABLES_LIST += [itemName]
-  if item.get("soulbound") != None:
-    test = item["soulbound"]
-    SB_SOULBOUND_DICT[itemName] = True
-    SB_SOULBOUND_LIST += [itemName]
-  else:
-    SB_SOULBOUND_DICT[itemName] = False
-  try:
-    test = item["category"]
-    SB_CAT_DICT[itemName] = test
-    SB_UNIQUE_CAT[test] = False
-    if test not in SB_UNIQUE_CAT:
-      SB_UNIQUE_CAT += [test]
-    if test == "MEMENTO" or test == "COSMETIC" or test == "NONE":
-      SB_NONCRAFTABLES_DICT[itemName] = True
-      if itemName not in SB_NONCRAFTABLES_LIST:
-        SB_NONCRAFTABLES_LIST += [itemName]
-    else:
-      SB_NONCRAFTABLES_DICT[itemName] = False
-  except:
-    SB_UNIQUE_CAT["N/A"] = False
-    SB_CAT_DICT[itemName] = "N/A"
-    SB_NONCRAFTABLES_DICT[itemName] = False
-  if "Enrichment" in itemName and "Accessory" not in itemName:
-    SB_BITS_SHOP_1[itemName] = 5000
-  if SB_SOULBOUND_DICT[itemName] == False and "Sack" not in itemName:
-    try:
-      test = item["generator"]
-      SB_MINIONS_LIST += [itemName]
-      SB_BZ_DICT[itemID] = False
-      SB_AH_DICT[itemName] = False
-    except:
-      try:
-        test = SB_BZ_DATA[itemID]
-        SB_BZ_DICT[itemID] = True
-        SB_AH_DICT[itemName] = False
-      except:
-        if itemID == itemMat and itemName not in USEFUL_VANILLA_ITEMS:
-          SB_BZ_DICT[itemID] = False
-          SB_AH_DICT[itemName] = False
-        else:
-          SB_BZ_DICT[itemID] = False
-          SB_AH_DICT[itemName] = True
-  else:
-    SB_BZ_DICT[itemID] = False
-    SB_AH_DICT[itemName] = False
-  if 'BUILDER_' not in itemID:
-    SB_NAME_DICT[itemName] = itemID
-    SB_ID_DICT[itemID] = itemName
-  SB_MAT_DICT[itemID] = itemMat
-  SB_NAME_FIX[itemName.lower()] = itemName
-  if "Stairs" in itemName or "Fence" in itemName or "Chiseled" in itemName or "Stone:" in itemID or "Slab" in itemName or "Planks" in itemName or "Rail" in itemName:
-
-    EXCLUDED_ITEMS_DICT[itemName] = True
-  else:
-    EXCLUDED_ITEMS_DICT[itemName] = False
-  BASE_ITEMS_DICT[itemName] = False
-#i = 0
-# Processing excluded items and base items:
-for i in BASE_ITEMS:
-  BASE_ITEMS_DICT[i] = True
-for i in EXCLUDED_ITEMS:
-  EXCLUDED_ITEMS_DICT[i] = True
-#Processing Enchants Here:
-for enchant in BITS_ENCHANTS_LIST:
-  SB_NAME_DICT[enchant] = f"ENCHANTMENT_{enchant.upper()}_1"
-  SB_ID_DICT[f"ENCHANTMENT_{enchant.upper()}_1"] = enchant
-  SB_SOULBOUND_DICT[enchant] = False
-  EXCLUDED_ITEMS_DICT[enchant] = False
-  BASE_ITEMS_DICT[enchant] = False
-  SB_BZ_DICT[f"ENCHANTMENT_{enchant.upper()}_1"] = True
-  SB_AH_DICT[enchant] = False
-for abicase in ABICASE_DICT:
-  SB_CAT_DICT[abicase] = "ACCESSORY"
-  SB_TIER_DICT[abicase] = "RARE"
-#create the filters for cookieprofit
-SB_BITS_FILTER = {
-  "None": SB_BITS_SHOP_1,
-  "No Abicase": SB_BITS_SHOP_2,
-  "No Enrichment": SB_BITS_SHOP_3,
-  "No Abicase and Enrichment": SB_BITS_SHOP_4
-}
-#
-# manually fix some of them due to strange items in hypixel items data
-# currently going to manually fix the enchantments
-SB_NAME_DICT["Griffin Feather"] = 'GRIFFIN_FEATHER'
-SB_BZ_DICT['GRIFFIN_FEATHER'] = True
-SB_AH_DICT["Griffin Feather"] = False
-SB_CAT_DICT["Griffin Feather"] = "N/A"
-SB_TIER_DICT["Griffin Feather"] = "RARE"
-SB_NAME_DICT["Hay Bale"] = "HAY_BLOCK"
-SB_ID_DICT["HAY_BLOCK"] = "Hay Bale"
-SB_BZ_DICT["HAY_BLOCK"] = True
-SB_CAT_DICT["Hay Bale"] = "N/A"
-SB_TIER_DICT["Hay Bale"] = "UNTIERED"
-SB_NAME_DICT["Jumbo Backpack"] = "JUMBO_BACKPACK"
-SB_NAME_DICT["JUMBO_BACKPACK"] = "Jumbo Backpack"
-SB_BZ_DICT["JUMBO_BACKPACK"] = False
-SB_AH_DICT["Jumbo Backpack"] = True
-SB_CAT_DICT["Jumbo Backpack"] = "N/A"
-SB_TIER_DICT["Jumbo Backpack"] = "LEGENDARY"
-SB_NAME_DICT["Greater Backpack"] = "GREATER_BACKPACK"
-SB_NAME_DICT["GREATER_BACKPACK"] = "Greater Backpack"
-SB_BZ_DICT["GREATER_BACKPACK"] = False
-SB_AH_DICT["Greater Backpack"] = True
-SB_CAT_DICT["Greater Backpack"] = "N/A"
-SB_TIER_DICT["Greater Backpack"] = "EPIC"
-SB_NAME_DICT["Large Backpack"] = "LARGE_BACKPACK"
-SB_NAME_DICT["LARGE_BACKPACK"] = "Large Backpack"
-SB_BZ_DICT["LARGE_BACKPACK"] = False
-SB_AH_DICT["Large Backpack"] = True
-SB_CAT_DICT["Large Backpack"] = "N/A"
-SB_TIER_DICT["Large Backpack"] = "EPIC"
-SB_NAME_DICT["Medium Backpack"] = "MEDIUM_BACKPACK"
-SB_NAME_DICT["MEDIUM_BACKPACK"] = "Medium Backpack"
-SB_BZ_DICT["MEDIUM_BACKPACK"] = False
-SB_AH_DICT["Medium Backpack"] = True
-SB_CAT_DICT["Medium Backpack"] = "N/A"
-SB_TIER_DICT["Medium Backpack"] = "RARE"
-SB_NAME_DICT["Small Backpack"] = "SMALL_BACKPACK"
-SB_NAME_DICT["SMALL_BACKPACK"] = "Small Backpack"
-SB_BZ_DICT["SMALL_BACKPACK"] = False
-SB_AH_DICT["Small Backpack"] = True
-SB_CAT_DICT["Small Backpack"] = "N/A"
-SB_TIER_DICT["Small Backpack"] = "UNCOMMON"
-SB_BZ_DICT["POCKET_SACK_IN_A_SACK"] = False
-SB_AH_DICT["Pocket Sack-in-a-Sack"] = True
-SB_CAT_DICT["Pocket Sack-in-a-Sack"] = "N/A"
-SB_TIER_DICT["Pocket Sack-in-a-Sack"] = "SPECIAL"
-# for personal debugging
-print("categories:", SB_UNIQUE_CAT)
-print("tier list:", SB_UNIQUE_TIER)
-print(len(SB_ITEMS_DATA['items']), "items")
-print("items in sb items dict:", len(SB_NAME_DICT))
-print("soulbound items", len(SB_SOULBOUND_LIST))
-print("unique minions", len(SB_MINIONS_LIST))
-print("bits shop items", len(SB_BITS_SHOP_1))
-print("uncraftable items", len(SB_NONCRAFTABLES_LIST))
-#print(f"excluded items: {EXCLUDED_ITEMS_DICT} ")
 end = time.time()
 print(f"{(end - start)} seconds")
 print("Globals Done")

@@ -5,16 +5,9 @@ import asyncio
 import aiohttp
 import time
 
-skyblockItems = globals.SB_ITEMS_DATA
+# key: item names, value: item id
+# due to the fact that some items have same names, the more useless ones got excluded, like decors, cosmetics, and furniture
 sbItemDict = globals.SB_NAME_DICT
-sbIDDict = globals.SB_ID_DICT
-sbAHDict = globals.SB_AH_DICT
-sbBzDict = globals.SB_BZ_DICT
-sbSBDict = globals.SB_SOULBOUND_DICT
-sbCatDict = globals.SB_CAT_DICT
-sbTierDict = globals.SB_TIER_DICT
-BASE_ITEMS = globals.BASE_ITEMS_DICT
-sbTiers = globals.SB_UNIQUE_TIER
 
 
 async def req_data(link):
@@ -31,17 +24,27 @@ ITEM_FACTOR = {
   "Gold Nugget": 0.111
 }
 NPC_ITEMS = {"Glass Bottle": 6, "Stick": 0}
-# these items can't be bought on bazaar, but are made of items from bz
-EXCLUDED_ITEMS = globals.EXCLUDED_ITEMS_DICT
 SB_ITEM_DATA = asyncio.run(
   req_data(
     'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/items.json'
   ))
 
 
-# check what item tiers and what item categories exist in list of items
+# check what item tiers and what item auction house categories exist in list of items
 def checkTierCats(itemLst):
-  tierLst = sbTiers
+  tierLst = {
+    'SUPREME': False,
+    'RARE': False,
+    'MYTHIC': False,
+    'LEGENDARY': False,
+    'EPIC': False,
+    'UNCOMMON': False,
+    'UNTIERED': False,
+    'COMMON': False,
+    'VERY_SPECIAL': False,
+    'SPECIAL': False,
+    'UNOBTAINABLE': False
+  }
   aHCats = {
     "weapon": False,
     "armor": False,
@@ -65,6 +68,7 @@ def checkTierCats(itemLst):
     else:
       aHCats[itmCat] = True
     tierLst[itmTier] = True
+  print(tierLst, aHCats)
   return [tierLst, aHCats]
 
 
@@ -88,7 +92,7 @@ def get_item_recipe(itemName):
     else:
       newItemId = itemID
     itemData2 = asyncio.run(
-      globals.req_data(
+      req_data(
         f'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/{newItemId}.json'
       ))
     recipeData = itemData2['recipe']
@@ -109,9 +113,9 @@ def get_item_recipe(itemName):
             else:
               fixedID += chr
 
-          itemName2 = sbIDDict[fixedID]
+          itemName2 = SB_ITEM_DATA[fixedID]['name']
         else:
-          itemName2 = sbIDDict[item[0]]
+          itemName2 = SB_ITEM_DATA[itemID]['name']
         if itemName2 in properRecipe:
           properRecipe[itemName2] += int(item[1])
         else:
@@ -179,7 +183,7 @@ def get_raw_recipe(recipe):
 def findCost(itemID):
   #print(f"item id being checked: {item_ID}")
   start = time.time()
-  itemName = sbIDDict[itemID]
+  itemName = SB_ITEM_DATA[itemID]['name']
   SB_ITEM_DATA[itemID]["in_bz"]
   if SB_ITEM_DATA[itemID]["in_bz"] == False:
     if SB_ITEM_DATA[itemID]["soulbound"] != 'N/A':  # if it is soulboumd
@@ -193,7 +197,7 @@ def findCost(itemID):
       return -1
   else:
     itemSellPrice = asyncio.run(
-      globals.req_data("https://api.hypixel.net/skyblock/bazaar")
+      req_data("https://api.hypixel.net/skyblock/bazaar")
     )["products"][itemID]['sell_summary']
     end = time.time()
     print(f"findCost time for {itemID} is {end - start}")
@@ -215,7 +219,7 @@ def lowestBin(itemLst):
   print("valid tiers", tierDict)
   while True:
     data = asyncio.run(
-      globals.req_data(f"https://api.hypixel.net/skyblock/auctions?page={pg}"))
+      req_data(f"https://api.hypixel.net/skyblock/auctions?page={pg}"))
     if data["success"] == False:
       print("test", pg, "last pg reached")
       break
@@ -227,12 +231,23 @@ def lowestBin(itemLst):
           aucTier = auction["tier"]
           aucCat = auction['category']
           if tierDict[aucTier] == True and ahCats[aucCat] == True:
-            for i in itemLst:
-              if (i in aucName):
-                print(aucName, f"on pg {pg}")
-                if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
-                  itemLst[i] = auction["starting_bid"]
-                break
+            if aucTier == 'SPECIAL' or aucTier == 'VERY_SPECIAL':
+
+              for i in itemLst:
+                if i == aucName:
+                  print(aucName, f"on pg {pg}")
+                  if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
+                    print(f"new lowest price for{i} found")
+                    itemLst[i] = auction["starting_bid"]
+                  break
+            else:
+              for i in itemLst:
+                if i in aucName:
+                  print(aucName, f"on pg {pg}")
+                  if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
+                    print(f"new lowest price for{i} found")
+                    itemLst[i] = auction["starting_bid"]
+                  break
       pg += 1
   print("itemLst", itemLst)
   end = time.time()
@@ -244,7 +259,19 @@ def lowestBin(itemLst):
 # assume all items in dict are valid and properly spelled
 def bitsLowestBin(itmDict):
   start = time.time()
-  tierDict = {'SUPREME': False, 'RARE': True, 'MYTHIC': False, 'LEGENDARY': True, 'EPIC': True, 'UNCOMMON': False, 'UNTIERED': False, 'COMMON': False, 'VERY_SPECIAL': False, 'SPECIAL': True, 'UNOBTAINABLE': False}
+  tierDict = {
+    'SUPREME': False,
+    'RARE': True,
+    'MYTHIC': False,
+    'LEGENDARY': True,
+    'EPIC': True,
+    'UNCOMMON': False,
+    'UNTIERED': False,
+    'COMMON': False,
+    'VERY_SPECIAL': False,
+    'SPECIAL': True,
+    'UNOBTAINABLE': False
+  }
   ahCats = {
     "weapon": False,
     "armor": False,
@@ -258,7 +285,7 @@ def bitsLowestBin(itmDict):
   print("auction item list", itmDict)
   while True:
     data = asyncio.run(
-      globals.req_data(f"https://api.hypixel.net/skyblock/auctions?page={pg}"))
+      req_data(f"https://api.hypixel.net/skyblock/auctions?page={pg}"))
     if data["success"] == False:
       print("test", pg, "last pg reached")
       break

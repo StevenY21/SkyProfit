@@ -18,12 +18,6 @@ tree = app_commands.CommandTree(client)
 
 sbProperNames = globals.SB_NAME_FIX
 sbItemNames = globals.SB_NAME_DICT
-sbItemIDs = globals.SB_ID_DICT
-sbItemMat = globals.SB_MAT_DICT
-sbBzItms = globals.SB_BZ_DICT
-sbAHItms = globals.SB_AH_DICT
-BASE_ITEMS = globals.BASE_ITEMS_DICT
-EXCLUDED_ITEMS = globals.EXCLUDED_ITEMS_DICT
 SB_ITEM_DATA = asyncio.run(functions.req_data('https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/items.json'))
 
 # inv bot: https://discord.com/api/oauth2/authorize?client_id=1117918806224932915&permissions=448824396865&scope=bot
@@ -61,7 +55,8 @@ async def craftprofit(interaction: discord.Interaction, name: str):
     await interaction.response.send_message("Getting Regular Recipe...")
     regRecipe = await asyncio.to_thread(functions.get_item_recipe, name)
     print(regRecipe, "is reg recipe")
-    if EXCLUDED_ITEMS[name] == True:
+    itemID = sbItemNames[name]
+    if SB_ITEM_DATA[itemID]['vanilla'] and SB_ITEM_DATA[itemID]['in_ah']:
       await interaction.edit_original_response(
         content="Do not flip vanilla items (well most of them)")
     elif regRecipe == None or regRecipe == -1:
@@ -362,7 +357,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
         itemID = f"ENCHANTMENT_{item.upper()}_1"
       else:
         itemID = sbItemNames[item]
-      if sbBzItms[itemID] == True:
+      if SB_ITEM_DATA[itemID]['in_bz'] == True:
         cost = await asyncio.to_thread(functions.findCost, itemID)
       else:
         cost = -1
