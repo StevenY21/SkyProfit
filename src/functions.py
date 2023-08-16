@@ -238,7 +238,6 @@ def lowestBin(itemLst):
           aucCat = auction['category']
           if tierDict[aucTier] == True and ahCats[aucCat] == True:
             if aucTier == 'SPECIAL' or aucTier == 'VERY_SPECIAL':
-
               for i in itemLst:
                 if i == aucName:
                   print(aucName, f"on pg {pg}")
@@ -251,7 +250,7 @@ def lowestBin(itemLst):
                 if i in aucName:
                   print(aucName, f"on pg {pg}")
                   if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
-                    print(f"new lowest price for{i} found")
+                    print(f"new lowest price for {i} found")
                     itemLst[i] = auction["starting_bid"]
                   break
       pg += 1

@@ -463,6 +463,8 @@ SB_ITEM_DICT["SMALL_BACKPACK"] = {
 # item name hay bale has both a furniture and the actual thing, which is dumb
 SB_ITEM_DICT["HAY_BLOCK"]['vanilla'] = True
 SB_NAME_DICT["Hay Bale"] = "HAY_BLOCK"
+# for some reason 2 different griffin feathers exist in item data, with one not even an actual item
+SB_NAME_DICT['Griffin Feather'] = 'GRIFFIN_FEATHER'
 
 # Manually processing base items:
 for i in BASE_ITEMS:
