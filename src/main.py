@@ -18,7 +18,11 @@ tree = app_commands.CommandTree(client)
 
 sbProperNames = globals.SB_NAME_FIX
 sbItemNames = globals.SB_NAME_DICT
-SB_ITEM_DATA = asyncio.run(functions.req_data('https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/items.json'))
+SB_ITEM_DATA = asyncio.run(
+  functions.req_data(
+    'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/items.json'
+  ))
+
 
 # inv bot: https://discord.com/api/oauth2/authorize?client_id=1117918806224932915&permissions=448824396865&scope=bot
 @tree.command(name="help", description="Help for SkyProfit commands")
@@ -67,9 +71,10 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         content=
         f"Error: {name} not found. Check if the item name is spelled correctly, or that it can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable"
       )
-    elif regRecipe <= -2:
+    elif regRecipe == -2:
       await interaction.edit_original_response(
-        content=f"Error: {name} does not have valid recipe or any recipe at all")
+        content=f"Error: {name} does not have valid recipe or any recipe at all"
+      )
     else:
       res = globals.finalOutput
       await interaction.edit_original_response(
@@ -337,6 +342,8 @@ async def craftprofit(interaction: discord.Interaction, name: str):
   description="provides a sorted list showing bit shop item profits")
 @app_commands.choices(
   filter=[Choice(name=i, value=i) for i in globals.SB_BITS_FILTER])
+@app_commands.choices(
+  famerank=[Choice(name=i, value=i) for i in globals.SB_BITS_FACTOR])
 async def cookieprofit(interaction: discord.Interaction, famerank: str,
                        filter: str):
   start = time.time()
@@ -436,9 +443,11 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   pg = 0
 
   class MyView(discord.ui.View):
+
     def __init__(self, timeout):
       super().__init__(timeout=timeout)
-      self.response = None 
+      self.response = None
+
     @discord.ui.button(label='<', style=discord.ButtonStyle.blurple)
     async def prev_callback(self, interaction: discord.Interaction, button):
       nonlocal pg
@@ -450,9 +459,11 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
       nonlocal pg
       pg += 1
       await interaction.response.edit_message(embed=embList[pg % numEmbeds])
+
     async def on_timeout(self):
       self.clear_items()
       await self.response.edit(view=self)
+
   end = time.time()
   #res.set_footer(text=f"Process Time: {round((end-start),2)} seconds")
   procTime = round((end - start), 2)
@@ -463,19 +474,10 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   for i in embList:
     i.set_footer(text=f"Process Time: {procTime} seconds")
   my_view = MyView(timeout=60)
-  await interaction.edit_original_response(embed=embList[0],
-                                           view = my_view)
-  out = await interaction.edit_original_response(embed=embList[0], view=my_view)
+  await interaction.edit_original_response(embed=embList[0], view=my_view)
+  out = await interaction.edit_original_response(embed=embList[0],
+                                                 view=my_view)
   my_view.response = out
-
-@cookieprofit.autocomplete("famerank")
-async def cookieprofit_fameRank(interaction: discord.Interaction,
-                                current: str):
-  data = []
-  for itemChoice in globals.SB_BITS_FACTOR:
-    if current.lower() in itemChoice.lower():
-      data.append(app_commands.Choice(name=itemChoice, value=itemChoice))
-  return data[:5]
 
 
 @client.event
