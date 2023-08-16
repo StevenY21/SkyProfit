@@ -59,14 +59,17 @@ async def craftprofit(interaction: discord.Interaction, name: str):
     if SB_ITEM_DATA[itemID]['vanilla'] and SB_ITEM_DATA[itemID]['in_ah']:
       await interaction.edit_original_response(
         content="Do not flip vanilla items (well most of them)")
+    elif SB_ITEM_DATA[itemID]['soulbound'] != 'N/A':
+      await interaction.edit_original_response(
+        content=f"Error: {name} is soulbound and cannot be sold")
     elif regRecipe == None or regRecipe == -1:
       await interaction.edit_original_response(
         content=
         f"Error: {name} not found. Check if the item name is spelled correctly, or that it can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable"
       )
-    elif regRecipe == -2:
+    elif regRecipe <= -2:
       await interaction.edit_original_response(
-        content="Error: Does not have valid recipe or any recipe at all")
+        content=f"Error: {name} does not have valid recipe or any recipe at all")
     else:
       res = globals.finalOutput
       await interaction.edit_original_response(
