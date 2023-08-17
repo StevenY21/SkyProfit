@@ -30,46 +30,127 @@ SB_ITEM_DATA = asyncio.run(
   ))
 
 
-# check what item tiers and what item auction house categories exist in list of items
+# check what item tier and item ah category combo exists in item list
 def checkTierCats(itemLst):
-  tierLst = {
-    'SUPREME': False,
-    'RARE': False,
-    'MYTHIC': False,
-    'LEGENDARY': False,
-    'EPIC': False,
-    'UNCOMMON': False,
-    'UNTIERED': False,
-    'COMMON': False,
-    'VERY_SPECIAL': False,
-    'SPECIAL': False,
-    'UNOBTAINABLE': False
-  }
-  aHCats = {
-    "weapon": False,
-    "armor": False,
-    "accessories": False,
-    "consumables": False,
-    "blocks": False,
-    "tools": False,
-    "misc": False
+  start = time.time()
+  tierCats = {
+    'SUPREME': {
+      "weapon": [],
+      "armor": [],
+      "accessories": [],
+      "consumables": [],
+      "blocks": [],
+      "tools": [],
+      "misc": []
+    },
+    'RARE': {
+      "weapon": [],
+      "armor": [],
+      "accessories": [],
+      "consumables": [],
+      "blocks": [],
+      "tools": [],
+      "misc": []
+    },
+    'MYTHIC': {
+      "weapon": [],
+      "armor": [],
+      "accessories": [],
+      "consumables": [],
+      "blocks": [],
+      "tools": [],
+      "misc": []
+    },
+    'LEGENDARY': {
+      "weapon": [],
+      "armor": [],
+      "accessories": [],
+      "consumables": [],
+      "blocks": [],
+      "tools": [],
+      "misc": []
+    },
+    'EPIC': {
+      "weapon": [],
+      "armor": [],
+      "accessories": [],
+      "consumables": [],
+      "blocks": [],
+      "tools": [],
+      "misc": []
+    },
+    'UNCOMMON': {
+      "weapon": [],
+      "armor": [],
+      "accessories": [],
+      "consumables": [],
+      "blocks": [],
+      "tools": [],
+      "misc": []
+    },
+    'UNTIERED': {
+      "weapon": [],
+      "armor": [],
+      "accessories": [],
+      "consumables": [],
+      "blocks": [],
+      "tools": [],
+      "misc": []
+    },
+    'COMMON': {
+      "weapon": [],
+      "armor": [],
+      "accessories": [],
+      "consumables": [],
+      "blocks": [],
+      "tools": [],
+      "misc": []
+    },
+    'VERY_SPECIAL': {
+      "weapon": [],
+      "armor": [],
+      "accessories": [],
+      "consumables": [],
+      "blocks": [],
+      "tools": [],
+      "misc": []
+    },
+    'SPECIAL': {
+      "weapon": [],
+      "armor": [],
+      "accessories": [],
+      "consumables": [],
+      "blocks": [],
+      "tools": [],
+      "misc": []
+    },
+    'UNOBTAINABLE': {
+      "weapon": [],
+      "armor": [],
+      "accessories": [],
+      "consumables": [],
+      "blocks": [],
+      "tools": [],
+      "misc": []
+    }
   }
   for item in itemLst:
     itemID = sbItemDict[item]
     itmTier = SB_ITEM_DATA[itemID]['tier']
     itmCat = SB_ITEM_DATA[itemID]['ah_category']
     if itmCat == 'tools and misc':
-      aHCats["tools"] = True
-      aHCats["misc"] = True
+      tierCats[itmTier]['tools'] += [item]
+      tierCats[itmTier]["misc"] += [item]
     elif itmCat == 'blocks and tools and misc':
-      aHCats["blocks"] = True
-      aHCats["tools"] = True
-      aHCats["misc"] = True
+      tierCats[itmTier]["blocks"] += [item]
+      tierCats[itmTier]["tools"] += [item]
+      tierCats[itmTier]["misc"] += [item]
     else:
-      aHCats[itmCat] = True
-    tierLst[itmTier] = True
-  print(tierLst, aHCats)
-  return [tierLst, aHCats]
+      tierCats[itmTier][itmCat] += [item]
+  print(tierCats)
+  end = time.time()
+  print(f'checkTierCats done in {end-start} seconds')
+  return tierCats
 
 
 #get item name to item recipe
@@ -220,9 +301,6 @@ def lowestBin(itemLst):
   pg = 0
   print("auction item list", itemLst)
   tierCats = checkTierCats(itemLst)
-  tierDict = tierCats[0]
-  ahCats = tierCats[1]
-  print("valid tiers", tierDict)
   while True:
     data = asyncio.run(
       req_data(f"https://api.hypixel.net/skyblock/auctions?page={pg}"))
@@ -236,9 +314,10 @@ def lowestBin(itemLst):
         if auction["bin"] == True:
           aucTier = auction["tier"]
           aucCat = auction['category']
-          if tierDict[aucTier] == True and ahCats[aucCat] == True:
+          tierCat = tierCats[aucTier][aucCat]
+          if tierCat != []:
             if aucTier == 'SPECIAL' or aucTier == 'VERY_SPECIAL':
-              for i in itemLst:
+              for i in tierCat:
                 if i == aucName:
                   print(aucName, f"on pg {pg}")
                   if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
@@ -246,7 +325,7 @@ def lowestBin(itemLst):
                     itemLst[i] = auction["starting_bid"]
                   break
             else:
-              for i in itemLst:
+              for i in tierCat:
                 if i in aucName:
                   print(aucName, f"on pg {pg}")
                   if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
