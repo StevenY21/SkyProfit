@@ -487,9 +487,9 @@ SB_BITS_SHOP = {
   "no_abicase_and_enrichments": SB_BITS_SHOP_4
 }
 
-# for updating data files
-#with open("src/data/items.json", "w") as outfile:
-#  json.dump(SB_ITEM_DICT, outfile)
+# for updating constants files
+with open("src/constants/items.json", "w") as outfile:
+  json.dump(SB_ITEM_DICT, outfile)
 #with open("src/data/bits_shop.json", "w") as outfile:
 #  json.dump(SB_BITS_SHOP, outfile)
 print(SB_ITEM_DICT["SIL_EX"])

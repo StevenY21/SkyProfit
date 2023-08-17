@@ -20,11 +20,11 @@ sbProperNames = globals.SB_NAME_FIX
 sbItemNames = globals.SB_NAME_DICT
 SB_ITEM_DATA = asyncio.run(
   functions.req_data(
-    'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/items.json'
+    'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/constants/items.json'
   ))
 SB_BITS_SHOP = asyncio.run(
   functions.req_data(
-    'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/bits_shop.json'
+    'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/constants/bits_shop.json'
   ))
 
 
@@ -33,7 +33,7 @@ SB_BITS_SHOP = asyncio.run(
 async def getHelp(interaction: discord.Interaction, name: str):
   await interaction.response.send_message("Need help for commands? :thinking:")
   globals.finalOutput.title = "SkyProfit Commands"
-  globals.finalOutput.description += "- craftprofit [item name]" + "\n" + " - gets regular item recipe, raw material recipe, and 2 alt recipes(if applicable)" + "\n" + " - finds cost to craft item with each recipe, and also returns the profit percentage if you sell item." + "\n" + " - NOTE: ONLY for items that can be made with regular crafting table. Currently doesn't work for pets, enchantments, potions, and some random items. Please report to me any items that don't work."
+  globals.finalOutput.description += "- craftprofit [item name]" + "\n" + " - gets regular item recipe, raw material recipe, and 2 alt recipes(if applicable)" + "\n" + " - finds cost to craft item with each recipe, and also returns the profit percentage if you sell item." + "\n" + " - NOTE: ONLY for items that can be made with regular crafting table, and are salable in bazaar or auction house. Currently doesn't work for pets, enchantments, potions, and some random items. Please report to me any items that don't work."
 
   await interaction.edit_original_response(embed=globals.finalOutput)
 

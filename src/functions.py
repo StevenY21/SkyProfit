@@ -26,7 +26,7 @@ ITEM_FACTOR = {
 NPC_ITEMS = {"Glass Bottle": 6, "Stick": 0}
 SB_ITEM_DATA = asyncio.run(
   req_data(
-    'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/items.json'
+    'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/constants/items.json'
   ))
 
 
