@@ -516,13 +516,13 @@ SB_BITS_SHOP = {
   "no_filter": SB_BITS_SHOP_1,
   "no_abicases": SB_BITS_SHOP_2,
   "no_enrichments": SB_BITS_SHOP_3,
-  "no_abicase_and_enrichments": SB_BITS_SHOP_4
+  "no_abicases_and_enrichments": SB_BITS_SHOP_4
 }
 
 # for updating constants files
 #with open("src/constants/items.json", "w") as outfile:
 #  json.dump(SB_ITEM_DICT, outfile)
-#with open("src/data/bits_shop.json", "w") as outfile:
+#with open("src/constants/bits_shop.json", "w") as outfile:
 #  json.dump(SB_BITS_SHOP, outfile)
 print(SB_ITEM_DICT["SIL_EX"])
 end = time.time()

@@ -397,7 +397,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
     "Processing filtered Bits Shop items... \nChecking auction house for items... \nFinalizing Results"
   )
   embTitle = ""
-  if filter == "None":
+  if filter == "no_filter":
     embTitle = "Bits Shop Item Profits:"
   else:
     embTitle = f"Bits Shop Item Profits with {filter}:"
