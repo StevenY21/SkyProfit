@@ -264,8 +264,30 @@ SB_BITS_FILTER = {
   "No Enrichment": "no_enrichemnts",
   "No Abicase and Enrichment": "no_abicases_and_enrichments"
 }
-# all enchants
-ENCHANTS_LIST = ["Expertise", "Cultivating", "Compact", "Champion", "Hecatomb"]
+# all salable enchants
+ENCHANTS_LIST = {
+  "Expertise": ["I"],
+  "Cultivating": ["I"],
+  "Compact": ["I"],
+  "Champion": ["I"],
+  "Hecatomb": ["I"],
+  "sunder": ["I", "II", "III", "IV", "V"],
+  "green thumb": ["I", "II", "III", "IV", "V"],
+  "dedication": ["I", "II", "III", "IV", "V"]
+}
+# all possible enchant levels
+ENCHANT_LVLS = {
+  "I": "1",
+  "II": "2",
+  "III": "3",
+  "IV": "4",
+  "V": "5",
+  "VI": "6",
+  "VII": "7",
+  "VIII": "8",
+  "IX": "9",
+  "X": "10"
+}
 # Stars
 SB_STARS = ["✪✪✪✪✪", "➊", "➋", "➌", "➍", "➎"]
 SB_ITEM_DICT = {}  # my own version of hypixel sb item data set
@@ -462,22 +484,32 @@ for i in BASE_ITEMS:
 # for enchants in bits shop
 # probably gonna apply this to all of enchants
 for enchant in ENCHANTS_LIST:
-  itemID = f"ENCHANTMENT_{enchant.upper()}_1"
-  SB_NAME_DICT[enchant] = itemID
-  SB_ITEM_DICT[itemID] = {
-    'name': enchant,
-    'material': "ENCHANTED_BOOK",
-    'tier': "UNTIERED",
-    'category': 'ENCHANTMENT',
-    'soulbound': 'N/A',
-    'furniture': 'N/A',
-    'generator': 'N/A',
-    'in_bz': True,
-    'in_ah': False,
-    'ah_category': 'bz',
-    'base_item': False,
-    'vanilla': False,
-  }
+  # the lowest salable enchant id will be used as the id for the name dict
+  if len(ENCHANTS_LIST[enchant]) == 1:
+
+    SB_NAME_DICT[
+      enchant] = f"ENCHANTMENT_{enchant.upper()}_{ENCHANTS_LIST[enchant][0]}"
+  else:
+    SB_NAME_DICT[
+      f"{enchant} {ENCHANTS_LIST[enchant][0]}"] = f"ENCHANTMENT_{enchant.upper()}_{ENCHANTS_LIST[enchant][0]}"
+  for lvl in ENCHANTS_LIST[enchant]:
+    numLvl = ENCHANT_LVLS[lvl]
+    itemID = f"ENCHANTMENT_{enchant.upper()}_{numLvl}"
+    SB_NAME_DICT[enchant] = itemID
+    SB_ITEM_DICT[itemID] = {
+      'name': f'{enchant} {lvl}',
+      'material': "ENCHANTED_BOOK",
+      'tier': "UNTIERED",
+      'category': 'ENCHANTMENT',
+      'soulbound': 'N/A',
+      'furniture': 'N/A',
+      'generator': 'N/A',
+      'in_bz': True,
+      'in_ah': False,
+      'ah_category': 'bz',
+      'base_item': False,
+      'vanilla': False,
+    }
 SB_BITS_SHOP = {
   "fame_rank": SB_BITS_FACTOR,
   "filter": SB_BITS_FILTER,
