@@ -488,8 +488,8 @@ SB_BITS_SHOP = {
 }
 
 # for updating constants files
-with open("src/constants/items.json", "w") as outfile:
-  json.dump(SB_ITEM_DICT, outfile)
+#with open("src/constants/items.json", "w") as outfile:
+#  json.dump(SB_ITEM_DICT, outfile)
 #with open("src/data/bits_shop.json", "w") as outfile:
 #  json.dump(SB_BITS_SHOP, outfile)
 print(SB_ITEM_DICT["SIL_EX"])
