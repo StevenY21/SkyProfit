@@ -522,8 +522,8 @@ SB_BITS_SHOP = {
 # for updating constants files
 #with open("src/constants/items.json", "w") as outfile:
 #  json.dump(SB_ITEM_DICT, outfile)
-with open("src/constants/bits_shop.json", "w") as outfile:
-  json.dump(SB_BITS_SHOP, outfile)
+#with open("src/constants/bits_shop.json", "w") as outfile:
+#  json.dump(SB_BITS_SHOP, outfile)
 print(SB_ITEM_DICT["SIL_EX"])
 end = time.time()
 print(f"{(end - start)} seconds")
