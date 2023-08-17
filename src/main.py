@@ -22,6 +22,10 @@ SB_ITEM_DATA = asyncio.run(
   functions.req_data(
     'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/items.json'
   ))
+SB_BITS_SHOP = asyncio.run(
+    functions.req_data(
+      'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/bits_shop.json'
+    ))
 
 
 # inv bot: https://discord.com/api/oauth2/authorize?client_id=1117918806224932915&permissions=448824396865&scope=bot
@@ -341,16 +345,17 @@ async def craftprofit(interaction: discord.Interaction, name: str):
   name="cookieprofit",
   description="provides a sorted list showing bit shop item profits")
 @app_commands.choices(
-  filter=[Choice(name=i, value=i) for i in globals.SB_BITS_FILTER])
+  filter=[Choice(name=i, value=i) for i in SB_BITS_SHOP['filter']])
 @app_commands.choices(
-  famerank=[Choice(name=i, value=i) for i in globals.SB_BITS_FACTOR])
+  famerank=[Choice(name=i, value=i) for i in SB_BITS_SHOP['fame_rank']])
 async def cookieprofit(interaction: discord.Interaction, famerank: str,
                        filter: str):
   start = time.time()
-  cookieBits = 4800 * globals.SB_BITS_FACTOR[famerank]
+  cookieBits = 4800 * SB_BITS_SHOP['fame_rank'][famerank]
   cookieCost = await asyncio.to_thread(functions.findCost, "BOOSTER_COOKIE")
   cookieCPB = round(cookieCost / cookieBits, 2)
-  shopLst = globals.SB_BITS_FILTER[filter]
+  filter = SB_BITS_SHOP['filter'][filter]
+  shopLst = SB_BITS_SHOP[filter]
   await interaction.response.send_message(
     "Processing filtered Bits Shop items...")
   costDict = {}

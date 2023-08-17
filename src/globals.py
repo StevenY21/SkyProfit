@@ -25,7 +25,7 @@ SB_BZ_DATA = asyncio.run(
 SB_CATEGORIES = {
   'ENCHANTMENT': 'bz',
   'REFORGE_STONE': 'bz',
-  'N/A': 'tools and misc',
+  'N/A': 'blocks and tools and misc',
   'SWORD': 'weapon',
   'BOOTS': 'armor',
   'BELT': 'misc',
@@ -259,23 +259,13 @@ SB_BITS_FACTOR = {
 }
 #create the filters for cookieprofit
 SB_BITS_FILTER = {
-  "None": SB_BITS_SHOP_1,
-  "No Abicase": SB_BITS_SHOP_2,
-  "No Enrichment": SB_BITS_SHOP_3,
-  "No Abicase and Enrichment": SB_BITS_SHOP_4
+  "None": "no_filter",
+  "No Abicase": "no_abicases",
+  "No Enrichment": "no_enrichemnts",
+  "No Abicase and Enrichment": "no_abicases_and_enrichments"
 }
 # all enchants
 ENCHANTS_LIST = ["Expertise", "Cultivating", "Compact", "Champion", "Hecatomb"]
-ABICASE_DICT = {
-  "Sumsung© G3 Abicase": 15000,
-  "Sumsung© GG Abicase": 25000,
-  "Rezar® Abicase": 26000,
-  "Blue™ but Red Abicase": 17000,
-  "Actually Blue™ Abicase": 17000,
-  "Blue™ but Green Abicase": 17000,
-  "Blue™ but Yellow Abicase": 17000,
-  "Lighter Blue™ Abicase": 17000,
-}
 # Stars
 SB_STARS = ["✪✪✪✪✪", "➊", "➋", "➌", "➍", "➎"]
 SB_ITEM_DICT = {}  # my own version of hypixel sb item data set
@@ -489,9 +479,13 @@ for enchant in ENCHANTS_LIST:
     'base_item': False,
     'vanilla': False,
   }
-# for updating items.json
+SB_BITS_SHOP = {"fame_rank":SB_BITS_FACTOR, "filter": SB_BITS_FILTER, "no_filter":SB_BITS_SHOP_1, "no_abicases": SB_BITS_SHOP_2, "no_enrichments": SB_BITS_SHOP_3, "no_abicase_and_enrichments": SB_BITS_SHOP_4}
+
+# for updating data files
 #with open("src/data/items.json", "w") as outfile:
 #  json.dump(SB_ITEM_DICT, outfile)
+with open("src/data/bits_shop.json", "w") as outfile:
+  json.dump(SB_BITS_SHOP, outfile)
 print(SB_ITEM_DICT["SIL_EX"])
 end = time.time()
 print(f"{(end - start)} seconds")
