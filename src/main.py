@@ -23,9 +23,9 @@ SB_ITEM_DATA = asyncio.run(
     'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/items.json'
   ))
 SB_BITS_SHOP = asyncio.run(
-    functions.req_data(
-      'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/bits_shop.json'
-    ))
+  functions.req_data(
+    'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/data/bits_shop.json'
+  ))
 
 
 # inv bot: https://discord.com/api/oauth2/authorize?client_id=1117918806224932915&permissions=448824396865&scope=bot

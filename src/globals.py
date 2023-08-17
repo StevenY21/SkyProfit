@@ -455,7 +455,6 @@ SB_ITEM_DICT["HAY_BLOCK"]['vanilla'] = True
 SB_NAME_DICT["Hay Bale"] = "HAY_BLOCK"
 # for some reason 2 different griffin feathers exist in item data, with one not even an actual item
 SB_NAME_DICT['Griffin Feather'] = 'GRIFFIN_FEATHER'
-
 # Manually processing base items:
 for i in BASE_ITEMS:
   itemID = SB_NAME_DICT[i]
@@ -479,13 +478,20 @@ for enchant in ENCHANTS_LIST:
     'base_item': False,
     'vanilla': False,
   }
-SB_BITS_SHOP = {"fame_rank":SB_BITS_FACTOR, "filter": SB_BITS_FILTER, "no_filter":SB_BITS_SHOP_1, "no_abicases": SB_BITS_SHOP_2, "no_enrichments": SB_BITS_SHOP_3, "no_abicase_and_enrichments": SB_BITS_SHOP_4}
+SB_BITS_SHOP = {
+  "fame_rank": SB_BITS_FACTOR,
+  "filter": SB_BITS_FILTER,
+  "no_filter": SB_BITS_SHOP_1,
+  "no_abicases": SB_BITS_SHOP_2,
+  "no_enrichments": SB_BITS_SHOP_3,
+  "no_abicase_and_enrichments": SB_BITS_SHOP_4
+}
 
 # for updating data files
 #with open("src/data/items.json", "w") as outfile:
 #  json.dump(SB_ITEM_DICT, outfile)
-with open("src/data/bits_shop.json", "w") as outfile:
-  json.dump(SB_BITS_SHOP, outfile)
+#with open("src/data/bits_shop.json", "w") as outfile:
+#  json.dump(SB_BITS_SHOP, outfile)
 print(SB_ITEM_DICT["SIL_EX"])
 end = time.time()
 print(f"{(end - start)} seconds")
