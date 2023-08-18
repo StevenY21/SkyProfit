@@ -520,12 +520,12 @@ SB_BITS_SHOP = {
 }
 SB_ITEM_DATA = {
   "item_data": SB_ITEM_DICT,
-  "item_to_id": SB_NAME_DICT,
+  "name_to_id": SB_NAME_DICT,
   "fix_item_name": SB_NAME_FIX
 }
 # for updating constants files
-#with open("src/constants/items.json", "w") as outfile:
-#  json.dump(SB_ITEM_DATA, outfile)
+with open("src/constants/items.json", "w") as outfile:
+  json.dump(SB_ITEM_DATA, outfile)
 #with open("src/constants/bits_shop.json", "w") as outfile:
 #  json.dump(SB_BITS_SHOP, outfile)
 print(SB_ITEM_DICT["SIL_EX"])

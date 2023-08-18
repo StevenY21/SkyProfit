@@ -18,10 +18,12 @@ tree = app_commands.CommandTree(client)
 
 sbProperNames = globals.SB_NAME_FIX
 sbItemNames = globals.SB_NAME_DICT
-SB_ITEM_DATA = asyncio.run(
+ITEMS_JSON = asyncio.run(
   functions.req_data(
     'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/constants/items.json'
   ))
+#SB_ITEM_DATA = ITEMS_JSON['item_data']
+#SB_PROPER_NAMES = ITEMS_JSON['fix_item_name']
 SB_BITS_SHOP = asyncio.run(
   functions.req_data(
     'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/constants/bits_shop.json'
