@@ -448,6 +448,37 @@ SB_ITEM_DICT["SMALL_BACKPACK"] = {
   'base_item': False,
   'vanilla': False,
 }
+# bandanas don't exist in public api for some reason
+SB_NAME_DICT["Green Bandana"] = "PET_ITEM_GREEN_BANDANA"
+SB_ITEM_DICT["PET_ITEM_GREEN_BANDANA"] = {
+  'name': "Green Bandana",
+  'material': "SKULL_ITEM",
+  'tier': "EPIC",
+  'category': 'PET_ITEM',
+  'soulbound': 'N/A',
+  'furniture': 'N/A',
+  'generator': 'N/A',
+  'in_bz': False,
+  'in_ah': True,
+  'ah_category': 'misc',
+  'base_item': False,
+  'vanilla': False,
+}
+SB_NAME_DICT["Yellow Bandana"] = "PET_ITEM_YELLOW_BANDANA"
+SB_ITEM_DICT["PET_ITEM_YELLOW_BANDANA"] = {
+  'name': "Yellow Bandana",
+  'material': "SKULL_ITEM",
+  'tier': "RARE",
+  'category': 'PET_ITEM',
+  'soulbound': 'N/A',
+  'furniture': 'N/A',
+  'generator': 'N/A',
+  'in_bz': False,
+  'in_ah': True,
+  'ah_category': 'misc',
+  'base_item': False,
+  'vanilla': False,
+}
 # item name hay bale has both a furniture and the actual thing, which is dumb
 SB_ITEM_DICT["HAY_BLOCK"]['vanilla'] = True
 SB_NAME_DICT["Hay Bale"] = "HAY_BLOCK"
