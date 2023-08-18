@@ -20,7 +20,8 @@ ITEM_FACTOR = {
   "Sulphuric Coal": 0.25,
   "Gold Nugget": 0.111
 }
-NPC_ITEMS = {"Glass Bottle": 6, "Stick": 0}
+# more useful vanilla items that have npc prices, or just can't be excluded due to recipes
+EXCEPTION_ITEMS = {"Glass Bottle": 6, "Stick": 0, "Vines": 0}
 ITEMS_JSON = asyncio.run(
   req_data(
     'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/constants/items.json'
@@ -220,7 +221,6 @@ def get_raw_recipe(recipe):
   start = time.time()
   tempRec = recipe
   recipelst = []  # all recipes that have been created so far
-  propLst = []  # all recipes that will be returned
   rawRecipe = {}
   temp = None
   recSize = len(recipe)
@@ -244,6 +244,10 @@ def get_raw_recipe(recipe):
         #print(temp)
         for mat in temp:
           #print(mat, f"in {temp}")
+          itemID = SB_NAME_ID[mat]
+          if SB_ITEM_DATA[itemID]["vanilla"] and SB_ITEM_DATA[itemID]["in_ah"]:
+            if mat not in EXCEPTION_ITEMS:
+              hasExcluded = True
           if mat not in rawRecipe:
             rawRecipe[mat] = int(math.ceil(tempRec[material] * temp[mat]))
           else:
@@ -253,11 +257,13 @@ def get_raw_recipe(recipe):
       break
     else:
       print(f"raw recipe so far {rawRecipe}")
-      recipelst.append(rawRecipe)
+      if hasExcluded == False:
+        recipelst.append(rawRecipe)
       tempRec = rawRecipe
       recSize = len(rawRecipe)
       rawRecipe = {}
       numDone = 0
+      hasExcluded = False
   end = time.time()
   print(f"get_raw_recipe time {end - start} seconds")
   return recipelst
@@ -273,17 +279,13 @@ def findCost(itemID):
   if SB_ITEM_DATA[itemID]["in_bz"] == False:
     if SB_ITEM_DATA[itemID]["soulbound"] != 'N/A':  # if it is soulboumd
       return -3
-    elif itemName in NPC_ITEMS:  # if it is sold by npc
-      return NPC_ITEMS[itemName]
+    elif itemName in EXCEPTION_ITEMS:  # if it is sold by npc
+      return EXCEPTION_ITEMS[itemName]
     elif SB_ITEM_DATA[itemID]['vanilla'] and SB_ITEM_DATA[itemID][
         'in_ah']:  # for vanilla items found in auction
       # for vanilla items with no recipe
       # so far only applied to vines
-      if itemName == "Vines":
-        return 0
-      # for vanilla items with recipe
-      else:
-        return -4
+      return -4
     else:
       return -1
   else:
