@@ -234,13 +234,11 @@ def get_raw_recipe(recipe):
       #print(material, "curr material to process in get_raw_recipe")
       try:
         temp = procRecs[material]
+        print(f' recipe for {material} found: {temp}')
       except:
         temp = get_item_recipe(material)
       if temp == -1 or temp == -2:
-        if material not in rawRecipe:
-          rawRecipe[material] = tempRec[material]
-        else:
-          rawRecipe[material] += tempRec[material]
+        rawRecipe[material] = tempRec[material]
         numDone += 1
       else:
         #print(temp)
@@ -254,7 +252,7 @@ def get_raw_recipe(recipe):
     if numDone == recSize:
       break
     else:
-      #print(f"raw recipe so far {rawRecipe}")
+      print(f"raw recipe so far {rawRecipe}")
       recipelst.append(rawRecipe)
       tempRec = rawRecipe
       recSize = len(rawRecipe)

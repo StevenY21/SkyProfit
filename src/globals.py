@@ -81,7 +81,7 @@ USEFUL_VANILLA_ITEMS = [
   "Raw Fish", "Salmon", "Pufferfish", "Ender Pearl", "Prismarine Shard",
   "Prismarine Crystals", "Flint", "Obsidian", "Raw Porkchop", "Raw Chicken",
   "Cobblestone", "Raw Beef", "Raw Mutton", "Raw Cod", "Raw Salmon", "Potato",
-  "Carrot", "Red Mushroom", "Brown Mushroom", "Hay Bale"
+  "Carrot", "Red Mushroom", "Brown Mushroom", "Hay Bale", "Magma Cream"
 ]
 SB_UNIQUE_CAT = {}  # all categories in hypixel sb items data
 SB_UNIQUE_TIER = {"SUPREME": False}  # all tiers in hypixel sb items data
@@ -92,7 +92,7 @@ SB_NAME_FIX = {
 BASE_ITEMS = [
   "Lapis Lazuli", "Coal", "Diamond", "Redstone", "Gold Ingot", "Iron Ingot",
   "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block",
-  "Glass Bottle", "Stick"
+  "Glass Bottle", "Stick", "Magma Cream"
 ]
 EXCLUDED_ITEMS = [
   "Block of Coal", "Block of Iron", "Block of Gold", "Block of Diamond",

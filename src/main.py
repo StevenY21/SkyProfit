@@ -6,7 +6,8 @@ import functions
 import re, json, requests
 import os
 from keep_alive import keep_alive
-#import globals if I need to update anything
+#if I need to update anything
+#import globals
 import time
 import aiohttp
 import asyncio
