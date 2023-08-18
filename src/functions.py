@@ -1,15 +1,12 @@
 import re, json, requests
-import globals
+#import globals
 import math
 import asyncio
 import aiohttp
 import time
 
-# key: item names, value: item id
-# due to the fact that some items have same names, the more useless ones got excluded, like decors, cosmetics, and furniture
-sbItemDict = globals.SB_NAME_DICT
 
-
+# for getting JSON data
 async def req_data(link):
   async with aiohttp.ClientSession() as session:
     async with session.get(link) as response:
@@ -24,10 +21,14 @@ ITEM_FACTOR = {
   "Gold Nugget": 0.111
 }
 NPC_ITEMS = {"Glass Bottle": 6, "Stick": 0}
-SB_ITEM_DATA = asyncio.run(
+ITEMS_JSON = asyncio.run(
   req_data(
     'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/constants/items.json'
   ))
+SB_ITEM_DATA = ITEMS_JSON["item_data"]  # key: item id, value: item data
+SB_NAME_ID = ITEMS_JSON["name_to_id"]  # key: item name, value: item id
+
+# note for SB_NAME_ID, due to some ids sharing the same names, IDs for items with "less usefulness" to me are overwritten by the ones that I deem more useful for my commands
 
 
 # check what item tier and item ah category combo exists in item list
@@ -135,7 +136,7 @@ def checkTierCats(itemLst):
     }
   }
   for item in itemLst:
-    itemID = sbItemDict[item]
+    itemID = SB_NAME_ID[item]
     itmTier = SB_ITEM_DATA[itemID]['tier']
     itmCat = SB_ITEM_DATA[itemID]['ah_category']
     if itmCat == 'tools and misc':
@@ -159,7 +160,7 @@ def get_item_recipe(itemName):
   print(f"item being checked {itemName}")
 
   try:
-    itemID = sbItemDict[itemName]
+    itemID = SB_NAME_ID[itemName]
     if SB_ITEM_DATA[itemID]['base_item'] == True:
       return -2
     #get the id from the name

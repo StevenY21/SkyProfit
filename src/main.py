@@ -6,7 +6,7 @@ import functions
 import re, json, requests
 import os
 from keep_alive import keep_alive
-import globals
+#import globals if I need to update anything
 import time
 import aiohttp
 import asyncio
@@ -16,14 +16,13 @@ intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
-sbProperNames = globals.SB_NAME_FIX
-sbItemNames = globals.SB_NAME_DICT
 ITEMS_JSON = asyncio.run(
   functions.req_data(
     'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/constants/items.json'
   ))
-#SB_ITEM_DATA = ITEMS_JSON['item_data']
-#SB_PROPER_NAMES = ITEMS_JSON['fix_item_name']
+SB_ITEM_DATA = ITEMS_JSON["item_data"]
+SB_PROPER_NAMES = ITEMS_JSON["fix_item_name"]
+SB_NAME_ID = ITEMS_JSON["name_to_id"]
 SB_BITS_SHOP = asyncio.run(
   functions.req_data(
     'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/constants/bits_shop.json'
@@ -34,10 +33,11 @@ SB_BITS_SHOP = asyncio.run(
 @tree.command(name="help", description="Help for SkyProfit commands")
 async def getHelp(interaction: discord.Interaction, name: str):
   await interaction.response.send_message("Need help for commands? :thinking:")
-  globals.finalOutput.title = "SkyProfit Commands"
-  globals.finalOutput.description += "- craftprofit [item name]" + "\n" + " - gets regular item recipe, raw material recipe, and 2 alt recipes(if applicable)" + "\n" + " - finds cost to craft item with each recipe, and also returns the profit percentage if you sell item." + "\n" + " - NOTE: ONLY for items that can be made with regular crafting table, and are salable in bazaar or auction house. Currently doesn't work for pets, enchantments, potions, and some random items. Please report to me any items that don't work."
+  res = discord.Embed(title="  ", colour=0x1978E3)
+  res.title = "SkyProfit Commands"
+  res.description += "- craftprofit [item name]" + "\n" + " - gets regular item recipe, raw material recipe, and 2 alt recipes(if applicable)" + "\n" + " - finds cost to craft item with each recipe, and also returns the profit percentage if you sell item." + "\n" + " - NOTE: ONLY for items that can be made with regular crafting table, and are salable in bazaar or auction house. Currently doesn't work for pets, enchantments, potions, and some random items. Please report to me any items that don't work."
 
-  await interaction.edit_original_response(embed=globals.finalOutput)
+  await interaction.edit_original_response(embed=res)
 
 
 @tree.command(name="test", description="testin comamnd")
@@ -48,7 +48,7 @@ async def testChoice(interaction: discord.Interaction, chc: str):
 @testChoice.autocomplete("chc")
 async def testChoice_autocomp(interaction: discord.Interaction, current: str):
   data = []
-  for itemChoice in globals.SB_BITS_DICT:
+  for itemChoice in SB_ITEM_DATA:
     if current.lower() in itemChoice.lower():
       data.append(app_commands.Choice(name=itemChoice, value=itemChoice))
   return data[:5]
@@ -61,11 +61,11 @@ async def testChoice_autocomp(interaction: discord.Interaction, current: str):
 async def craftprofit(interaction: discord.Interaction, name: str):
   testStart = time.time()
   try:
-    name = sbProperNames[name.lower()]
+    name = SB_PROPER_NAMES[name.lower()]
     await interaction.response.send_message("Getting Regular Recipe...")
     regRecipe = await asyncio.to_thread(functions.get_item_recipe, name)
     print(regRecipe, "is reg recipe")
-    itemID = sbItemNames[name]
+    itemID = SB_NAME_ID[name]
     if SB_ITEM_DATA[itemID]['vanilla'] and SB_ITEM_DATA[itemID]['in_ah']:
       await interaction.edit_original_response(
         content="Do not flip vanilla items (well most of them)")
@@ -82,7 +82,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         content=f"Error: {name} does not have valid recipe or any recipe at all"
       )
     else:
-      res = globals.finalOutput
+      res = discord.Embed(title="  ", colour=0x1978E3)
       await interaction.edit_original_response(
         content="Getting Regular Recipe... \nGetting Alt Recipes...")
       recipeLst = await asyncio.to_thread(functions.get_raw_recipe, regRecipe)
@@ -166,14 +166,14 @@ async def craftprofit(interaction: discord.Interaction, name: str):
                     prevPrice[material] /
                     prevRecipe[material]) * currRecipe[material]
             else:
-              matID = sbItemNames[material]
+              matID = SB_NAME_ID[material]
               matCost = await asyncio.to_thread(functions.findCost, matID)
               if matCost < 0:
                 material_price[material] = matCost
               else:
                 material_price[material] = matCost * currRecipe[material]
           else:
-            matID = sbItemNames[material]
+            matID = SB_NAME_ID[material]
             matCost = await asyncio.to_thread(functions.findCost, matID)
             if matCost < 0:
               material_price[material] = matCost
@@ -200,7 +200,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       ahItems = {}
       # for efficiency, all items in both raw and regular recipe will be processed together
       mainItemPrice = round(await asyncio.to_thread(functions.findCost,
-                                                    sbItemNames[name]))
+                                                    SB_NAME_ID[name]))
       #print(f"mainItem Price of {name} in bz: {mainItemPrice}")
       if mainItemPrice == -1:  # if in auction house
         ahItems[name] = -1
@@ -253,7 +253,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
 
       await interaction.edit_original_response(
         content=
-        "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipes' Prices... \nGetting Readable Results. Note that the price for bazaar items are based off the highest buy order price, and the price for auction house items are based off of the lowest BIN."
+        "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipes' Prices... \nGetting Readable Results. Note that the price for bazaar items are based off the highest buy order price, and the price for auction house items are based off of the lowest BIN. Additionally, an item's value is based off its clean version, e.g non-recombombulated."
       )
       res.title = f"{name}'s recipes:"
       # find total cost for each recipe
@@ -373,7 +373,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
       if item == "Compact" or item == "Expertise" or item == "Cultivating" or item == "Hecatomb" or item == "Champion":
         itemID = f"ENCHANTMENT_{item.upper()}_1"
       else:
-        itemID = sbItemNames[item]
+        itemID = SB_NAME_ID[item]
       if SB_ITEM_DATA[itemID]['in_bz'] == True:
         cost = await asyncio.to_thread(functions.findCost, itemID)
       else:
