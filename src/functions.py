@@ -218,11 +218,14 @@ def get_item_recipe(itemName):
 def get_raw_recipe(recipe):
   start = time.time()
   tempRec = recipe
-  recipelst = []
+  recipelst = []  # all recipes that have been created so far
+  propLst = []  # all recipes that will be returned
   rawRecipe = {}
   temp = None
   recSize = len(recipe)
   numDone = 0  # number of items in recipe that have reached its most basic component
+  hasExcluded = False  # has vanilla items that are salable on ah, but shouldn't be bought from AH
+  # the only exception is Vines so far
   procRecs = {}  # all the recipes that have already been processed stored here
   #print(recipe, "recipe to be processed into raw form")
   while True:
@@ -235,6 +238,8 @@ def get_raw_recipe(recipe):
       if temp == -1 or temp == -2:
         if material not in rawRecipe:
           rawRecipe[material] = tempRec[material]
+        else:
+          rawRecipe[material] += tempRec[material]
         numDone += 1
       else:
         #print(temp)
