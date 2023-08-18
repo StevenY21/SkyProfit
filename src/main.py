@@ -28,6 +28,10 @@ SB_BITS_SHOP = asyncio.run(
   functions.req_data(
     'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/constants/bits_shop.json'
   ))
+SB_SKYMART = asyncio.run(
+  functions.req_data(
+    'https://raw.githubusercontent.com/StevenY21/SkyProfit/main/src/constants/copper_shop.json'
+  ))
 
 
 # inv bot: https://discord.com/api/oauth2/authorize?client_id=1117918806224932915&permissions=448824396865&scope=bot
@@ -486,6 +490,69 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   out = await interaction.edit_original_response(embed=embList[0],
                                                  view=my_view)
   my_view.response = out
+
+
+@tree.command(name="copperprofit",
+              description="provides a sorted list showing SkyMart item profits"
+              )
+async def copperprofit(interaction: discord.Interaction):
+  start = time.time()
+  skymartLst = SB_SKYMART['copper_shop']
+  profitDict = {}
+  itemProfitData = {}  # {copper: ,sellPrice: , cPC (coinsPerCopper): }
+  ahLst = []
+  await interaction.response.send_message("Checking Bazaar for items...")
+  for item in skymartLst:
+    itemID = SB_NAME_ID[item]
+    sellPrice = await asyncio.to_thread(functions.findCost, itemID)
+    cpc = 0  # coins per copper
+    if sellPrice <= -1:
+      ahLst += [item]
+    else:
+      cpc = round(sellPrice / SB_SKYMART[item], 2)
+    profitDict[item] = cpc
+    itemProfitData[item] = {
+      "copper": skymartLst[item],
+      "sell_price": sellPrice,
+      "cpc": cpc
+    }
+  await interaction.edit_original_response(
+    content=
+    "Processing filtered Bits Shop items... \nChecking auction house for items..."
+  )
+  ahPrices = await asyncio.to_thread(functions.lowestBin, ahLst)
+  for item in ahPrices:
+    profitDict[item] = ahPrices[item]
+  sortedItms = dict(
+    sorted(profitDict.items(), key=lambda x: x[1], reverse=True))
+  i = 0
+  await interaction.edit_original_response(
+    content=
+    "Processing filtered Bits Shop items... \nChecking auction house for items... \nFinalizing Results"
+  )
+  embed = discord.Embed(
+    title="SkyMart Item Profits",
+    description=
+    "Sell Price based and Coins per Copper based off the lowest bin or highest buy order for item",
+    colour=0x1978E3)
+  for item in sortedItms:
+    copperCost = itemProfitData[item]["copper"]
+    sellPrice = itemProfitData[item]["sell_price"]
+    finalCPC = itemProfitData[item]["cpc"]
+    if finalCPC <= -1:
+      embed.add_field(
+        name=f"{i}. {item}",
+        value=f"Copper: {copperCost} copper\nSell Price: No one is selling it")
+    else:
+      embed.add_field(
+        name=f"{i}. {item}",
+        value=
+        f"Copper: {copperCost} copper\nSell Price: {sellPrice} coins\n Coins Per Copper: {finalCPC} "
+      )
+  ahPrices = await asyncio.to_thread(functions.lowestBin, ahLst)
+  end = time.time()
+  embed.footer = f"Process Time: {round((end-start),2)} seconds"
+  await interaction.edit_original_response(embed=embed)
 
 
 @client.event
