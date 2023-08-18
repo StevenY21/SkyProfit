@@ -486,8 +486,9 @@ for enchant in ENCHANTS_LIST:
   numEnc = len(ENCHANTS_LIST[enchant])
   for lvl in ENCHANTS_LIST[enchant]:
     numLvl = ENCHANT_LVLS[lvl]
-    itemID = f"ENCHANTMENT_{enchant.upper()}_{numLvl}"
-    itemName = ""
+    modName = enchant.replace(" ", "_")
+
+    itemID = f"ENCHANTMENT_{modName.upper()}_{numLvl}"
     if numEnc == 1:
       SB_NAME_DICT[enchant] = itemID
       itemName = enchant

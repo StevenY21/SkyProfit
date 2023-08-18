@@ -509,7 +509,7 @@ async def copperprofit(interaction: discord.Interaction):
     if sellPrice <= -1:
       ahLst += [item]
     else:
-      cpc = round(sellPrice / SB_SKYMART[item], 2)
+      cpc = round(sellPrice / skymartLst[item], 2)
     profitDict[item] = cpc
     itemProfitData[item] = {
       "copper": skymartLst[item],
