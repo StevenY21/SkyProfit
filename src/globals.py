@@ -42,7 +42,7 @@ SB_CATEGORIES = {
   'MEMENTO': 'misc',
   'PET_ITEM': 'blocks and tools and misc',
   'BAIT': 'bz',
-  'FISHING_ROD': 'tool',
+  'FISHING_ROD': 'tools',
   'WAND': 'tools',
   'PORTAL': 'misc',
   'BOW': "weapon",
