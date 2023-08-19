@@ -500,14 +500,14 @@ async def copperprofit(interaction: discord.Interaction):
   skymartLst = SB_SKYMART['copper_shop']
   profitDict = {}
   itemProfitData = {}  # {copper: ,sellPrice: , cPC (coinsPerCopper): }
-  ahLst = []
+  ahLst = {}
   await interaction.response.send_message("Checking Bazaar for items...")
   for item in skymartLst:
     itemID = SB_NAME_ID[item]
     sellPrice = await asyncio.to_thread(functions.findCost, itemID)
     cpc = 0  # coins per copper
     if sellPrice <= -1:
-      ahLst += [item]
+      ahLst[item] = -1
     else:
       cpc = round(sellPrice / skymartLst[item], 2)
     profitDict[item] = cpc
@@ -520,12 +520,16 @@ async def copperprofit(interaction: discord.Interaction):
     content=
     "Processing filtered Bits Shop items... \nChecking auction house for items..."
   )
-  ahPrices = await asyncio.to_thread(functions.lowestBin, ahLst)
-  for item in ahPrices:
-    profitDict[item] = ahPrices[item]
+  ahLst = await asyncio.to_thread(functions.lowestBin, ahLst)
+  for item in ahLst:
+    profitDict[item] = ahLst[item]
+    itemProfitData[item]["sell_price"] = ahLst[item]
+    if ahLst[item] != -1:
+      cpc = round(ahLst[item] / skymartLst[item], 2)
+      itemProfitData[item]["cpc"] = cpc
+      profitDict[item] = cpc
   sortedItms = dict(
     sorted(profitDict.items(), key=lambda x: x[1], reverse=True))
-  i = 0
   await interaction.edit_original_response(
     content=
     "Processing filtered Bits Shop items... \nChecking auction house for items... \nFinalizing Results"
@@ -535,11 +539,12 @@ async def copperprofit(interaction: discord.Interaction):
     description=
     "Sell Price based and Coins per Copper based off the lowest bin or highest buy order for item",
     colour=0x1978E3)
+  i = 1
   for item in sortedItms:
     copperCost = itemProfitData[item]["copper"]
     sellPrice = itemProfitData[item]["sell_price"]
     finalCPC = itemProfitData[item]["cpc"]
-    if finalCPC <= -1:
+    if sellPrice == -1:
       embed.add_field(
         name=f"{i}. {item}",
         value=f"Copper: {copperCost} copper\nSell Price: No one is selling it")
@@ -549,9 +554,9 @@ async def copperprofit(interaction: discord.Interaction):
         value=
         f"Copper: {copperCost} copper\nSell Price: {sellPrice} coins\n Coins Per Copper: {finalCPC} "
       )
-  ahPrices = await asyncio.to_thread(functions.lowestBin, ahLst)
+    i += 1
   end = time.time()
-  embed.footer = f"Process Time: {round((end-start),2)} seconds"
+  embed.set_footer(text=f"Process Time: {round((end-start), 2)} seconds")
   await interaction.edit_original_response(embed=embed)
 
 
