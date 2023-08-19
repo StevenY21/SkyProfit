@@ -479,6 +479,81 @@ SB_ITEM_DICT["PET_ITEM_YELLOW_BANDANA"] = {
   'base_item': False,
   'vanilla': False,
 }
+SB_NAME_DICT["Hive Barn Skin"] = "HIVE_BARN_SKIN"
+SB_ITEM_DICT["HIVE_BARN_SKIN"] = {
+  'name': "Hive Barn Skin",
+  'material': "STAINED_CLAY",
+  'tier': "LEGENDARY",
+  'category': 'COSMETIC',
+  'soulbound': 'N/A',
+  'furniture': 'N/A',
+  'generator': 'N/A',
+  'in_bz': False,
+  'in_ah': True,
+  'ah_category': 'blocks',
+  'base_item': False,
+  'vanilla': False,
+}
+SB_NAME_DICT["Trading Post Barn Skin"] = "TRADING_POST_BARN_SKIN"
+SB_ITEM_DICT["TRADING_POST_BARN_SKIN"] = {
+  'name': "Trading Post Barn Skin",
+  'material': "FENCE",
+  'tier': "UNCOMMON",
+  'category': 'COSMETIC',
+  'soulbound': 'N/A',
+  'furniture': 'N/A',
+  'generator': 'N/A',
+  'in_bz': False,
+  'in_ah': True,
+  'ah_category': 'blocks',
+  'base_item': False,
+  'vanilla': False,
+}
+SB_NAME_DICT["Autumn Hut Barn Skin"] = "AUTUMN_HUT_BARN_SKIN"
+SB_ITEM_DICT["AUTUMN_HUT_BARN_SKIN"] = {
+  'name': "Autumn Hut Barn Skin",
+  'material': "LEAVES",
+  'tier': "UNCOMMON",
+  'category': 'COSMETIC',
+  'soulbound': 'N/A',
+  'furniture': 'N/A',
+  'generator': 'N/A',
+  'in_bz': False,
+  'in_ah': True,
+  'ah_category': 'blocks',
+  'base_item': False,
+  'vanilla': False,
+}
+SB_NAME_DICT["Castle Barn Skin"] = "CASTLE_BARN_SKIN"
+SB_ITEM_DICT["CASTLE_BARN_SKIN"] = {
+  'name': "Castle Barn Skin",
+  'material': "COBBLESTONE",
+  'tier': "LEGENDARY",
+  'category': 'COSMETIC',
+  'soulbound': 'N/A',
+  'furniture': 'N/A',
+  'generator': 'N/A',
+  'in_bz': False,
+  'in_ah': True,
+  'ah_category': 'blocks',
+  'base_item': False,
+  'vanilla': False,
+}
+SB_NAME_DICT["Bamboo Barn Skin"] = "BAMBOO_BARN_SKIN"
+SB_ITEM_DICT["BAMBOO_BARN_SKIN"] = {
+  'name': "Bamboo Barn Skin",
+  'material': "STICK",
+  'tier': "EPIC",
+  'category': 'COSMETIC',
+  'soulbound': 'N/A',
+  'furniture': 'N/A',
+  'generator': 'N/A',
+  'in_bz': False,
+  'in_ah': True,
+  'ah_category': 'misc',
+  'base_item': False,
+  'vanilla': False,
+}
 # item name hay bale has both a furniture and the actual thing, which is dumb
 SB_ITEM_DICT["HAY_BLOCK"]['vanilla'] = True
 SB_NAME_DICT["Hay Bale"] = "HAY_BLOCK"
@@ -559,10 +634,10 @@ SB_ITEM_DATA = {
   "fix_item_name": SB_NAME_FIX
 }
 # for updating constants files
-#with open("src/constants/items.json", "w") as outfile:
-#  json.dump(SB_ITEM_DATA, outfile)
-#with open("src/constants/bits_shop.json", "w") as outfile:
-#  json.dump(SB_BITS_SHOP, outfile)
+with open("src/constants/items.json", "w") as outfile:
+  json.dump(SB_ITEM_DATA, outfile)
+with open("src/constants/bits_shop.json", "w") as outfile:
+  json.dump(SB_BITS_SHOP, outfile)
 print(SB_ITEM_DICT["SIL_EX"])
 end = time.time()
 print(f"{(end - start)} seconds")
