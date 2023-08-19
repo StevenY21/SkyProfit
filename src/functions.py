@@ -140,10 +140,7 @@ def checkTierCats(itemLst):
     itemID = SB_NAME_ID[item]
     itmTier = SB_ITEM_DATA[itemID]['tier']
     itmCat = SB_ITEM_DATA[itemID]['ah_category']
-    if itmCat == 'tools and misc':
-      tierCats[itmTier]['tools'] += [item]
-      tierCats[itmTier]["misc"] += [item]
-    elif itmCat == 'blocks and tools and misc':
+    if itmCat == 'blocks and tools and misc':
       tierCats[itmTier]["blocks"] += [item]
       tierCats[itmTier]["tools"] += [item]
       tierCats[itmTier]["misc"] += [item]

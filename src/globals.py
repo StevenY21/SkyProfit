@@ -42,24 +42,24 @@ SB_CATEGORIES = {
   'MEMENTO': 'misc',
   'PET_ITEM': 'blocks and tools and misc',
   'BAIT': 'bz',
-  'FISHING_ROD': 'tools',
-  'WAND': 'tools',
+  'FISHING_ROD': 'misc',
+  'WAND': 'misc',
   'PORTAL': 'misc',
   'BOW': "weapon",
-  'NONE': 'tools and misc',
+  'NONE': 'misc',
   'DUNGEON_PASS': 'none',
   'ARROW': 'none',
-  'SPADE': 'tools',
-  'PICKAXE': 'tools',
-  'DEPLOYABLE': 'tools',
+  'SPADE': 'misc',
+  'PICKAXE': 'misc',
+  'DEPLOYABLE': 'misc',
   'DRILL': 'tools',
-  'SHEARS': 'tools and misc',
+  'SHEARS': 'misc',
   'BRACELET': 'misc',
   'GAUNTLET': 'misc',
   'LONGSWORD': 'weapon',
   'TRAVEL_SCROLL': 'misc',
   'ARROW_POISON': 'bz',
-  'FISHING_WEAPON': 'tools'
+  'FISHING_WEAPON': 'misc'
 }
 #with open("src/data/test.json", "w") as outfile:
 #  json.dump(SB_CATEGORIES, outfile)
