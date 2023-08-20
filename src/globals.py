@@ -449,8 +449,8 @@ SB_ITEM_DICT["SMALL_BACKPACK"] = {
   'vanilla': False,
 }
 # bandanas don't exist in public api for some reason
-SB_NAME_DICT["Green Bandana"] = "PET_ITEM_GREEN_BANDANA"
-SB_ITEM_DICT["PET_ITEM_GREEN_BANDANA"] = {
+SB_NAME_DICT["Green Bandana"] = "GREEN_BANDANA"
+SB_ITEM_DICT["GREEN_BANDANA"] = {
   'name': "Green Bandana",
   'material': "SKULL_ITEM",
   'tier': "EPIC",
@@ -464,8 +464,8 @@ SB_ITEM_DICT["PET_ITEM_GREEN_BANDANA"] = {
   'base_item': False,
   'vanilla': False,
 }
-SB_NAME_DICT["Yellow Bandana"] = "PET_ITEM_YELLOW_BANDANA"
-SB_ITEM_DICT["PET_ITEM_YELLOW_BANDANA"] = {
+SB_NAME_DICT["Yellow Bandana"] = "YELLOW_BANDANA"
+SB_ITEM_DICT["YELLOW_BANDANA"] = {
   'name': "Yellow Bandana",
   'material': "SKULL_ITEM",
   'tier': "RARE",

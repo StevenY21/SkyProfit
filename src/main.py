@@ -7,7 +7,7 @@ import re, json, requests
 import os
 from keep_alive import keep_alive
 #if I need to update anything
-#import globals
+import globals
 import time
 import aiohttp
 import asyncio
@@ -122,9 +122,6 @@ async def craftprofit(interaction: discord.Interaction, name: str):
             elif mat_prices[material] == -3:
               res.description += " Soulbound"
               mat_prices[material] = 0
-            elif mat_prices[material] == -4:
-              res.description += " See Next Recipe"
-              totalCost = -1
           else:
             mat_prices[material] = round(mat_prices[material])
             res.description += f" {mat_prices[material]} coins."
@@ -225,7 +222,14 @@ async def craftprofit(interaction: discord.Interaction, name: str):
           j += 1
       # places the auction house item costs into the recip cost dict
       if len(ahItems) > 0:
-        ahItems = await asyncio.to_thread(functions.lowestBin, ahItems)
+        ah_data = requests.get("https://moulberry.codes/lowestbin.json").json()
+        #ahItems = await asyncio.to_thread(functions.lowestBin, ahItems)
+        for item in ahItems:
+          itemID = SB_NAME_ID[item]
+          try:
+            ahItems[item] = ah_data[itemID]
+          except:
+            ahItems[item] = -1
         #print(ahItems)
         count = 0
         #print(f"rec list {recipeLst}")
@@ -520,10 +524,16 @@ async def copperprofit(interaction: discord.Interaction):
     content=
     "Processing filtered Bits Shop items... \nChecking auction house for items..."
   )
-  ahLst = await asyncio.to_thread(functions.lowestBin, ahLst)
+  ah_data = requests.get("https://moulberry.codes/lowestbin.json").json()
+  #ahLst = await asyncio.to_thread(functions.lowestBin, ahLst)
   for item in ahLst:
-    profitDict[item] = ahLst[item]
-    itemProfitData[item]["sell_price"] = ahLst[item]
+    itemID = SB_NAME_ID[item]
+    try:
+      profitDict[item] = ah_data[itemID]
+      itemProfitData[item]["sell_price"] = ah_data[itemID]
+    except:
+      profitDict[item] = -1
+      itemProfitData[item]["sell_price"] = ah_data[itemID]
     if ahLst[item] != -1:
       cpc = round(ahLst[item] / skymartLst[item], 2)
       itemProfitData[item]["cpc"] = cpc
