@@ -7,7 +7,7 @@ import re, json, requests
 import os
 from keep_alive import keep_alive
 #if I need to update anything
-#import globals
+import globals
 import time
 import aiohttp
 import asyncio
@@ -400,9 +400,13 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
     content=
     "Processing filtered Bits Shop items... \nChecking auction house for items..."
   )
-  ahDict = await asyncio.to_thread(functions.bitsLowestBin, ahLst)
-  for item in ahDict:
-    costDict[item] = ahDict[item]
+  ah_data = requests.get("https://moulberry.codes/lowestbin.json").json()
+  #ahDict = await asyncio.to_thread(functions.bitsLowestBin, ahLst)
+  for item in ahLst:
+    try:
+      costDict[item] = ah_data[item]
+    except:
+      costDict[item] = -1
   await interaction.edit_original_response(
     content=
     "Processing filtered Bits Shop items... \nChecking auction house for items... \nFinalizing Results"

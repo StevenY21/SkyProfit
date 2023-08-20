@@ -257,6 +257,17 @@ SB_BITS_FACTOR = {
   'Chancellor': 2.24,
   'Supreme': 2.26
 }
+# abicases id
+SB_ABICASES = {
+  "Sumsung© G3 Abicase": "ABICASE_SUMSUNG_1",
+  "Sumsung© GG Abicase": "ABICASE_SUMSUNG_2",
+  "Rezar® Abicase": "ABICASE_REZAR",
+  "Blue™ but Red Abicase": "ABICASE_BLUE_RED",
+  "Actually Blue™ Abicase": "ABICASE_BLUE_BLUE",
+  "Blue™ but Green Abicase": "ABICASE_BLUE_GREEN",
+  "Blue™ but Yellow Abicase": "ABICASE_BLUE_YELLOW",
+  "Lighter Blue™ Abicase": "ABICASE_BLUE_AQUA",
+}
 #create the filters for cookieprofit
 SB_BITS_FILTER = {
   "None": "no_filter",
@@ -561,8 +572,11 @@ SB_NAME_DICT["Hay Bale"] = "HAY_BLOCK"
 SB_NAME_DICT['Griffin Feather'] = 'GRIFFIN_FEATHER'
 # Manually processing base items:
 for i in BASE_ITEMS:
-  itemID = SB_NAME_DICT[i]
+  itemID = SB_NAME_DICT[i]                    
   SB_ITEM_DICT[itemID]['base_item'] = True
+# adding in abicase ids:
+for i in SB_ABICASES:
+  SB_NAME_DICT[i] = SB_ABICASES[i]
 # all salable enchants
 ENCHANTS_LIST = {
   "Expertise": ["I"],
