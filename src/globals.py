@@ -89,11 +89,6 @@ SB_UNIQUE_TIER = {"SUPREME": False}  # all tiers in hypixel sb items data
 SB_NAME_DICT = {}  # key: item name, value: item id
 SB_NAME_FIX = {
 }  # key: item name in lower case, value: item name's proper uppercase form
-BASE_ITEMS = [
-  "Lapis Lazuli", "Coal", "Diamond", "Redstone", "Gold Ingot", "Iron Ingot",
-  "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block",
-  "Glass Bottle", "Stick", "Magma Cream"
-]
 EXCLUDED_ITEMS = [
   "Block of Coal", "Block of Iron", "Block of Gold", "Block of Diamond",
   "Block of Emerald", "Lapis Lazuli Block", "Blaze Powder", "Block of Quartz",
@@ -257,17 +252,7 @@ SB_BITS_FACTOR = {
   'Chancellor': 2.24,
   'Supreme': 2.26
 }
-# abicases id
-SB_ABICASES = {
-  "Sumsung© G3 Abicase": "ABICASE_SUMSUNG_1",
-  "Sumsung© GG Abicase": "ABICASE_SUMSUNG_2",
-  "Rezar® Abicase": "ABICASE_REZAR",
-  "Blue™ but Red Abicase": "ABICASE_BLUE_RED",
-  "Actually Blue™ Abicase": "ABICASE_BLUE_BLUE",
-  "Blue™ but Green Abicase": "ABICASE_BLUE_GREEN",
-  "Blue™ but Yellow Abicase": "ABICASE_BLUE_YELLOW",
-  "Lighter Blue™ Abicase": "ABICASE_BLUE_AQUA",
-}
+
 #create the filters for cookieprofit
 SB_BITS_FILTER = {
   "None": "no_filter",
@@ -571,23 +556,177 @@ SB_NAME_DICT["Hay Bale"] = "HAY_BLOCK"
 # for some reason 2 different griffin feathers exist in item data, with one not even an actual item
 SB_NAME_DICT['Griffin Feather'] = 'GRIFFIN_FEATHER'
 # Manually processing base items:
+BASE_ITEMS = [
+  "Lapis Lazuli", "Coal", "Diamond", "Redstone", "Gold Ingot", "Iron Ingot",
+  "Wheat", "Cobblestone", "Bone", "Emerald", "Slimeball", "Snow Block",
+  "Glass Bottle", "Stick", "Magma Cream", "Leather"
+]
 for i in BASE_ITEMS:
-  itemID = SB_NAME_DICT[i]                    
+  itemID = SB_NAME_DICT[i]
   SB_ITEM_DICT[itemID]['base_item'] = True
 # adding in abicase ids:
+SB_ABICASES = {
+  "Sumsung© G3 Abicase": "ABICASE_SUMSUNG_1",
+  "Sumsung© GG Abicase": "ABICASE_SUMSUNG_2",
+  "Rezar® Abicase": "ABICASE_REZAR",
+  "Blue™ but Red Abicase": "ABICASE_BLUE_RED",
+  "Actually Blue™ Abicase": "ABICASE_BLUE_BLUE",
+  "Blue™ but Green Abicase": "ABICASE_BLUE_GREEN",
+  "Blue™ but Yellow Abicase": "ABICASE_BLUE_YELLOW",
+  "Lighter Blue™ Abicase": "ABICASE_BLUE_AQUA",
+}
 for i in SB_ABICASES:
   SB_NAME_DICT[i] = SB_ABICASES[i]
-# all salable enchants
+# all salable enchants that can be combined in an anvil or created by combining enchants in an anvil
+# and the bits enchants lol
 ENCHANTS_LIST = {
   "Expertise": ["I"],
   "Cultivating": ["I"],
   "Compact": ["I"],
   "Champion": ["I"],
   "Hecatomb": ["I"],
-  "sunder": ["I", "II", "III", "IV", "V"],
-  "green thumb": ["I", "II", "III", "IV", "V"],
-  "dedication": ["I", "II", "III", "IV", "V"]
+  "Sunder": ["I", "II", "III", "IV", "V"],
+  "Green Thumb": ["I", "II", "III", "IV", "V"],
+  "Dedication": ["I", "II", "III", "IV", "V"],
+  "Infinite Quiver": ["VI", "VII", "VIII", "IX", "X"],
+  "Feather Falling": ["VI", "VII", "VIII", "IX", "X"],
+  "Big Brain": ["III", "IV", "V"],
+  "Dragon Hunter": ["I", "II", "III", "IV", "V"],
+  "Mana Steal": ["I", "II", "III"],
+  "Charm": ["I", "II", "III", "IV", "V"],
+  "Pristine": ["I", "II", "III", "IV", "V"],
+  "Prosperity": ["I", "II", "III", "IV", "V"],
+  "Reflection": ["I", "II", "III", "IV", "V"],
+  "Overload": ["I", "II", "III", "IV", "V"],
+  "Quantum": ["III", "IV", "V"],
+  "Smarty Pants": ["I", "II", "III", "IV", "V"],
+  "Transylvanian": ["IV", "V"],
+  "Vicious": ["III", "IV", "V"],
+  "Rejuvenate": ["I", "II", "III", "IV", "V"],
+  "Cayenne": ["IV", "V"],
+  "Tabasco": ["II", "III"],
+  "Strong Mana": ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"],
+  "Ferocious Mana":
+  ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"],
+  "Mana Vampire":
+  ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"],
+  "Hardened Mana":
+  ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"],
+  "Turbo-Cacti": ["I", "II", "III", "IV", "V"],
+  "Turbo-Cane": ["I", "II", "III", "IV", "V"],
+  "Turbo-Carrot": ["I", "II", "III", "IV", "V"],
+  "Turbo-Cocoa": ["I", "II", "III", "IV", "V"],
+  "Turbo-Melon": ["I", "II", "III", "IV", "V"],
+  "Turbo_Mushrooms": ["I", "II", "III", "IV", "V"],
+  "Turbo-Potato": ["I", "II", "III", "IV", "V"],
+  "Turbo-Pumpkin": ["I", "II", "III", "IV", "V"],
+  "Turbo-Warts": ["I", "II", "III", "IV", "V"],
+  "Turbo-Wheat": ["I", "II", "III", "IV", "V"]
 }
+# all salable ult enchants that can be combined in an anvil or created by combining enchants in an anvil
+ULT_ENCHANTS = {
+  "Bank": ["I", "II", "III", "IV", "V"],
+  "Bobbin Time": ["III", "IV", "V"],
+  "Chimera": ["I", "II", "III", "IV", "V"],
+  "Combo": ["I", "II", "III", "IV", "V"],
+  "Duplex": ["I", "II", "III", "IV", "V"],
+  "Fatal Tempo": ["I", "II", "III", "IV", "V"],
+  "Flash": ["I", "II", "III", "IV", "V"],
+  "Habanero Tactics": ["IV", "V"],
+  "Inferno": ["I", "II", "III", "IV", "V"],
+  "Last Stand": ["I", "II", "III", "IV", "V"],
+  "Legion": ["I", "II", "III", "IV", "V"],
+  "No Pain No Gain": ["I", "II", "III", "IV", "V"],
+  "Rend": ["I", "II", "III", "IV", "V"],
+  "Soul Eater": ["I", "II", "III", "IV", "V"],
+  "Swarm": ["I", "II", "III", "IV", "V"],
+  "The One": ["IV", "V"],
+  "Ultimate Jerry": ["I", "II", "III", "IV", "V"],
+  "Ultimate Wise": ["I", "II", "III", "IV", "V"],
+  "Wisdom": ["I", "II", "III", "IV", "V"]
+}
+BITS_ENCHANTS = {
+  "Expertise": ["I"],
+  "Cultivating": ["I"],
+  "Compact": ["I"],
+  "Champion": ["I"],
+  "Hecatomb": ["I"]
+}
+# all these categorized enchants meets the following requiremnts
+# all salable enchants that can be combined in an anvil or created by combining enchants in an anvil
+DUNGEON_ENCHANTS = {
+  "Bank": ["I", "II", "III", "IV", "V"],
+  "Combo": ["I", "II", "III", "IV", "V"],
+  "Rejuvenate": ["I", "II", "III", "IV", "V"],
+  "Infinite Quiver": ["VI", "VII", "VIII", "IX", "X"],
+  "Feather Falling": ["VI", "VII", "VIII", "IX", "X"],
+  "Overload": ["I", "II", "III", "IV", "V"],
+  "Last Stand": ["I", "II", "III", "IV", "V"],
+  "Legion": ["I", "II", "III", "IV", "V"],
+  "No Pain No Gain": ["I", "II", "III", "IV", "V"],
+  "Rend": ["I", "II", "III", "IV", "V"],
+  "Soul Eater": ["I", "II", "III", "IV", "V"],
+  "Swarm": ["I", "II", "III", "IV", "V"],
+  "Ultimate Jerry": ["I", "II", "III", "IV", "V"],
+  "Ultimate Wise": ["I", "II", "III", "IV", "V"],
+  "Wisdom": ["I", "II", "III", "IV", "V"]
+}
+FARMING_ENCHANTS = {
+  "Sunder": ["I", "II", "III", "IV", "V"],
+  "Green Thumb": ["I", "II", "III", "IV", "V"],
+  "Dedication": ["I", "II", "III", "IV", "V"],
+  "Turbo-Cacti": ["I", "II", "III", "IV", "V"],
+  "Turbo-Cane": ["I", "II", "III", "IV", "V"],
+  "Turbo-Carrot": ["I", "II", "III", "IV", "V"],
+  "Turbo-Cocoa": ["I", "II", "III", "IV", "V"],
+  "Turbo-Melon": ["I", "II", "III", "IV", "V"],
+  "Turbo_Mushrooms": ["I", "II", "III", "IV", "V"],
+  "Turbo-Potato": ["I", "II", "III", "IV", "V"],
+  "Turbo-Pumpkin": ["I", "II", "III", "IV", "V"],
+  "Turbo-Warts": ["I", "II", "III", "IV", "V"],
+  "Turbo-Wheat": ["I", "II", "III", "IV", "V"]
+}
+FISHING_ENCHANTS = {
+  "Flash": ["I", "II", "III", "IV", "V"],
+  "Charm": ["I", "II", "III", "IV", "V"],
+  "Bobbin Time": ["III", "IV", "V"],
+  "Legion": ["I", "II", "III", "IV", "V"]
+}
+KUUDRA_ENCHANTS = {
+  "Strong Mana": ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"],
+  "Ferocious Mana":
+  ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"],
+  "Mana Vampire":
+  ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"],
+  "Hardened Mana":
+  ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"],
+  "Inferno": ["I", "II", "III", "IV", "V"],
+  "Fatal Tempo": ["I", "II", "III", "IV", "V"]
+}
+RIFT_ENCHANTS = {
+  "Reflection": ["I", "II", "III", "IV", "V"],
+  "Transylvanian": ["IV", "V"],
+  "Quantum": ["III", "IV", "V"]
+}
+EQUIPMENT_ENCHANTS = {
+  "Cayenne": ["IV", "V"],
+  "Green Thumb": ["I", "II", "III", "IV", "V"],
+  "Prosperity": ["I", "II", "III", "IV", "V"],
+  "Quantum": ["III", "IV", "V"]
+}
+SLAYER_ENCHANTS = {
+  "Smarty Pants": ["I", "II", "III", "IV", "V"],
+  "Mana Steal": ["I", "II", "III"],
+}
+DA_ENCHANTS = {"Big Brain": ["III", "IV", "V"], "Vicious": ["III", "IV", "V"]}
+CHILI_PEPPER_ENCHANTS = {
+  "Cayenne": ["IV", "V"],
+  "Tabasco": ["II", "III"],
+  "Habanero Tactics": ["IV", "V"],
+  "Duplex": ["I", "II", "III", "IV", "V"]
+}
+# idk how to categorize pristine lol
+PRISTINE_ENCHANT = {"Pristine": ["I", "II", "III", "IV", "V"]}
 # all possible enchant levels
 ENCHANT_LVLS = {
   "I": "1",
@@ -607,19 +746,49 @@ for enchant in ENCHANTS_LIST:
   for lvl in ENCHANTS_LIST[enchant]:
     numLvl = ENCHANT_LVLS[lvl]
     modName = enchant.replace(" ", "_")
-
-    itemID = f"ENCHANTMENT_{modName.upper()}_{numLvl}"
+    modName = modName.replace("-", "_")
+    itemID = ""
+    if enchant == "Turbo-Cacti":
+      itemID = f"ENCHANTMENT_TURBO_CACTUS_{numLvl}"
+    else:
+      itemID = f"ENCHANTMENT_{modName.upper()}_{numLvl}"
     if numEnc == 1:
       SB_NAME_DICT[enchant] = itemID
       itemName = enchant
     else:
       # sunder does not use roman numerals for some reason
-      if enchant == "sunder" and lvl != "I":
+      if enchant == "Sunder" and lvl != "I":
         SB_NAME_DICT[f"{enchant} {numLvl}"] = itemID
         itemName = f"{enchant} {numLvl}"
       else:
         SB_NAME_DICT[f"{enchant} {lvl}"] = itemID
         itemName = f"{enchant} {lvl}"
+    SB_ITEM_DICT[itemID] = {
+      'name': itemName,
+      'material': "ENCHANTED_BOOK",
+      'tier': "UNTIERED",
+      'category': 'ENCHANTMENT',
+      'soulbound': 'N/A',
+      'furniture': 'N/A',
+      'generator': 'N/A',
+      'in_bz': True,
+      'in_ah': False,
+      'ah_category': 'bz',
+      'base_item': False,
+      'vanilla': False,
+    }
+for enchant in ULT_ENCHANTS:
+  for lvl in ULT_ENCHANTS[enchant]:
+    numLvl = ENCHANT_LVLS[lvl]
+    modName = enchant.replace(" ", "_")
+    modName = modName.replace("-", "_")
+    itemID = ""
+    if "Ultimate" not in enchant:
+      itemID = f"ENCHANTMENT_ULTIMATE_{modName.upper()}_{numLvl}"
+    else:
+      itemID = f"ENCHANTMENT_{modName.upper()}_{numLvl}"
+    itemName = f"{enchant} {lvl}"
+    SB_NAME_DICT[itemName] = itemID
     SB_ITEM_DICT[itemID] = {
       'name': itemName,
       'material': "ENCHANTED_BOOK",
