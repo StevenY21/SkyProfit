@@ -7,7 +7,7 @@ import re, json, requests
 import os
 from keep_alive import keep_alive
 #if I need to update anything
-import globals
+#import globals
 import time
 import aiohttp
 import asyncio
@@ -534,10 +534,10 @@ async def copperprofit(interaction: discord.Interaction):
     itemID = SB_NAME_ID[item]
     try:
       profitDict[item] = ah_data[itemID]
-      itemProfitData[item]["sell_price"] = ah_data[itemID]
+      itemProfitData[item]["sell_price"] = profitDict[item]
     except:
       profitDict[item] = -1
-      itemProfitData[item]["sell_price"] = ah_data[itemID]
+      itemProfitData[item]["sell_price"] = -1
     if ahLst[item] != -1:
       cpc = round(ahLst[item] / skymartLst[item], 2)
       itemProfitData[item]["cpc"] = cpc
