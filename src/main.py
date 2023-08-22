@@ -551,7 +551,7 @@ async def copperprofit(interaction: discord.Interaction):
   embed = discord.Embed(
     title="SkyMart Item Profits",
     description=
-    "Sell Price based and Coins per Copper based off the lowest bin or highest buy order for item",
+    "Sell Price and Coins per Copper based off the lowest bin or highest buy order for item",
     colour=0x1978E3)
   i = 1
   for item in sortedItms:
