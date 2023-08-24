@@ -752,6 +752,7 @@ for enchant in ENCHANTS_LIST:
       itemID = f"ENCHANTMENT_TURBO_CACTUS_{numLvl}"
     else:
       itemID = f"ENCHANTMENT_{modName.upper()}_{numLvl}"
+    itemName = ""
     if numEnc == 1:
       SB_NAME_DICT[enchant] = itemID
       itemName = enchant
@@ -777,6 +778,7 @@ for enchant in ENCHANTS_LIST:
       'base_item': False,
       'vanilla': False,
     }
+    SB_NAME_FIX[itemName.lower()] = itemName
 for enchant in ULT_ENCHANTS:
   for lvl in ULT_ENCHANTS[enchant]:
     numLvl = ENCHANT_LVLS[lvl]
@@ -803,6 +805,7 @@ for enchant in ULT_ENCHANTS:
       'base_item': False,
       'vanilla': False,
     }
+    SB_NAME_FIX[itemName.lower()] = itemName
 SB_BITS_SHOP = {
   "fame_rank": SB_BITS_FACTOR,
   "filter": SB_BITS_FILTER,

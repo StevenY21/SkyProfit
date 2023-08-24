@@ -161,6 +161,12 @@ def get_item_recipe(itemName):
     itemID = SB_NAME_ID[itemName]
     if SB_ITEM_DATA[itemID]['base_item'] == True:
       return -2
+    if SB_ITEM_DATA[itemID]["category"] == "ENCHANTMENT":
+      idLen = len(itemID)
+      enchLvl = itemID[-1]
+      itemID = itemID[12:(idLen-2)]
+      itemID += (f";{enchLvl}")
+      print(itemID)
     #get the id from the name
     newItemID = ''
     if ':' in itemID:
@@ -295,107 +301,3 @@ def findCost(itemID):
       return -2
     else:
       return itemSellPrice[0]["pricePerUnit"]
-
-
-# takes in already valid item names, check ah for lowest bin
-# assume all items in itemLst properly capitalized
-def lowestBin(itemLst):
-  start = time.time()
-  pg = 0
-  print("auction item list", itemLst)
-  tierCats = checkTierCats(itemLst)
-  while True:
-    data = asyncio.run(
-      req_data(f"https://api.hypixel.net/skyblock/auctions?page={pg}"))
-    if data["success"] == False:
-      print("test", pg, "last pg reached")
-      break
-    else:
-      print("test", pg)
-      for auction in data["auctions"]:
-        aucName = auction["item_name"]
-        if auction["bin"] == True:
-          aucTier = auction["tier"]
-          aucCat = auction['category']
-          tierCat = tierCats[aucTier][aucCat]
-          if tierCat != []:
-            if aucTier == 'SPECIAL' or aucTier == 'VERY_SPECIAL':
-              for i in tierCat:
-                if i == aucName:
-                  print(aucName, f"on pg {pg}")
-                  if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
-                    print(f"new lowest price for{i} found")
-                    itemLst[i] = auction["starting_bid"]
-                  break
-            else:
-              for i in tierCat:
-                if i in aucName:
-                  print(aucName, f"on pg {pg}")
-                  if itemLst[i] == -1 or auction["starting_bid"] < itemLst[i]:
-                    print(f"new lowest price for {i} found")
-                    itemLst[i] = auction["starting_bid"]
-                  break
-      pg += 1
-  print("itemLst", itemLst)
-  end = time.time()
-  print(f"lowestBin process time {end - start} seconds")
-  return itemLst
-
-
-# trying out a lowest bin for bits
-# assume all items in dict are valid and properly spelled
-def bitsLowestBin(itmDict):
-  start = time.time()
-  tierDict = {
-    'SUPREME': False,
-    'RARE': True,
-    'MYTHIC': False,
-    'LEGENDARY': True,
-    'EPIC': True,
-    'UNCOMMON': False,
-    'UNTIERED': False,
-    'COMMON': False,
-    'VERY_SPECIAL': False,
-    'SPECIAL': True,
-    'UNOBTAINABLE': False
-  }
-  ahCats = {
-    "weapon": False,
-    "armor": False,
-    "accessories": True,
-    "consumables": True,
-    "blocks": True,
-    "tools": True,
-    "misc": True
-  }
-  pg = 0
-  print("auction item list", itmDict)
-  while True:
-    data = asyncio.run(
-      req_data(f"https://api.hypixel.net/skyblock/auctions?page={pg}"))
-    if data["success"] == False:
-      print("test", pg, "last pg reached")
-      break
-    else:
-      #print("test", pg)
-      for auction in data["auctions"]:
-        if auction["bin"] == True:
-          aucItm = auction["item_name"]
-          itmCat = auction["category"]
-          itmTier = auction["tier"]
-          if tierDict[itmTier] == True and ahCats[itmCat] == True:
-            try:
-              aucItm = auction["item_name"]
-              itmVal = itmDict[aucItm]
-              aucItm
-              #print(auction["item_name"], f"on pg {pg}")
-              aucPrice = auction["starting_bid"]
-              if itmVal == -1 or aucPrice < itmVal:
-                itmDict[aucItm] = aucPrice
-            except:
-              pass
-    pg += 1
-  print("itemLst", itmDict)
-  end = time.time()
-  print(f"bitsLowestBin process time {end - start} seconds")
-  return itmDict
