@@ -367,6 +367,7 @@ for item in SB_ITEMS_DATA["items"]:
   else:
     SB_ITEM_DICT[itemID]['vanilla'] = False
 # manually fix some strange items
+SB_NAME_DICT["Enchanted Clownfish"] = "ENCHANTED_CLOWNFISH"
 SB_ITEM_DICT["SPECKLED_MELON"]['vanilla'] = True
 SB_ITEM_DICT["SPECKLED_MELON"]['in_ah'] = True
 SB_NAME_DICT["Jumbo Backpack"] = "JUMBO_BACKPACK"

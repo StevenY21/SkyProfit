@@ -80,7 +80,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
     elif regRecipe == None or regRecipe == -1:
       await interaction.edit_original_response(
         content=
-        f"Error: {name} not found. Check if the item name is spelled correctly, or that it can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable"
+        f"Error: {name} not found. Check if the item has a recipe, and that it can be sold on Auction House or Bazaar. REMEMBER: Pets and Enchantment Books are currently not applicable"
       )
     elif regRecipe == -2:
       await interaction.edit_original_response(
@@ -91,8 +91,6 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       await interaction.edit_original_response(
         content="Getting Regular Recipe... \nGetting Alt Recipes...")
       recipeLst = await asyncio.to_thread(functions.get_raw_recipe, regRecipe)
-      print(f"recipeLst {recipeLst}")
-      rawRecipe = {}
       if len(recipeLst) == 0:  # when regular and raw recipe the same
         recipeLst += [regRecipe]
       elif len(recipeLst) > 3:  # when there are too many recipes
@@ -101,9 +99,8 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         tempRecLst += [recipeLst[-2]]
         tempRecLst += [recipeLst[-1]]
         recipeLst = tempRecLst
-      rawRecipe = recipeLst[-1]
-
-      print(rawRecipe, "is raw recipe")
+      #rawRecipe = recipeLst[-1]
+      #print(rawRecipe, "is raw recipe")
 
       # process the cost of the materials into proper sentences
       def processCosts(mat_prices, curr_recipe):
