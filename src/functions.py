@@ -32,126 +32,6 @@ SB_NAME_ID = ITEMS_JSON["name_to_id"]  # key: item name, value: item id
 # note for SB_NAME_ID, due to some ids sharing the same names, IDs for items with "less usefulness" to me are overwritten by the ones that I deem more useful for my commands
 
 
-# check what item tier and item ah category combo exists in item list
-def checkTierCats(itemLst):
-  start = time.time()
-  tierCats = {
-    'SUPREME': {
-      "weapon": [],
-      "armor": [],
-      "accessories": [],
-      "consumables": [],
-      "blocks": [],
-      "tools": [],
-      "misc": []
-    },
-    'RARE': {
-      "weapon": [],
-      "armor": [],
-      "accessories": [],
-      "consumables": [],
-      "blocks": [],
-      "tools": [],
-      "misc": []
-    },
-    'MYTHIC': {
-      "weapon": [],
-      "armor": [],
-      "accessories": [],
-      "consumables": [],
-      "blocks": [],
-      "tools": [],
-      "misc": []
-    },
-    'LEGENDARY': {
-      "weapon": [],
-      "armor": [],
-      "accessories": [],
-      "consumables": [],
-      "blocks": [],
-      "tools": [],
-      "misc": []
-    },
-    'EPIC': {
-      "weapon": [],
-      "armor": [],
-      "accessories": [],
-      "consumables": [],
-      "blocks": [],
-      "tools": [],
-      "misc": []
-    },
-    'UNCOMMON': {
-      "weapon": [],
-      "armor": [],
-      "accessories": [],
-      "consumables": [],
-      "blocks": [],
-      "tools": [],
-      "misc": []
-    },
-    'UNTIERED': {
-      "weapon": [],
-      "armor": [],
-      "accessories": [],
-      "consumables": [],
-      "blocks": [],
-      "tools": [],
-      "misc": []
-    },
-    'COMMON': {
-      "weapon": [],
-      "armor": [],
-      "accessories": [],
-      "consumables": [],
-      "blocks": [],
-      "tools": [],
-      "misc": []
-    },
-    'VERY_SPECIAL': {
-      "weapon": [],
-      "armor": [],
-      "accessories": [],
-      "consumables": [],
-      "blocks": [],
-      "tools": [],
-      "misc": []
-    },
-    'SPECIAL': {
-      "weapon": [],
-      "armor": [],
-      "accessories": [],
-      "consumables": [],
-      "blocks": [],
-      "tools": [],
-      "misc": []
-    },
-    'UNOBTAINABLE': {
-      "weapon": [],
-      "armor": [],
-      "accessories": [],
-      "consumables": [],
-      "blocks": [],
-      "tools": [],
-      "misc": []
-    }
-  }
-  for item in itemLst:
-    itemID = SB_NAME_ID[item]
-    itmTier = SB_ITEM_DATA[itemID]['tier']
-    itmCat = SB_ITEM_DATA[itemID]['ah_category']
-    if itmCat == 'blocks and tools and misc':
-      tierCats[itmTier]["blocks"] += [item]
-      tierCats[itmTier]["tools"] += [item]
-      tierCats[itmTier]["misc"] += [item]
-    else:
-      tierCats[itmTier][itmCat] += [item]
-  print(tierCats)
-  end = time.time()
-  print(f'checkTierCats done in {end-start} seconds')
-  return tierCats
-
-
 #get item name to item recipe
 # assume item name is fixed to proper form
 def get_item_recipe(itemName):
@@ -164,22 +44,14 @@ def get_item_recipe(itemName):
     if SB_ITEM_DATA[itemID]["category"] == "ENCHANTMENT":
       idLen = len(itemID)
       enchLvl = itemID[-1]
-      itemID = itemID[12:(idLen-2)]
+      itemID = itemID[12:(idLen - 2)]
       itemID += (f";{enchLvl}")
       print(itemID)
     #get the id from the name
-    newItemID = ''
-    if ':' in itemID:
-      for j in itemID:
-        if j == ':':
-          newItemID += '-'
-        else:
-          newItemID += j
-    else:
-      newItemId = itemID
+    itemID.replace(":", "-")
     itemData2 = asyncio.run(
       req_data(
-        f'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/{newItemId}.json'
+        f'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/{itemID}.json'
       ))
     recipeData = itemData2['recipe']
     #make english readable
