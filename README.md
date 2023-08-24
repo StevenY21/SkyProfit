@@ -20,4 +20,6 @@ In the works(higher up USUALLY means higher priority, but I'm consistent with th
 - /ah [item]: finds all instances of the item in BIN and lists them from highest to lowest, and attempts to calculate ah flip profit of the item
 
 
-Data sourced from: Hypixel Public API and NotEnoughUpdates Master Repo
+Hypixel Skyblock Bazaar and General Item Data Source: Hypixel Public API 
+Hypixel Skyblock Item Recipe Data Source: NotEnoughUpdates Master Repo
+Hypixel Skyblock Auction House Data(Lowest BINS of all items on AH): https://moulberry.codes/lowestbin.json
