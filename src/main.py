@@ -506,7 +506,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
 async def copperprofit(interaction: discord.Interaction):
   start = time.time()
   skymartLst = SB_SKYMART['copper_shop']
-  profitDict = {} # key: item name, value: coins per copper
+  profitDict = {}  # key: item name, value: coins per copper
   itemProfitData = {}  # {copper: ,sellPrice: , cPC (coinsPerCopper): }
   ahLst = {}
   await interaction.response.send_message("Checking Bazaar for items...")
@@ -534,7 +534,8 @@ async def copperprofit(interaction: discord.Interaction):
     itemID = SB_NAME_ID[item]
     try:
       itemProfitData[item]["sell_price"] = ah_data[itemID]
-      profitDict[item] = round(itemProfitData[item]["sell_price"] / skymartLst[item], 2)    
+      profitDict[item] = round(
+        itemProfitData[item]["sell_price"] / skymartLst[item], 2)
       itemProfitData[item]["cpc"] = profitDict[item]
     except:
       profitDict[item] = -1
