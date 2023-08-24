@@ -154,7 +154,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         for material in currRecipe:
           print(f"curr processed: {material}")
           if prevRecipe != None:
-            if material in prevRecipe:
+            try:
               if prevRecipe[material] == currRecipe[material]:
                 material_price[material] = prevPrice[material]
               else:
@@ -164,7 +164,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
                   material_price[material] = (
                     prevPrice[material] /
                     prevRecipe[material]) * currRecipe[material]
-            else:
+            except:
               matID = SB_NAME_ID[material]
               matCost = await asyncio.to_thread(functions.findCost, matID)
               if matCost < 0:
@@ -187,33 +187,26 @@ async def craftprofit(interaction: discord.Interaction, name: str):
           prevRecipe = currRecipe
           currRecipe = fullLst[i]
           prevPrice = recipeCosts[-1]
-      #print(f"rec list {recipeLst}")
-      #recipeCosts.append(getCosts(recipeLst[-2], rawRecipe))
       costEnd = time.time()
       print(f"getCosts time {costEnd - costStrt} seconds")
       await interaction.edit_original_response(
         content=
         "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipe Prices... \nNote that if any items are from the auction house, it will take a little longer :slight_smile:"
       )
-      #print(f"rec costs: {recipeCosts}")
       ahItems = {}
       # for efficiency, all items in both raw and regular recipe will be processed together
       mainItemPrice = round(await asyncio.to_thread(functions.findCost,
                                                     SB_NAME_ID[name]))
-      #print(f"mainItem Price of {name} in bz: {mainItemPrice}")
       if mainItemPrice == -1:  # if in auction house
         ahItems[name] = -1
       j = 0
       costsLen = len(recipeCosts)
       prevPrice = recipeCosts[0]
-      #print(recipeCosts, "check for auction items")
       while True:
         if j == costsLen:
           break
         else:
-          #print(recipeCosts[j])
           for mat in recipeCosts[j]:
-            #print(f"checking {recipeCosts[j]} for auction stuff")
             if recipeCosts[j][mat] == -1:
               ahItems[mat] = -1
           j += 1
@@ -227,21 +220,16 @@ async def craftprofit(interaction: discord.Interaction, name: str):
             ahItems[item] = ah_data[itemID]
           except:
             ahItems[item] = -1
-        #print(ahItems)
         count = 0
-        #print(f"rec list {recipeLst}")
         for i in (ahItems):
           for j in range(len(recipeCosts)):
             if i in recipeCosts[j]:
-              #print(f"{i} is in current rec {recipeCosts[j]}")
               if count == 0:
-                #print(f"landed in regular recipe for {i}")
                 if ahItems[i] == -1:
                   recipeCosts[j][i] = -1
                 else:
                   recipeCosts[j][i] = regRecipe[i] * ahItems[i]
               elif count > 0:
-                #print("landed in alt recipes")
                 if ahItems[i] == -1:
                   recipeCosts[j][i] = -1
                 else:
@@ -250,7 +238,6 @@ async def craftprofit(interaction: discord.Interaction, name: str):
                 count = 0
               else:
                 count += 1
-              #print(recipeCosts[j], "testin change to the recipe")
             else:
               count += 1
           count = 0
@@ -265,7 +252,6 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       # find total cost for each recipe
       recipeTotals = []
       i = 0
-      #print(f"rec costs {recipeCosts}")
       while True:
         if i == 0:
           res.description = "__**Regular Recipe:**__"
@@ -306,7 +292,6 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         i = 0
         print("check point creating profit % ")
         while True:
-          #print(i)
           profit = 0
           profitPercent = 0
           if i == len(recipeCosts):
