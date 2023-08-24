@@ -378,11 +378,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
       temp = item
       if temp == "1 Inferno Fuel Block" or item == "64 Inferno Fuel Blocks":
         item = "Inferno Fuel Block"
-      itemID = ""
-      if item == "Compact" or item == "Expertise" or item == "Cultivating" or item == "Hecatomb" or item == "Champion":
-        itemID = f"ENCHANTMENT_{item.upper()}_1"
-      else:
-        itemID = SB_NAME_ID[item]
+      itemID = SB_NAME_ID[item]
       if SB_ITEM_DATA[itemID]['in_bz'] == True:
         cost = await asyncio.to_thread(functions.findCost, itemID)
       else:
@@ -403,8 +399,9 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   ah_data = requests.get("https://moulberry.codes/lowestbin.json").json()
   #ahDict = await asyncio.to_thread(functions.bitsLowestBin, ahLst)
   for item in ahLst:
+    itemID = SB_NAME_ID[item]
     try:
-      costDict[item] = ah_data[item]
+      costDict[item] = ah_data[itemID]
     except:
       costDict[item] = -1
   await interaction.edit_original_response(
