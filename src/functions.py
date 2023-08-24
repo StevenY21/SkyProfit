@@ -62,11 +62,23 @@ def get_item_recipe(itemName):
       if recipeData[section] != '':
         item = recipeData[section].split(':')
         itemID = item[0]
+        fixedID = ""
+        itemName2 = ""
         itemID.replace("-", ":")
-        if itemName in properRecipe:
-          properRecipe[itemName] += int(item[1])
+        if "-" in itemID:
+          for chr in itemID:
+            if chr == '-':
+              fixedID += ':'
+            else:
+              fixedID += chr
+
+          itemName2 = SB_ITEM_DATA[fixedID]['name']
         else:
-          properRecipe[itemName] = int(item[1])
+          itemName2 = SB_ITEM_DATA[itemID]['name']
+        if itemName2 in properRecipe:
+          properRecipe[itemName2] += int(item[1])
+        else:
+          properRecipe[itemName2] = int(item[1])
     try:
       factor = ITEM_FACTOR[itemName]
       print(f"special item hit {itemName}")
