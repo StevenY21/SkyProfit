@@ -151,9 +151,9 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       i = 0
       while True:
         material_price = {}
-        for material in currRecipe:
-          print(f"curr processed: {material}")
-          if prevRecipe != None:
+        if prevRecipe != None:
+          for material in currRecipe:
+            print(f"curr processed: {material}")
             try:
               if prevRecipe[material] == currRecipe[material]:
                 material_price[material] = prevPrice[material]
@@ -171,7 +171,8 @@ async def craftprofit(interaction: discord.Interaction, name: str):
                 material_price[material] = matCost
               else:
                 material_price[material] = matCost * currRecipe[material]
-          else:
+        else:
+          for material in currRecipe:
             matID = SB_NAME_ID[material]
             matCost = await asyncio.to_thread(functions.findCost, matID)
             if matCost < 0:

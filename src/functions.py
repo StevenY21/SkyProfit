@@ -140,17 +140,15 @@ def findCost(itemID):
   #print(f"item id being checked: {item_ID}")
   start = time.time()
   itemName = SB_ITEM_DATA[itemID]['name']
-  SB_ITEM_DATA[itemID]["in_bz"]
   if SB_ITEM_DATA[itemID]["in_bz"] == False:
     if SB_ITEM_DATA[itemID]["soulbound"] != 'N/A':  # if it is soulboumd
       return -3
-    elif itemName in EXCEPTION_ITEMS:  # if it is sold by npc
-      return EXCEPTION_ITEMS[itemName]
     elif SB_ITEM_DATA[itemID]['vanilla'] and SB_ITEM_DATA[itemID][
         'in_ah']:  # for vanilla items found in auction
       # for vanilla items with no recipe
-      # so far only applied to vines
       return -4
+    elif itemName in EXCEPTION_ITEMS:  # if it is sold by npc
+      return EXCEPTION_ITEMS[itemName]
     else:
       return -1
   else:
