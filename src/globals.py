@@ -551,6 +551,8 @@ SB_ITEM_DICT["BAMBOO_BARN_SKIN"] = {
   'base_item': False,
   'vanilla': False,
 }
+SB_NAME_DICT[
+  "God Potion"] = "GOD_POTION_2"  # legacy god potion is GOD_POTION, while the current one is GOD_POTION_2
 # item name hay bale has both a furniture and the actual thing, which is dumb
 SB_ITEM_DICT["HAY_BLOCK"]['vanilla'] = True
 SB_NAME_DICT["Hay Bale"] = "HAY_BLOCK"
