@@ -7,7 +7,7 @@ import re, json, requests
 import os
 from keep_alive import keep_alive
 #if I need to update anything
-import globals
+#import globals
 import time
 import aiohttp
 import asyncio
@@ -145,32 +145,41 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       fullLst = [regRecipe] + recipeLst
       recipeCosts = []
       prevRecipe = None
-      prevPrice = None
       currRecipe = fullLst[0]
       numRecs = len(fullLst)
+      procMats = {
+      }  # dict with key being material name, value being if it has a price already
+      matCosts = {}  # key: material name, value: material price
+      for i in fullLst:
+        for mat in i:
+          procMats[mat] = False
       i = 0
       while True:
         material_price = {}
         if prevRecipe != None:
           for material in currRecipe:
             print(f"curr processed: {material}")
-            try:
+            if procMats[material] == True:
+              #try:
               if prevRecipe[material] == currRecipe[material]:
-                material_price[material] = prevPrice[material]
+                material_price[material] = matCosts[material]
               else:
-                if prevPrice[material] < 0:
-                  material_price[material] = prevPrice[material]
+                if matCosts[material] < 0:
+                  material_price[material] = matCosts[material]
                 else:
                   material_price[material] = (
-                    prevPrice[material] /
+                    matCosts[material] /
                     prevRecipe[material]) * currRecipe[material]
-            except:
+            #except:
+            else:
               matID = SB_NAME_ID[material]
               matCost = await asyncio.to_thread(functions.findCost, matID)
               if matCost < 0:
                 material_price[material] = matCost
               else:
                 material_price[material] = matCost * currRecipe[material]
+              matCosts[material] = matCost
+              procMats[material] = True
         else:
           for material in currRecipe:
             matID = SB_NAME_ID[material]
@@ -187,13 +196,13 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         else:
           prevRecipe = currRecipe
           currRecipe = fullLst[i]
-          prevPrice = recipeCosts[-1]
       costEnd = time.time()
       print(f"getCosts time {costEnd - costStrt} seconds")
       await interaction.edit_original_response(
         content=
         "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipe Prices... \nNote that if any items are from the auction house, it will take a little longer :slight_smile:"
       )
+      chkptStrt = time.time()
       ahItems = {}
       # for efficiency, all items in both raw and regular recipe will be processed together
       mainItemPrice = round(await asyncio.to_thread(functions.findCost,
@@ -202,7 +211,6 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         ahItems[name] = -1
       j = 0
       costsLen = len(recipeCosts)
-      prevPrice = recipeCosts[0]
       while True:
         if j == costsLen:
           break
@@ -328,6 +336,8 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       res.set_footer(
         text="Recipe Data By: NotEnoughUpdates" +
         f"\nProcess Time: {round((testEnd-testStart), 2)} seconds")
+      chkptEnd = time.time()
+      print(f"time to process final results: {chkptEnd - chkptStrt} seconds ")
       await interaction.edit_original_response(embed=res)
   except:
     await interaction.response.send_message(
