@@ -136,9 +136,8 @@ def get_raw_recipe(recipe):
 
 # gets items bazaar cost
 # can assume id is valid
-def findCost(itemID):
+def findCost(itemID, bzData):
   #print(f"item id being checked: {item_ID}")
-  start = time.time()
   itemName = SB_ITEM_DATA[itemID]['name']
   if SB_ITEM_DATA[itemID]["in_bz"] == False:
     if SB_ITEM_DATA[itemID]["soulbound"] != 'N/A':  # if it is soulboumd
@@ -146,17 +145,14 @@ def findCost(itemID):
     elif SB_ITEM_DATA[itemID]['vanilla'] and SB_ITEM_DATA[itemID][
         'in_ah']:  # for vanilla items found in auction
       # for vanilla items with no recipe
-      return -4
-    elif itemName in EXCEPTION_ITEMS:  # if it is sold by npc
-      return EXCEPTION_ITEMS[itemName]
+      if itemName in EXCEPTION_ITEMS:  # if it is sold by npc
+        return EXCEPTION_ITEMS[itemName]
+      else:
+        return -4
     else:
       return -1
   else:
-    itemSellPrice = asyncio.run(
-      req_data("https://api.hypixel.net/skyblock/bazaar")
-    )["products"][itemID]['sell_summary']
-    end = time.time()
-    print(f"findCost time for {itemID} is {end - start}")
+    itemSellPrice = bzData["products"][itemID]['sell_summary']
     if itemSellPrice == []:  # if no one is selling it bazaar
       return -2
     else:

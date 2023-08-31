@@ -87,7 +87,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         content=f"Error: {name} does not have valid recipe or any recipe at all"
       )
     else:
-      res = discord.Embed(title="  ", colour=0x1978E3)
+      res = discord.Embed(title=f"{name}'s Recipes:", colour=0x1978E3)
       await interaction.edit_original_response(
         content="Getting Regular Recipe... \nGetting Alt Recipes...")
       recipeLst = await asyncio.to_thread(functions.get_raw_recipe, regRecipe)
@@ -131,7 +131,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
           res.description += "\n`Total Cost: Incomplete.`"
         end = time.time()
         print(f"processCosts time {end - start} seconds")
-        return (totalCost)
+        return totalCost
 
       await interaction.edit_original_response(
         content=
@@ -144,58 +144,39 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       costStrt = time.time()
       fullLst = [regRecipe] + recipeLst
       recipeCosts = []
-      prevRecipe = None
-      currRecipe = fullLst[0]
       numRecs = len(fullLst)
       procMats = {
       }  # dict with key being material name, value being if it has a price already
       matCosts = {}  # key: material name, value: material price
+      bzData = requests.get("https://api.hypixel.net/skyblock/bazaar").json()
       for i in fullLst:
         for mat in i:
           procMats[mat] = False
       i = 0
-      while True:
-        material_price = {}
-        if prevRecipe != None:
-          for material in currRecipe:
-            print(f"curr processed: {material}")
-            if procMats[material] == True:
-              #try:
-              if prevRecipe[material] == currRecipe[material]:
-                material_price[material] = matCosts[material]
-              else:
-                if matCosts[material] < 0:
-                  material_price[material] = matCosts[material]
-                else:
-                  material_price[material] = (
-                    matCosts[material] /
-                    prevRecipe[material]) * currRecipe[material]
-            #except:
+      while i < numRecs:
+        currRecipe = fullLst[i]
+        materialPrice = {}
+        for material in currRecipe:
+          print(f"curr processed: {material}")
+          if procMats[material] == True:
+            if matCosts[material] < 0:
+              materialPrice[material] = matCosts[material]
             else:
-              matID = SB_NAME_ID[material]
-              matCost = await asyncio.to_thread(functions.findCost, matID)
-              if matCost < 0:
-                material_price[material] = matCost
-              else:
-                material_price[material] = matCost * currRecipe[material]
-              matCosts[material] = matCost
-              procMats[material] = True
-        else:
-          for material in currRecipe:
+              materialPrice[
+                material] = matCosts[material] * currRecipe[material]
+          else:
             matID = SB_NAME_ID[material]
-            matCost = await asyncio.to_thread(functions.findCost, matID)
+            matCost = await asyncio.to_thread(functions.findCost, matID,
+                                              bzData)
             if matCost < 0:
-              material_price[material] = matCost
+              materialPrice[material] = matCost
             else:
-              material_price[material] = matCost * currRecipe[material]
-        recipeCosts.append(material_price)
-        print(f"mat price for curr recipe: {material_price}")
+              materialPrice[material] = matCost * currRecipe[material]
+            matCosts[material] = matCost
+            procMats[material] = True
+        recipeCosts.append(materialPrice)
+        print(f"mat price for curr recipe: {materialPrice}")
         i += 1
-        if i == numRecs:
-          break
-        else:
-          prevRecipe = currRecipe
-          currRecipe = fullLst[i]
       costEnd = time.time()
       print(f"getCosts time {costEnd - costStrt} seconds")
       await interaction.edit_original_response(
@@ -206,7 +187,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
       ahItems = {}
       # for efficiency, all items in both raw and regular recipe will be processed together
       mainItemPrice = round(await asyncio.to_thread(functions.findCost,
-                                                    SB_NAME_ID[name]))
+                                                    SB_NAME_ID[name], bzData))
       if mainItemPrice == -1:  # if in auction house
         ahItems[name] = -1
       j = 0
@@ -257,37 +238,27 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         content=
         "Getting Regular Recipe... \nGetting Alt Recipes... \nGetting Regular Recipe Prices... \nGetting Alt Recipes' Prices... \nGetting Readable Results. Note that the price for bazaar items are based off the highest buy order price, and the price for auction house items are based off of the lowest BIN. Additionally, an item's value is based off its clean version, e.g non-recombombulated."
       )
-      res.title = f"{name}'s recipes:"
       # find total cost for each recipe
       recipeTotals = []
-      i = 0
-      while True:
-        if i == 0:
-          res.description = "__**Regular Recipe:**__"
-          recipeTotals += [
-            await asyncio.to_thread(processCosts, recipeCosts[0], regRecipe)
-          ]
-        else:
-          if len(recipeCosts) == 1 or i == len(recipeCosts) - 1:
-            res.description += "\n\n__**Raw Recipe:**__"
-            recipeTotals += [
-              await asyncio.to_thread(processCosts, recipeCosts[-1],
-                                      recipeLst[-1])
-            ]
-            break
-          else:
-            res.description += f"\n\n__**Alt Recipe {i}:**__"
-            if i == 1:
-              recipeTotals += [
-                await asyncio.to_thread(processCosts, recipeCosts[1],
-                                        recipeLst[(0)])
-              ]
-            elif i == 2:
-              recipeTotals += [
-                await asyncio.to_thread(processCosts, recipeCosts[2],
-                                        recipeLst[(1)])
-              ]
+      i = 1
+      lastRec = len(recipeLst) - 1
+      print(f"number of recs: {lastRec+1}")
+      res.description = "__**Regular Recipe:**__"
+      recipeTotals += [
+        await asyncio.to_thread(processCosts, recipeCosts[0], regRecipe)
+      ]
+      while i <= lastRec:
+        res.description += f"\n\n__**Alt Recipe {i}:**__"
+        recipeTotals += [
+          await asyncio.to_thread(processCosts, recipeCosts[i],
+                                  recipeLst[(i - 1)])
+        ]
         i += 1
+      res.description += "\n\n__**Raw Recipe:**__"
+      recipeTotals += [
+        await asyncio.to_thread(processCosts, recipeCosts[-1], recipeLst[-1])
+      ]
+
       # processes the profit percentages
       res.description += "\n\n__**Profit Margin**__"
       res.description += f"\n> {name}'s price:"
@@ -355,8 +326,10 @@ async def craftprofit(interaction: discord.Interaction, name: str):
 async def cookieprofit(interaction: discord.Interaction, famerank: str,
                        filter: str):
   start = time.time()
+  bzData = requests.get("https://api.hypixel.net/skyblock/bazaar").json()
   cookieBits = 4800 * SB_BITS_SHOP['fame_rank'][famerank]
-  cookieCost = await asyncio.to_thread(functions.findCost, "BOOSTER_COOKIE")
+  cookieCost = await asyncio.to_thread(functions.findCost, "BOOSTER_COOKIE",
+                                       bzData)
   cookieCPB = round(cookieCost / cookieBits, 2)
   filter = SB_BITS_SHOP['filter'][filter]
   shopLst = SB_BITS_SHOP[filter]
@@ -373,7 +346,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
         item = "Inferno Fuel Block"
       itemID = SB_NAME_ID[item]
       if SB_ITEM_DATA[itemID]['in_bz'] == True:
-        cost = await asyncio.to_thread(functions.findCost, itemID)
+        cost = await asyncio.to_thread(functions.findCost, itemID, bzData)
       else:
         cost = -1
     print(f"{itemID}: {cost}")
@@ -498,11 +471,12 @@ async def copperprofit(interaction: discord.Interaction):
   skymartLst = SB_SKYMART['copper_shop']
   profitDict = {}  # key: item name, value: coins per copper
   itemProfitData = {}  # {copper: ,sellPrice: , cPC (coinsPerCopper): }
+  bzData = requests.get("https://api.hypixel.net/skyblock/bazaar").json()
   ahLst = {}
   await interaction.response.send_message("Checking Bazaar for items...")
   for item in skymartLst:
     itemID = SB_NAME_ID[item]
-    sellPrice = await asyncio.to_thread(functions.findCost, itemID)
+    sellPrice = await asyncio.to_thread(functions.findCost, itemID, bzData)
     cpc = 0  # coins per copper
     if sellPrice <= -1:
       ahLst[item] = -1
