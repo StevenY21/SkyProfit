@@ -107,18 +107,26 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         start = time.time()
         #print(mat_prices, "process_cost debug mat prices")
         totalCost = 0
+        # key: code for if no valid price found, value: what it represents
+        codeDict = {
+          -1: " No one is selling it.",
+          -2: " No sell offers found",
+          -3: " Soulbound"
+        }
+        # key: code for if no valid price found, value: what coin value we give
+        priceDict = {-2: 0.1, -3: 0}
         for material in mat_prices:
           #print(f"current {material} in loop")
           #print(f"curr recipe: {curr_recipe}")
           res.description += f"\n> {curr_recipe[material]} {material}:"
           #print(mat_prices)
           if mat_prices[material] < 0:
-            if mat_prices[material] == -1 or mat_prices[material] == -2:
-              res.description += " No one is selling it."
+            price = mat_prices[material]
+            res.description += codeDict[price]
+            if price == -1:
               totalCost = -1
-            elif mat_prices[material] == -3:
-              res.description += " Soulbound"
-              mat_prices[material] = 0
+            else:
+              mat_prices[material] = curr_recipe[material] * priceDict[price]
           else:
             mat_prices[material] = round(mat_prices[material])
             res.description += f" {mat_prices[material]} coins."
