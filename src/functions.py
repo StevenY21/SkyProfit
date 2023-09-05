@@ -99,29 +99,31 @@ def get_raw_recipe(recipe):
       #print(material, "curr material to process in get_raw_recipe")
       try:
         temp = procRecs[material]
-        print(f' recipe for {material} found: {temp}')
+        #print(f' recipe for {material} found: {temp}')
       except:
         temp = get_item_recipe(material)
       if temp == -1 or temp == -2:
-        rawRecipe[material] = tempRec[material]
+        if material in rawRecipe:
+          rawRecipe[material] += tempRec[material]
+        else:
+          rawRecipe[material] = tempRec[material]
         numDone += 1
       else:
         #print(temp)
         for mat in temp:
-          #print(mat, f"in {temp}")
           itemID = SB_NAME_ID[mat]
           if SB_ITEM_DATA[itemID]["vanilla"] and SB_ITEM_DATA[itemID]["in_ah"]:
             if mat not in EXCEPTION_ITEMS:
               hasExcluded = True
-          if mat not in rawRecipe:
-            rawRecipe[mat] = int(math.ceil(tempRec[material] * temp[mat]))
-          else:
+          if mat in rawRecipe:
             rawRecipe[mat] += int(math.ceil(tempRec[material] * temp[mat]))
+          else:
+            rawRecipe[mat] = int(math.ceil(tempRec[material] * temp[mat]))
       procRecs[material] = temp
     if numDone == recSize:
       break
     else:
-      print(f"raw recipe so far {rawRecipe}")
+      #print(f"raw recipe so far {rawRecipe}")
       if hasExcluded == False:
         recipelst.append(rawRecipe)
       tempRec = rawRecipe
