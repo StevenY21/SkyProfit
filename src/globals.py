@@ -374,6 +374,9 @@ for item in SB_ITEMS_DATA["items"]:
       SB_ITEM_DICT[itemID]['rift'] = "transferable"
     elif fromRift == "Rift" and riftTransfer == None:
       SB_ITEM_DICT[itemID]['rift'] = "non_transferable"
+      SB_ITEM_DICT[itemID]['ah_category'] = "N/A"
+      SB_ITEM_DICT[itemID]['in_bz'] = False
+      SB_ITEM_DICT[itemID]['in_ah'] = False
     else:
       SB_ITEM_DICT[itemID]['rift'] = "N/A"
 # manually fix some strange items
