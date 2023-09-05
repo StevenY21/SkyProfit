@@ -278,6 +278,7 @@ example of an item in SB_ITEM_DICT
   'ah_category': ,
   'base_item': ,  
   'vanilla': ,
+  'rift': , # values for rift: N/A if not rift item, transferable for items that can be taken out of or put in rift, non_transferable for rift items that cannot be taken out of rift
 }
 """
 
@@ -366,6 +367,15 @@ for item in SB_ITEMS_DATA["items"]:
     SB_ITEM_DICT[itemID]['vanilla'] = True
   else:
     SB_ITEM_DICT[itemID]['vanilla'] = False
+    # rift
+    fromRift = item.get("origin")
+    riftTransfer = item.get("rift_transferrable")
+    if fromRift == None and riftTransfer == True:
+      SB_ITEM_DICT[itemID]['rift'] = "transferable"
+    elif fromRift == "Rift" and riftTransfer == None:
+      SB_ITEM_DICT[itemID]['rift'] = "non_transferable"
+    else:
+      SB_ITEM_DICT[itemID]['rift'] = "N/A"
 # manually fix some strange items
 SB_NAME_DICT["Enchanted Clownfish"] = "ENCHANTED_CLOWNFISH"
 SB_ITEM_DICT["SPECKLED_MELON"]['vanilla'] = True
@@ -384,6 +394,7 @@ SB_ITEM_DICT["JUMBO_BACKPACK"] = {
   'ah_category': 'tools and misc',
   'base_item': False,
   'vanilla': False,
+  'rift': 'N/A'
 }
 SB_NAME_DICT["Greater Backpack"] = "GREATER_BACKPACK"
 SB_ITEM_DICT["GREATER_BACKPACK"] = {
@@ -399,6 +410,7 @@ SB_ITEM_DICT["GREATER_BACKPACK"] = {
   'ah_category': 'tools and misc',
   'base_item': False,
   'vanilla': False,
+  'rift': 'N/A'
 }
 SB_NAME_DICT["Large Backpack"] = "LARGE_BACKPACK"
 SB_ITEM_DICT["LARGE_BACKPACK"] = {
@@ -414,6 +426,7 @@ SB_ITEM_DICT["LARGE_BACKPACK"] = {
   'ah_category': 'tools and misc',
   'base_item': False,
   'vanilla': False,
+  'rift': 'N/A'
 }
 SB_NAME_DICT["Medium Backpack"] = "MEDIUM_BACKPACK"
 SB_ITEM_DICT["MEDIUM_BACKPACK"] = {
@@ -429,6 +442,7 @@ SB_ITEM_DICT["MEDIUM_BACKPACK"] = {
   'ah_category': 'tools and misc',
   'base_item': False,
   'vanilla': False,
+  'rift': 'N/A'
 }
 SB_NAME_DICT["Small Backpack"] = "SMALL_BACKPACK"
 SB_ITEM_DICT["SMALL_BACKPACK"] = {
@@ -444,6 +458,7 @@ SB_ITEM_DICT["SMALL_BACKPACK"] = {
   'ah_category': 'tools and misc',
   'base_item': False,
   'vanilla': False,
+  'rift': 'N/A'
 }
 # bandanas don't exist in public api for some reason
 SB_NAME_DICT["Green Bandana"] = "GREEN_BANDANA"
@@ -460,6 +475,7 @@ SB_ITEM_DICT["GREEN_BANDANA"] = {
   'ah_category': 'misc',
   'base_item': False,
   'vanilla': False,
+  'rift': 'N/A'
 }
 SB_NAME_DICT["Yellow Bandana"] = "YELLOW_BANDANA"
 SB_ITEM_DICT["YELLOW_BANDANA"] = {
@@ -475,6 +491,7 @@ SB_ITEM_DICT["YELLOW_BANDANA"] = {
   'ah_category': 'misc',
   'base_item': False,
   'vanilla': False,
+  'rift': 'N/A'
 }
 SB_NAME_DICT["Hive Barn Skin"] = "HIVE_BARN_SKIN"
 SB_ITEM_DICT["HIVE_BARN_SKIN"] = {
@@ -490,6 +507,7 @@ SB_ITEM_DICT["HIVE_BARN_SKIN"] = {
   'ah_category': 'blocks',
   'base_item': False,
   'vanilla': False,
+  'rift': 'N/A'
 }
 SB_NAME_DICT["Trading Post Barn Skin"] = "TRADING_POST_BARN_SKIN"
 SB_ITEM_DICT["TRADING_POST_BARN_SKIN"] = {
@@ -505,6 +523,7 @@ SB_ITEM_DICT["TRADING_POST_BARN_SKIN"] = {
   'ah_category': 'blocks',
   'base_item': False,
   'vanilla': False,
+  'rift': 'N/A'
 }
 SB_NAME_DICT["Autumn Hut Barn Skin"] = "AUTUMN_HUT_BARN_SKIN"
 SB_ITEM_DICT["AUTUMN_HUT_BARN_SKIN"] = {
@@ -520,6 +539,7 @@ SB_ITEM_DICT["AUTUMN_HUT_BARN_SKIN"] = {
   'ah_category': 'blocks',
   'base_item': False,
   'vanilla': False,
+  'rift': 'N/A'
 }
 SB_NAME_DICT["Castle Barn Skin"] = "CASTLE_BARN_SKIN"
 SB_ITEM_DICT["CASTLE_BARN_SKIN"] = {
@@ -535,6 +555,7 @@ SB_ITEM_DICT["CASTLE_BARN_SKIN"] = {
   'ah_category': 'blocks',
   'base_item': False,
   'vanilla': False,
+  'rift': 'N/A'
 }
 SB_NAME_DICT["Bamboo Barn Skin"] = "BAMBOO_BARN_SKIN"
 SB_ITEM_DICT["BAMBOO_BARN_SKIN"] = {
@@ -550,6 +571,7 @@ SB_ITEM_DICT["BAMBOO_BARN_SKIN"] = {
   'ah_category': 'misc',
   'base_item': False,
   'vanilla': False,
+  'rift': 'N/A'
 }
 SB_NAME_DICT[
   "God Potion"] = "GOD_POTION_2"  # legacy god potion is GOD_POTION, while the current one is GOD_POTION_2
@@ -780,6 +802,7 @@ for enchant in ENCHANTS_LIST:
       'ah_category': 'bz',
       'base_item': False,
       'vanilla': False,
+      'rift': 'N/A'
     }
     SB_NAME_FIX[itemName.lower()] = itemName
 for enchant in ULT_ENCHANTS:
@@ -807,6 +830,7 @@ for enchant in ULT_ENCHANTS:
       'ah_category': 'bz',
       'base_item': False,
       'vanilla': False,
+      'rift': 'N/A'
     }
     SB_NAME_FIX[itemName.lower()] = itemName
 SB_BITS_SHOP = {
