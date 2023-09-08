@@ -339,6 +339,8 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   cookieCost = await asyncio.to_thread(functions.findCost, "BOOSTER_COOKIE",
                                        bzData)
   cookieCPB = round(cookieCost / cookieBits, 2)
+  #print(cookieCPB)
+  filterName = filter
   filter = SB_BITS_SHOP['filter'][filter]
   shopLst = SB_BITS_SHOP[filter]
   await interaction.response.send_message(
@@ -386,7 +388,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   if filter == "no_filter":
     embTitle = "Bits Shop Item Profits:"
   else:
-    embTitle = f"Bits Shop Item Profits with {filter}:"
+    embTitle = f"Bits Shop Item Profits with {filterName}:"
   profitDict = {}
   for item in costDict:
     if costDict[item] == -1:
