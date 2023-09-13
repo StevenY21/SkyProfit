@@ -111,7 +111,8 @@ async def craftprofit(interaction: discord.Interaction, name: str):
         codeDict = {
           -1: " No one is selling it.",
           -2: " No sell offers found",
-          -3: " Soulbound"
+          -3: " Soulbound",
+          -4: " See next recipe(s)"
         }
         # key: code for if no valid price found, value: what coin value we give
         priceDict = {-2: 0.1, -3: 0}
@@ -123,7 +124,7 @@ async def craftprofit(interaction: discord.Interaction, name: str):
           if mat_prices[material] < 0:
             price = mat_prices[material]
             res.description += codeDict[price]
-            if price == -1:
+            if price != -3:
               totalCost = -1
             else:
               mat_prices[material] = curr_recipe[material] * priceDict[price]
@@ -339,7 +340,7 @@ async def cookieprofit(interaction: discord.Interaction, famerank: str,
   cookieCost = await asyncio.to_thread(functions.findCost, "BOOSTER_COOKIE",
                                        bzData)
   cookieCPB = round(cookieCost / cookieBits, 2)
-  #print(cookieCPB)
+  print("cookie cost cookie cpb", cookieCost, cookieCPB)
   filterName = filter
   filter = SB_BITS_SHOP['filter'][filter]
   shopLst = SB_BITS_SHOP[filter]
